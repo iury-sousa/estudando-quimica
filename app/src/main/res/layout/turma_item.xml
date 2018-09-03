@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <variable
+            name="turma"
+            type="projetotcc.estudandoquimica.viewmodel.TurmaViewModel"/>
+    </data>
+    <android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/cardView"
+        android:elevation="4dp"
+        android:layout_marginBottom="7dp">
+
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="vertical"
+            android:background="#8dafcf"
+            android:gravity="center_vertical"
+            android:padding="12dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Primeira Turma a utilizar o aplicativo"
+                android:textColor="#fff"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
+        </LinearLayout>
+        </LinearLayout>
+
+        <!--<TextView
+              android:id="@+id/turma"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="8dp"
+              android:layout_marginLeft="4dp"
+              android:layout_marginRight="4dp"
+              android:layout_marginBottom="4dp"
+              android:padding="10dp"
+              android:text="Turma 1"
+              android:textColor="#000"
+              android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>-->
+
+    </android.support.v7.widget.CardView>
+</layout>

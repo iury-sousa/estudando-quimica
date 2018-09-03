@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#410C5A</color>
+    <color name="colorPrimaryDark">#300843</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="colorTextMainDefault">#000</color>
+    <color name="colorItemHome">#2cc227</color>
+    <color name="colorItemAgenda">#922fcb</color>
+    <color name="colorItemActivities">#c810a1</color>
+    <color name="colorItemPerformance">#d37212</color>
+    <color name="colorItemConfiguration">#1822dd</color>
+    <color name="colorItemExit">#b51010</color>
+    <color name="colorItemTurma">#0d94d8</color>
+    <color name="colorIconePefil">#740ca5</color>
+    <color name="colorProcessConteudo">#3ec33b</color>
+    <color name="colorButtonPrincipal">#5c0984</color>
+    <color name="colorButtonCancelar">#840928</color>
+    <color name="colorIconePublicacao">#5d5d5d</color>
+</resources>

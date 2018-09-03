@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "898422124337",
+    "firebase_url": "https://projeto-tcc-appquimica.firebaseio.com",
+    "project_id": "projeto-tcc-appquimica",
+    "storage_bucket": "projeto-tcc-appquimica.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:898422124337:android:ab4e1979b22c3aec",
+        "android_client_info": {
+          "package_name": "projetotcc.estudandoquimica"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "898422124337-v70ebd4qv0olb4f7ss9ln36og33mk0om.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "projetotcc.estudandoquimica",
+            "certificate_hash": "91cb7be9e2871efb8df19e386a998f572585076e"
+          }
+        },
+        {
+          "client_id": "898422124337-4qfelnb9dvupmt4k6hq0js8d16eendrs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDG6Jfz743QFggE3m1-9ZnCzTSi8U3yqBE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "898422124337-4qfelnb9dvupmt4k6hq0js8d16eendrs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

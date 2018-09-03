@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data class="ActivityUsuarioBinding">
+
+        <variable
+            name="user"
+            type="projetotcc.estudandoquimica.viewmodel.CadastrarUsuarioViewModel"/>
+
+
+    </data>
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/telacadastro"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:paddingBottom="@dimen/spacing_small"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:fitsSystemWindows="true"
+        android:orientation="vertical"
+        android:background="@drawable/fundo_dois">
+        <ProgressBar
+            android:id="@+id/cadastro_progress"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone" />
+        <ScrollView
+            android:id="@+id/form_cadastro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fillViewport="true"
+            android:layout_centerInParent="true"
+            android:fitsSystemWindows="true"
+            android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/form_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="20dp">
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/foto"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_alignParentTop="true"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="10dp"
+                            android:src="@drawable/ic_person_2"
+                            app:civ_circle_background_color="#b6afb9"
+                            android:background="@drawable/borda_foto_perfil" />
+
+                        <ImageView
+                            android:id="@+id/add_foto"
+                            android:layout_width="45dp"
+                            android:layout_height="45dp"
+                            android:layout_alignEnd="@+id/foto"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginEnd="-4dp"
+                            android:layout_marginBottom="5dp"
+                            android:background="@drawable/borda"
+                            android:backgroundTint="@color/colorButtonCancelar"
+                            android:src="@drawable/ic_add_a_photo" />
+                    </RelativeLayout>
+                    <EditText
+                        android:id="@+id/nome"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/spacing_medium"
+                        android:background="@drawable/borda"
+                        android:drawablePadding="@dimen/spacing_medium"
+                        android:drawableStart="@drawable/ic_person"
+                        android:hint="Nome"
+                        android:inputType="textPersonName"
+                        android:maxLines="1"
+                        android:padding="12dp"
+                        android:singleLine="false"
+                        android:textColor="#fff"
+                        android:textColorHint="#c7aee8"
+                        android:text="@={user.nome}"/>
+
+                    <EditText
+                        android:id="@+id/email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/borda"
+                        android:drawablePadding="@dimen/spacing_medium"
+                        android:drawableStart="@drawable/ic_email_roxo_claro"
+                        android:hint="@string/prompt_email"
+                        android:inputType="textEmailAddress"
+                        android:maxLines="1"
+                        android:padding="12dp"
+                        android:singleLine="false"
+                        android:textColor="#fff"
+                        android:textColorHint="#c7aee8"
+                        android:text="@={user.email}"/>
+
+                    <EditText
+                        android:id="@+id/senha"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_medium"
+                        android:background="@drawable/borda"
+                        android:drawablePadding="@dimen/spacing_medium"
+                        android:drawableStart="@drawable/ic_lock"
+                        android:hint="Senha"
+                        android:imeActionId="6"
+                        android:imeActionLabel="@string/action_sign_in_short"
+                        android:imeOptions="actionUnspecified"
+                        android:inputType="textPassword"
+                        android:maxLines="1"
+                        android:padding="12dp"
+                        android:singleLine="true"
+                        android:textColor="#fff"
+                        android:textColorHint="#c7aee8"
+                        android:text="@={user.senha}"
+
+                        />
+
+                    <GridLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="horizontal"
+                        android:columnCount="2"
+                        android:rowCount="1"
+                        >
+
+                        <TextView
+                            style="@style/Widget.AppCompat.Button"
+                            android:layout_width="140dp"
+                            android:layout_height="50dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/borda"
+                            android:backgroundTint="@color/colorButtonPrincipal"
+                            android:gravity="center"
+                            android:onClick="onCreateUserClicked"
+                            android:text="Cadastrar"
+                            android:textColor="#fffe"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:layout_gravity="start"/>
+
+                        <TextView
+                            style="@style/Widget.AppCompat.Button"
+                            android:layout_width="140dp"
+                            android:layout_height="50dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/borda"
+                            android:backgroundTint="@color/colorButtonCancelar"
+                            android:gravity="center"
+                            android:onClick="onCancelarCadastro"
+                            android:text="Cancelar"
+                            android:textColor="#fffe"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                    </GridLayout>
+
+                </LinearLayout>
+
+        </ScrollView>
+    </RelativeLayout>
+</layout>
+

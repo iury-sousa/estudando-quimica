@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout>
+    <data/>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:paddingBottom="@dimen/spacing_small"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/spacing_medium"
+    android:fitsSystemWindows="true"
+    android:background="@drawable/fundo_dois"
+    android:id="@+id/login_mai"
+    tools:context=".view.usuario.LoginActivity"
+    >
+
+    <!-- Login progress -->
+    <ProgressBar
+        android:id="@+id/login_progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone" />
+
+    <ScrollView
+        android:id="@+id/login_form"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        android:layout_alignParentBottom="true"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/email_login_form"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="10dp"
+            >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="Logo"
+                android:layout_marginBottom="30dp"
+                android:src="@drawable/ic_extension" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="4dp"
+                android:id="@+id/form_text">
+
+                <AutoCompleteTextView
+                    android:id="@+id/email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/borda"
+                    android:drawablePadding="@dimen/spacing_medium"
+                    android:drawableStart="@drawable/ic_email_roxo_claro"
+                    android:hint="@string/prompt_email"
+                    android:textColorHint="#c7aee8"
+                    android:inputType="textEmailAddress"
+                    android:maxLines="1"
+                    android:padding="12dp"
+                    android:singleLine="false"
+                    android:textColor="#fff"
+                    />
+
+                <EditText
+                    android:layout_marginTop="@dimen/spacing_medium"
+                    android:id="@+id/password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Senha"
+                    android:imeActionId="6"
+                    android:drawableStart="@drawable/ic_lock"
+                    android:drawablePadding="@dimen/spacing_medium"
+                    android:imeActionLabel="@string/action_sign_in_short"
+                    android:imeOptions="actionUnspecified"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:padding="12dp"
+                    android:textColor="#fff"
+                    android:textColorHint="#c7aee8"
+                    android:background="@drawable/borda"/>
+
+                <TextView
+                    android:id="@+id/email_sign_in_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Acessar"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:layout_marginTop="20dp"
+                    android:padding="12dp"
+                    android:background="@drawable/borda"
+                    style="@style/Widget.AppCompat.Button"
+                    android:textColor="#fffe"
+                    android:backgroundTint="@color/colorButtonPrincipal"
+                    android:gravity="center"/>
+
+            </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    >
+                   <!-- <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:gravity="center_horizontal"
+                        android:layout_marginTop="20dp"
+                        android:text="Entre com"
+                        android:textColor="#fff" />-->
+
+                    <LinearLayout
+                        android:layout_marginTop="20dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:layout_marginBottom="50dp">
+
+                        <ImageView
+                            android:layout_width="50dp"
+                            android:layout_height="30dp"
+                            android:layout_gravity="start"
+                            android:src="@drawable/ic_google_plus" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Entre com o Google"
+                            android:textStyle="bold"
+                            android:textColor="#fff"/>
+                    </LinearLayout>
+
+                <!--    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/spacing_medium"
+                        android:background="@drawable/borda_vermelha"
+                        android:padding="@dimen/spacing_large"
+                        android:gravity="center"
+                        android:textColor="#c20303"
+                        android:textStyle="bold"
+                        android:text="G" />-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="50dp"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:layout_gravity="bottom"
+                        android:id="@+id/cadastrar">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="bottom"
+                            android:text="Não possuí uma conta? "
+                            android:textColor="#e5daf4" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="bottom"
+                            android:text="Cadastre-se."
+                            android:textStyle="bold"
+                            android:textColor="#e5daf4" />
+
+                    </LinearLayout>
+                </LinearLayout>
+        </LinearLayout>
+
+    </ScrollView>
+</RelativeLayout>
+</layout>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".view.offline.ConteudoOfflineFragment">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="50dp"
+            android:gravity="center">
+
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/titulo1"
+                android:background="@drawable/borda_layout_processbar_conteudo_offline"
+                >
+                <projetotcc.estudandoquimica.componentesPersonalizados.CircleProgressBar
+                    android:id="@+id/processo_titulo1"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:layout_gravity="center"
+                    app:ring_color="#cecece"
+                    app:ring_max_progress="100"
+                    app:ring_progress_color="@color/colorProcessConteudo"
+                    app:ring_stroke_width="9dp"
+                    app:ring_style="stroke"
+                    />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="14dp"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/borda_processbar_conteudo_offline"
+                    android:src="@drawable/ic_android" />
+            </RelativeLayout>
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" Titulo 1"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/tamanho_titulo_conteudo_offline"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="40dp"
+            android:gravity="center"
+            >
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center">
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/titulo2"
+                android:background="@drawable/borda_layout_processbar_conteudo_offline"
+                >
+                <projetotcc.estudandoquimica.componentesPersonalizados.CircleProgressBar
+                    android:id="@+id/processo_titulo2"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:layout_gravity="center"
+                    app:ring_color="#cecece"
+                    app:ring_max_progress="100"
+                    app:ring_progress_color="@color/colorProcessConteudo"
+                    app:ring_stroke_width="9dp"
+                    app:ring_style="stroke"
+                    />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="14dp"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/borda_processbar_conteudo_offline"
+                    android:src="@drawable/ic_android" />
+            </RelativeLayout>
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" Titulo 2"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/tamanho_titulo_conteudo_offline"/>
+            </LinearLayout>
+
+
+            <Space
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center">
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/titulo3"
+                    android:background="@drawable/borda_layout_processbar_conteudo_offline"
+                    >
+                    <projetotcc.estudandoquimica.componentesPersonalizados.CircleProgressBar
+                        android:id="@+id/processo_titulo3"
+                        android:layout_width="90dp"
+                        android:layout_height="90dp"
+                        android:layout_gravity="center"
+                        app:ring_color="#cecece"
+                        app:ring_max_progress="100"
+                        app:ring_progress_color="@color/colorProcessConteudo"
+                        app:ring_stroke_width="9dp"
+                        app:ring_style="stroke"
+                        />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="14dp"
+                        android:layout_centerInParent="true"
+                        android:background="@drawable/borda_processbar_conteudo_offline"
+                        android:src="@drawable/ic_android" />
+                </RelativeLayout>
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" Titulo 3"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/tamanho_titulo_conteudo_offline"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>
+
