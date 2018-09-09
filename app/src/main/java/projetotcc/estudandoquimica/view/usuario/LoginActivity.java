@@ -81,7 +81,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private FirebaseAuth auth;
     private ActivityLoginBinding binding;
 
-
+    MainActivity mainActivity;
     @Override
     protected void onStart() {
         super.onStart();
@@ -98,6 +98,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
+        mainActivity = new MainActivity();
 
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();

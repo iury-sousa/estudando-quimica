@@ -1,5 +1,6 @@
 package projetotcc.estudandoquimica.view.home;
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 
 import java.util.Objects;
 
+import projetotcc.estudandoquimica.MainActivity;
 import projetotcc.estudandoquimica.R;
 import projetotcc.estudandoquimica.view.offline.ConteudoOfflineFragment;
 
@@ -33,9 +35,7 @@ public class HomeFragment extends Fragment{
 
         View viewContainer = (View) container.getParent();
         appBar = (AppBarLayout) viewContainer.findViewById(R.id.appbar);
-        //tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
         tabLayout = new TabLayout(Objects.requireNonNull(getActivity()));
-        //tabLayout = (TabLayout) view.findViewById(R.id.tabs);
         tabLayout.setTabTextColors(Color.parseColor("#FF5D5D5D"), Color.parseColor("#410C5A"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
@@ -43,7 +43,6 @@ public class HomeFragment extends Fragment{
         tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#410C5A"));
         tabLayout.setSelectedTabIndicatorHeight(8);
         appBar.addView(tabLayout);
-
 
         AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) tabLayout.getLayoutParams();
         params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP);

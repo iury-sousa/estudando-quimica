@@ -9,47 +9,47 @@
             android:icon="@drawable/ic_round_home_24px"
             android:title="Home"
             android:checked="true"/>
-        <item
-            android:id="@+id/nav_agenda"
-            android:icon="@drawable/ic_calendar"
-            android:title="Agenda" />
+        <!--<item-->
+            <!--android:id="@+id/nav_agenda"-->
+            <!--android:icon="@drawable/ic_calendar"-->
+            <!--android:title="Agenda" />-->
         <item
             android:id="@+id/nav_turma"
             android:icon="@drawable/ic_school"
             android:title="Turmas" />
-        <item
-            android:id="@+id/nav_atividade"
-            android:icon="@drawable/atom"
-            android:title="Atividades" />
-        <item
-            android:id="@+id/nav_desempenho"
-            android:icon="@drawable/ic_bar_chart"
-            android:title="Desempenho escolar"/>
-        <item
-            android:id="@+id/nav_configuracoes"
-            android:icon="@drawable/ic_settings_20px"
-            android:title="Configurações"
-            />
+        <!--<item-->
+            <!--android:id="@+id/nav_atividade"-->
+            <!--android:icon="@drawable/atom"-->
+            <!--android:title="Atividades" />-->
+        <!--<item-->
+            <!--android:id="@+id/nav_desempenho"-->
+            <!--android:icon="@drawable/ic_bar_chart"-->
+            <!--android:title="Desempenho escolar"/>-->
+        <!--<item-->
+            <!--android:id="@+id/nav_configuracoes"-->
+            <!--android:icon="@drawable/ic_settings_20px"-->
+            <!--android:title="Configurações"-->
+            <!--/>-->
         <item
             android:id="@+id/nav_sair"
             android:icon="@drawable/ic_exit_to_app"
             android:title="Sair" />
     </group>
 
-    <item android:title="Comunicação">
-        <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Sobre" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Compartilhe" />
+    <!--<item android:title="Comunicação">-->
+        <!--<menu>-->
+            <!--<item-->
+                <!--android:id="@+id/nav_share"-->
+                <!--android:icon="@drawable/ic_menu_share"-->
+                <!--android:title="Sobre" />-->
+            <!--<item-->
+                <!--android:id="@+id/nav_send"-->
+                <!--android:icon="@drawable/ic_menu_send"-->
+                <!--android:title="Compartilhe" />-->
 
-            <item android:id="@+id/nav_feedback"
-                android:title="Enviar feedback"/>
-        </menu>
-    </item>
+            <!--<item android:id="@+id/nav_feedback"-->
+                <!--android:title="Enviar feedback"/>-->
+        <!--</menu>-->
+    <!--</item>-->
 
 </menu>

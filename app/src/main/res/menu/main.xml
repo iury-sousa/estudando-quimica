@@ -5,8 +5,7 @@
     tools:context="projetotcc.estudandoquimica.MainActivity">
     <item
         android:id="@+id/action_add_conteudo"
-        android:orderInCategory="100"
-        android:icon="@drawable/ic_person"
-        app:showAsAction="ifRoom|withText"
-        android:title="Estudando quimica" />
+        android:icon="@drawable/ic_add"
+        android:title="Estudando quimica"
+        app:showAsAction="always" />
 </menu>

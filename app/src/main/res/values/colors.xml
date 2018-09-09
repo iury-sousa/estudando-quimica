@@ -16,4 +16,7 @@
     <color name="colorButtonPrincipal">#5c0984</color>
     <color name="colorButtonCancelar">#840928</color>
     <color name="colorIconePublicacao">#5d5d5d</color>
+    <color name="colorActionMode">#650792</color>
+    <color name="colorItemAtivado">#91b7ec</color>
+    <color name="colorItemDesativado">#f7f4ff</color>
 </resources>

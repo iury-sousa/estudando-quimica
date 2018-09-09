@@ -122,4 +122,8 @@
     <string name="title_activity_teste">Teste</string>
     <string name="btnsalvar">Salvar</string>
     <string name="btnCancelar">Cancelar</string>
+    <string name="title_activity_turma">TurmaActivity</string>
+    <string name="tab_text_1">Publicações</string>
+    <string name="tab_text_2">Alunos</string>
+    <string name="section_format">Hello World from section: %1$d</string>
 </resources>

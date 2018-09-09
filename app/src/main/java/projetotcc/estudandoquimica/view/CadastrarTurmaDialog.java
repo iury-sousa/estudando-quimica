@@ -22,6 +22,15 @@ import projetotcc.estudandoquimica.R;
 public class CadastrarTurmaDialog extends DialogFragment {
 
     private String nome;
+    private int opcao;
+
+    public int getOpcao() {
+        return opcao;
+    }
+
+    public void setOpcao(int opcao) {
+        this.opcao = opcao;
+    }
 
     public interface CadastrarTurmaListener {
         void onDialogPositiveClick(CadastrarTurmaDialog dialog);

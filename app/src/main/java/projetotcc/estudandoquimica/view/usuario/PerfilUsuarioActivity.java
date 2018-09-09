@@ -37,11 +37,11 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
 
         String nome = user.getDisplayName();
         String email = user.getEmail();
-        String imagemPath = user.getPhotoUrl().toString();
+        //String imagemPath = user.getPhotoUrl().toString();
 
         UsuarioViewModel usuarioViewModel = new UsuarioViewModel(
                 new Usuario(nome, email, null, false,
-                        "(16)99115-6158", BindingUtils.converterStringToDate("13/08/1997"), true,imagemPath));
+                        "(16)99115-6158", BindingUtils.converterStringToDate("13/08/1997"), true,""));
 
         binding.setUsuario(usuarioViewModel);
 

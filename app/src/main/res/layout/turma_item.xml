@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <variable
             name="turma"
@@ -10,28 +10,51 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/cardView"
-        android:elevation="4dp"
-        android:layout_marginBottom="7dp">
+        android:elevation="10dp"
+        android:shadowColor="#515151"
+        app:cardElevation="5dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp">
+
 
         <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:background="#8dafcf"
             android:gravity="center_vertical"
-            android:padding="12dp">
+            android:background="@drawable/selector_item_turma"
+            android:padding="16dp">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Primeira Turma a utilizar o aplicativo"
-                android:textColor="#fff"
+                android:text="@{turma.nome}"
+                android:textColor="#000"
+                android:shadowColor="#d3d3d3"
+                android:shadowRadius="8"
+                android:shadowDx="2"
+                android:shadowDy="1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#000"
+                android:text="@{turma.nomeProfessor}"
+                android:textSize="16sp"/>
+            <!--<TextView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:textColor="#867bb3"-->
+                <!--android:text="@{turma.codeTurma}"-->
+                <!--android:textSize="16sp"/>-->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#929292"
+                android:text="@{turma.data}"/>
         </LinearLayout>
-        </LinearLayout>
+
 
         <!--<TextView
               android:id="@+id/turma"
