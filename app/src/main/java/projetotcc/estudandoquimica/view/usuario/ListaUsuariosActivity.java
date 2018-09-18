@@ -4,8 +4,6 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.graphics.Color;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -18,7 +16,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -30,12 +27,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import projetotcc.estudandoquimica.MainActivity;
 import projetotcc.estudandoquimica.R;
 import projetotcc.estudandoquimica.componentesPersonalizados.DividerItemDecoration;
 import projetotcc.estudandoquimica.databinding.ActivityListaUsuariosBinding;
 import projetotcc.estudandoquimica.model.Usuario;
-import projetotcc.estudandoquimica.view.TurmaFragment;
 
 public class ListaUsuariosActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
 

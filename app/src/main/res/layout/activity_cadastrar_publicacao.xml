@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
 
-    <data/>
+    <data>
+        <variable
+            name="pub"
+            type="projetotcc.estudandoquimica.viewmodel.PublicacaoViewModel"/>
+    </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -30,7 +34,7 @@
                     >
 
                     <EditText
-
+                        android:id="@+id/titulo"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:hint="Titulo"
@@ -41,9 +45,11 @@
                         android:inputType="text"
                         android:textColor="#8c28ff"
                         android:background="#14000000"
+                        android:text="@={pub.titulo}"
                        />
 
                     <EditText
+                        android:id="@+id/texto_publicacao"
                         android:layout_marginTop="5dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -55,6 +61,7 @@
                         android:hint="Digite um conteúdo"
                         android:background="#fff"
                         android:minHeight="40dp"
+                        android:text="@={pub.textoPublicacao}"
                         />
 
                     <RelativeLayout
@@ -78,8 +85,10 @@
                             android:layout_marginTop="1dp"
                             android:adjustViewBounds="true"
                             android:maxHeight="400dp"
-                            android:src="@drawable/imagem_teste"
-                            android:visibility="gone" />
+                            android:visibility="visible" />
+                            <!--android:src="@drawable/imagem_teste"-->
+                            <!--app:image="@{pub.imagemUrl}"-->
+
                     </RelativeLayout>
 
 

@@ -9,6 +9,7 @@ public class ConteudoOffline implements Parcelable {
     private String assunto;
     private String texto;
     private int[] imagensArray;
+    private int id;
 
     public ConteudoOffline() {
 
@@ -26,6 +27,7 @@ public class ConteudoOffline implements Parcelable {
         assunto = in.readString();
         texto = in.readString();
         imagensArray = in.createIntArray();
+        id = in.readInt();
     }
 
     public static final Creator<ConteudoOffline> CREATOR = new Creator<ConteudoOffline>() {
@@ -51,6 +53,7 @@ public class ConteudoOffline implements Parcelable {
         dest.writeString(assunto);
         dest.writeString(texto);
         dest.writeIntArray(imagensArray);
+        dest.writeInt(id);
     }
 
     public String getTitulo() {
@@ -85,4 +88,11 @@ public class ConteudoOffline implements Parcelable {
         this.imagensArray = imagensArray;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

@@ -1,10 +1,16 @@
 package projetotcc.estudandoquimica.view.usuario;
 
+import android.animation.Animator;
+import android.annotation.TargetApi;
 import android.databinding.DataBindingUtil;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.transition.TransitionManager;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -51,6 +57,7 @@ public class ListaUsuariosAdapter extends RecyclerView.Adapter<ListaUsuariosAdap
 
         ListaEstudanteViewModel model = new ListaEstudanteViewModel();
         model.setViewModel(filtroUsuarios.get(position));
+
         binding.setUsuario(model);
     }
 
@@ -74,6 +81,16 @@ public class ListaUsuariosAdapter extends RecyclerView.Adapter<ListaUsuariosAdap
         }
 
     }
+
+    //@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+//    public static void circularReveal(View v){
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            int finalRadius = Math.max(v.getWidth(), v.getHeight()) / 2;
+//            TransitionManager.beginDelayedTransition((ViewGroup) v);
+//            Animator anim = ViewAnimationUtils.createCircularReveal(v, v.getWidth() / 2, v.getHeight() / 2, 0, finalRadius);
+//            anim.start();
+//        }
+  //  }
 
     @Override
     public Filter getFilter() {

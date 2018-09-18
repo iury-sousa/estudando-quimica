@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import projetotcc.estudandoquimica.R;
+import projetotcc.estudandoquimica.WrapContentLinearLayoutManager;
 import projetotcc.estudandoquimica.componentesPersonalizados.DividerItemDecoration;
 import projetotcc.estudandoquimica.databinding.FragmentListUsuariosBinding;
 import projetotcc.estudandoquimica.model.Usuario;
@@ -65,11 +66,11 @@ public class ListUsuariosFragment extends Fragment implements SearchView.OnQuery
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Intent intent = getActivity().getIntent();
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            //doMySearch(query);
-        }
+//        Intent intent = getActivity().getIntent();
+//        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+//            String query = intent.getStringExtra(SearchManager.QUERY);
+//            //doMySearch(query);
+//        }
         setHasOptionsMenu(true);
         Intent it = getActivity().getIntent();
         Bundle b = it.getExtras();
@@ -209,6 +210,7 @@ public class ListUsuariosFragment extends Fragment implements SearchView.OnQuery
 
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -232,22 +234,6 @@ public class ListUsuariosFragment extends Fragment implements SearchView.OnQuery
     public boolean onQueryTextChange(String newText) {
         adapter.getFilter().filter(newText.trim());
         return false;
-    }
-
-    public class WrapContentLinearLayoutManager extends LinearLayoutManager {
-
-        public WrapContentLinearLayoutManager(Context context, int orientation, boolean reverseLayout) {
-            super(context, orientation, reverseLayout);
-        }
-
-        @Override
-        public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
-            try {
-                super.onLayoutChildren(recycler, state);
-            } catch (IndexOutOfBoundsException e) {
-                Log.e("probe", "meet a IOOBE in RecyclerView");
-            }
-        }
     }
 
 }

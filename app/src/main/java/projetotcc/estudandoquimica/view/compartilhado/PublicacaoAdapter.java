@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ViewSwitcher;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,11 +22,25 @@ import projetotcc.estudandoquimica.viewmodel.PublicacaoViewModel;
 public class PublicacaoAdapter extends RecyclerView.Adapter<PublicacaoAdapter.BindingHolder> {
 
     private List<Publicacao> lista_publicacao;
-    private Context context;
 
-    public PublicacaoAdapter(List<Publicacao> lista_publicacao, Context context) {
-        this.lista_publicacao = lista_publicacao;
+    Context context;
+    public PublicacaoAdapter(Context context) {
         this.context = context;
+    }
+
+    public void setPublicacao(List<Publicacao> lista_publicacao) {
+
+        if(this.lista_publicacao == null) {
+            this.lista_publicacao = lista_publicacao;
+            notifyDataSetChanged();
+        }
+    }
+
+    public void addPublicacao(Publicacao publicacao, int posicao){
+
+        lista_publicacao.add(posicao,publicacao);
+        notifyItemInserted(getItemCount());
+        notifyItemRangeChanged(0, lista_publicacao.size());
     }
 
     @NonNull
@@ -43,8 +59,10 @@ public class PublicacaoAdapter extends RecyclerView.Adapter<PublicacaoAdapter.Bi
     public void onBindViewHolder(@NonNull PublicacaoAdapter.BindingHolder holder, int position) {
         PublicacaoItemBinding binding = holder.binding;
 
-        PublicacaoViewModel publicacaoViewModel = new PublicacaoViewModel(lista_publicacao.get(position), context);
+        PublicacaoViewModel publicacaoViewModel = new PublicacaoViewModel();
+        publicacaoViewModel.setPublicacao(lista_publicacao.get(position),context);
 
+        //lista_publicacao.get(position).getCurtiu();
         onBotaoCurtirClicked(binding, publicacaoViewModel);
 
         binding.setPublicacao(publicacaoViewModel);
@@ -52,7 +70,7 @@ public class PublicacaoAdapter extends RecyclerView.Adapter<PublicacaoAdapter.Bi
 
     @Override
     public int getItemCount() {
-        return lista_publicacao.size();
+        return lista_publicacao != null ? lista_publicacao.size() : 0;
     }
 
     private void onBotaoCurtirClicked(final PublicacaoItemBinding binding, final PublicacaoViewModel viewModel){
@@ -61,18 +79,18 @@ public class PublicacaoAdapter extends RecyclerView.Adapter<PublicacaoAdapter.Bi
 
             @Override
             public void onClick(View v) {
-                ViewSwitcher switcher = (ViewSwitcher) v;
+                ViewSwitcher switcher = binding.viewSwitcher;
 
                 if (switcher.getDisplayedChild() == 0) {
 
                     if(Objects.equals(Objects.requireNonNull(
                             context.getDrawable(R.drawable.ic_flask_cheio)).getConstantState(),
                             binding.imageCurtir.getDrawable().getConstantState())){
-                        viewModel.setCurtida(false);
+                        viewModel.curtiu.set(0);
                         binding.imageCurtir.setImageResource(R.drawable.ic_flask_vazio);
                     }else {
                         binding.imageCurtir.setImageResource(R.drawable.ic_flask_cheio);
-                        viewModel.setCurtida(true);
+                        viewModel.curtiu.set(1);
 
                     }
                     switcher.showNext();
@@ -83,10 +101,10 @@ public class PublicacaoAdapter extends RecyclerView.Adapter<PublicacaoAdapter.Bi
                             binding.imageCurtir.getDrawable().getConstantState())){
 
                         binding.imageCurtir.setImageResource(R.drawable.ic_flask_vazio);
-                        viewModel.setCurtida(false);
+                        viewModel.curtiu.set(0);
                     }else {
                         binding.imageCurtir.setImageResource(R.drawable.ic_flask_cheio);
-                        viewModel.setCurtida(true);
+                        viewModel.curtiu.set(1);
                     }
                     switcher.showPrevious();
                 }
@@ -95,6 +113,7 @@ public class PublicacaoAdapter extends RecyclerView.Adapter<PublicacaoAdapter.Bi
     }
 
     public static class BindingHolder extends RecyclerView.ViewHolder {
+
         private PublicacaoItemBinding binding;
 
         private BindingHolder(PublicacaoItemBinding binding) {

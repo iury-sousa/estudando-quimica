@@ -2,27 +2,34 @@ package projetotcc.estudandoquimica.model;
 
 import android.graphics.drawable.Drawable;
 
-import projetotcc.estudandoquimica.BR;
+import com.google.firebase.database.Exclude;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Publicacao {
 
-    private int id;
-    private Usuario usuario;
+    private String id;
+    private Usuario admin;
     private String titulo;
     private String textoPublicacao;
     private String imagemUrl;
-    private int tempoPublicacao;
+    private String dataPublicacao;
     private int numCurtidas;
     private int numComentarios;
     private boolean curtiu;
     private Drawable iconeCurtida;
 
-    public Publicacao(Usuario usuario, String titulo, String textoPublicacao, String imagemUrl, int tempoPublicacao, int numCurtidas, int numComentarios, boolean curtiu) {
-        this.usuario = usuario;
+    public Publicacao() {
+    }
+
+
+    public Publicacao(Usuario admin, String titulo, String textoPublicacao, String imagemUrl, String dataPublicacao, int numCurtidas, int numComentarios, boolean curtiu) {
+        this.admin = admin;
         this.titulo = titulo;
         this.textoPublicacao = textoPublicacao;
         this.imagemUrl = imagemUrl;
-        this.tempoPublicacao = tempoPublicacao;
+        this.dataPublicacao = dataPublicacao;
         this.numCurtidas = numCurtidas;
         this.numComentarios = numComentarios;
         this.curtiu = curtiu;
@@ -37,20 +44,20 @@ public class Publicacao {
         this.iconeCurtida = iconeCurtida;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public Usuario getUsuario() {
-        return usuario;
+    public Usuario getAdmin() {
+        return admin;
     }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
+    public void setAdmin(Usuario admin) {
+        this.admin = admin;
     }
 
     public String getTitulo() {
@@ -77,12 +84,12 @@ public class Publicacao {
         this.imagemUrl = imagemUrl;
     }
 
-    public int getTempoPublicacao() {
-        return tempoPublicacao;
+    public String getDataPublicacao() {
+        return dataPublicacao;
     }
 
-    public void setTempoPublicacao(int tempoPublicacao) {
-        this.tempoPublicacao = tempoPublicacao;
+    public void setDataPublicacao(String dataPublicacao) {
+        this.dataPublicacao = dataPublicacao;
     }
 
     public int getNumCurtidas() {
@@ -107,5 +114,16 @@ public class Publicacao {
 
     public void setCurtiu(boolean curtiu) {
         this.curtiu = curtiu;
+    }
+
+    @Exclude
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("titulo", titulo);
+        result.put("textoPublicacao", textoPublicacao);
+        result.put("administrador", admin.getId());
+        result.put("dataPublicacao", dataPublicacao);
+
+        return result;
     }
 }

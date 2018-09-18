@@ -78,6 +78,11 @@ public class TurmaActivity extends AppCompatActivity implements SearchView.OnQue
 
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -96,6 +101,7 @@ public class TurmaActivity extends AppCompatActivity implements SearchView.OnQue
         switch (item.getItemId()){
             case android.R.id.home:
                 onBackPressed();
+                overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
                 return true;
         }
 

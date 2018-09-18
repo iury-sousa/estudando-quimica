@@ -126,4 +126,17 @@
     <string name="tab_text_1">Publicações</string>
     <string name="tab_text_2">Alunos</string>
     <string name="section_format">Hello World from section: %1$d</string>
+
+    <string name="titulo_ligacao">Ligações químicas</string>
+    <string-array name="ligacao_quimica">
+        <item>Os átomos ligam entre si para formar moléculas, para que isso ocorra existem três tipos
+            de ligação: a ligação iônica, a ligação covalente e a ligação metálica.</item>
+        <item>Para ter auxilio nesses tipos de ligação existe a regra do octeto que estabelece que
+            os átomos se unem uns aos outros na tentativa de completar a sua camada de valência,
+            quando a última camada (camada de valência) apresentar 8 elétrons, indica que o átomo está estável.
+            Para atingir esta estabilidade é necessário que os elementos ganhem ou percam elétrons
+            nas ligações químicas.</item>
+
+    </string-array>
+
 </resources>

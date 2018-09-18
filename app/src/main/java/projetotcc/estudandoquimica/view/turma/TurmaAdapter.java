@@ -1,9 +1,7 @@
 package projetotcc.estudandoquimica.view.turma;
 
 import android.content.Context;
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,7 +18,6 @@ import java.util.List;
 import projetotcc.estudandoquimica.R;
 import projetotcc.estudandoquimica.databinding.TurmaItemBinding;
 import projetotcc.estudandoquimica.model.Turma;
-import projetotcc.estudandoquimica.view.TurmaFragment;
 import projetotcc.estudandoquimica.viewmodel.TurmaViewModel;
 
 public class TurmaAdapter extends RecyclerView.Adapter<TurmaAdapter.BindingHolder> {
@@ -163,7 +160,7 @@ public class TurmaAdapter extends RecyclerView.Adapter<TurmaAdapter.BindingHolde
             @Override
             public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
 
-                return turmas.get(oldItemPosition).getId().equals(newTurmas.get(newItemPosition).getId());
+                return turmas.get(oldItemPosition).equals(newTurmas.get(newItemPosition));
             }
 
             @Override

@@ -39,12 +39,12 @@ public class ConteudoOfflineFragment extends Fragment {
             public void onClick(View v) {
 
                 ArrayList<CardItem> cardItems = new ArrayList<>();
-                cardItems.add(new CardItem(R.string.title_1, R.string.text_1));
-                cardItems.add(new CardItem(R.string.title_2, R.string.text_1));
-                cardItems.add(new CardItem(R.string.title_3, R.string.text_1));
-                cardItems.add(new CardItem(R.string.title_4, R.string.text_1));
+                cardItems.add(new CardItem(1,"Ligações químicas", "Os átomos ligam entre si para formar moléculas, para que isso ocorra existem três tipos de ligação: a ligação iônica, a ligação covalente e a ligação metálica."));
+//                cardItems.add(new CardItem(R.string.title_2, R.string.text_1));
+//                cardItems.add(new CardItem(R.string.title_3, R.string.text_1));
+//                cardItems.add(new CardItem(R.string.title_4, R.string.text_1));
 
-                Intent it = new Intent(getContext(), SubConteudoActivity.class);
+                Intent it = new Intent(getContext(), ListaAssuntoActivity.class);
                 it.putParcelableArrayListExtra("cardItems", cardItems);
                 startActivity(it);
             }
@@ -57,7 +57,7 @@ public class ConteudoOfflineFragment extends Fragment {
         progressBar.setProgress(95);
         progressBar2.setProgress(45);
         progressBar3.setProgress(75);
-
+        setHasOptionsMenu(false);
        return view;
     }
 

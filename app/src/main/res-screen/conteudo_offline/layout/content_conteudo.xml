@@ -5,10 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".view.offline.ConteudoActivity"
-    tools:showIn="@layout/activity_conteudo">
+    tools:context=".view.offline.ExibirConteudoActivity"
+    tools:showIn="@layout/activity_exibir_conteudo">
 
     <TextView
+        android:id="@+id/texto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/text_margin"

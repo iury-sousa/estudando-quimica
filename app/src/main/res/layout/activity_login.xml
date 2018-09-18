@@ -8,11 +8,7 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:paddingBottom="@dimen/spacing_small"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/spacing_medium"
     android:fitsSystemWindows="true"
-    android:background="@drawable/fundo_dois"
     android:id="@+id/login_mai"
     tools:context=".view.usuario.LoginActivity"
     >
@@ -40,23 +36,28 @@
             android:id="@+id/email_login_form"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
             android:orientation="vertical"
             android:paddingBottom="10dp"
             >
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
                 android:layout_gravity="center"
+                android:adjustViewBounds="true"
                 android:contentDescription="Logo"
-                android:layout_marginBottom="30dp"
-                android:src="@drawable/ic_extension" />
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:src="@drawable/logo_quimica" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="4dp"
+                android:paddingTop="11dp"
+                android:paddingBottom="10dp"
                 android:id="@+id/form_text">
 
                 <AutoCompleteTextView
@@ -67,12 +68,12 @@
                     android:drawablePadding="@dimen/spacing_medium"
                     android:drawableStart="@drawable/ic_email_roxo_claro"
                     android:hint="@string/prompt_email"
-                    android:textColorHint="#c7aee8"
+                    android:textColorHint="#a994d5"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
                     android:padding="12dp"
                     android:singleLine="false"
-                    android:textColor="#fff"
+                    android:textColor="#000"
                     />
 
                 <EditText
@@ -90,8 +91,8 @@
                     android:maxLines="1"
                     android:singleLine="true"
                     android:padding="12dp"
-                    android:textColor="#fff"
-                    android:textColorHint="#c7aee8"
+                    android:textColor="#000"
+                    android:textColorHint="#a994d5"
                     android:background="@drawable/borda"/>
 
                 <TextView
@@ -100,13 +101,16 @@
                     android:layout_height="match_parent"
                     android:text="Acessar"
                     android:textStyle="bold"
-                    android:textSize="14sp"
+                    android:textSize="16sp"
                     android:layout_marginTop="20dp"
                     android:padding="12dp"
-                    android:background="@drawable/borda"
+                    android:shadowRadius="5"
+                    android:shadowDx="3"
+                    android:shadowDy="5"
+                    android:shadowColor="#000"
+                    android:background="@drawable/seletor_button_login"
                     style="@style/Widget.AppCompat.Button"
                     android:textColor="#fffe"
-                    android:backgroundTint="@color/colorButtonPrincipal"
                     android:gravity="center"/>
 
             </LinearLayout>
@@ -127,11 +131,11 @@
                         android:textColor="#fff" />-->
 
                     <LinearLayout
+                        android:id="@+id/login_google"
                         android:layout_marginTop="20dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_horizontal|center_vertical"
-                        android:layout_marginBottom="50dp">
+                        android:gravity="center_horizontal|center_vertical">
 
                         <ImageView
                             android:layout_width="50dp"
@@ -143,20 +147,8 @@
                             android:layout_height="wrap_content"
                             android:text="Entre com o Google"
                             android:textStyle="bold"
-                            android:textColor="#fff"/>
+                            android:textColor="#000"/>
                     </LinearLayout>
-
-                <!--    <TextView
-                        android:layout_width="80dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="@dimen/spacing_medium"
-                        android:background="@drawable/borda_vermelha"
-                        android:padding="@dimen/spacing_large"
-                        android:gravity="center"
-                        android:textColor="#c20303"
-                        android:textStyle="bold"
-                        android:text="G" />-->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -171,15 +163,14 @@
                             android:layout_height="match_parent"
                             android:gravity="bottom"
                             android:text="Não possuí uma conta? "
-                            android:textColor="#e5daf4" />
+                            android:textColor="#000" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:gravity="bottom"
                             android:text="Cadastre-se."
                             android:textStyle="bold"
-                            android:textColor="#e5daf4" />
-
+                            android:textColor="#000" />
                     </LinearLayout>
                 </LinearLayout>
         </LinearLayout>

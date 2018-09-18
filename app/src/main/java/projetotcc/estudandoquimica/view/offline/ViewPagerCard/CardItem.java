@@ -5,17 +5,20 @@ import android.os.Parcelable;
 
 public class CardItem implements Parcelable {
 
-    private int mTextResource;
-    private int mTitleResource;
+    private String mTextResource;
+    private String mTitleResource;
+    private int id;
 
-    public CardItem(int title, int text) {
+    public CardItem(int id, String title, String text) {
         mTitleResource = title;
         mTextResource = text;
+        this.id = id;
     }
 
     protected CardItem(Parcel in) {
-        mTextResource = in.readInt();
-        mTitleResource = in.readInt();
+        mTextResource = in.readString();
+        mTitleResource = in.readString();
+        id = in.readInt();
     }
 
     public static final Creator<CardItem> CREATOR = new Creator<CardItem>() {
@@ -30,12 +33,20 @@ public class CardItem implements Parcelable {
         }
     };
 
-    public int getText() {
+    public String getText() {
         return mTextResource;
     }
 
-    public int getTitle() {
+    public String getTitle() {
         return mTitleResource;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override
@@ -45,7 +56,8 @@ public class CardItem implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(mTextResource);
-        dest.writeInt(mTitleResource);
+        dest.writeString(mTextResource);
+        dest.writeString(mTitleResource);
+        dest.writeInt(id);
     }
 }

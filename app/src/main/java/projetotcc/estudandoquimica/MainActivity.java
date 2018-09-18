@@ -1,12 +1,11 @@
 package projetotcc.estudandoquimica;
 
-import android.app.Fragment;
 import android.arch.lifecycle.LiveData;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.design.widget.NavigationView;
@@ -14,7 +13,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -24,7 +22,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -34,29 +38,33 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import projetotcc.estudandoquimica.db.entidade.UsuarioEntity;
 import projetotcc.estudandoquimica.db.repositorio.UsuarioRepositorio;
 import projetotcc.estudandoquimica.model.Turma;
 import projetotcc.estudandoquimica.model.Usuario;
-import projetotcc.estudandoquimica.view.AgendaFragment;
-import projetotcc.estudandoquimica.view.CadastrarTurmaDialog;
-import projetotcc.estudandoquimica.view.TurmaFragment;
+import projetotcc.estudandoquimica.view.turma.CadastrarTurmaDialog;
+import projetotcc.estudandoquimica.view.turma.GerarCodigoTurma;
+import projetotcc.estudandoquimica.view.turma.TurmaFragment;
 import projetotcc.estudandoquimica.view.compartilhado.CadastrarPublicacaoActivity;
 import projetotcc.estudandoquimica.view.home.HomeFragment;
+import projetotcc.estudandoquimica.view.usuario.LibraryClass;
 import projetotcc.estudandoquimica.view.usuario.LoginActivity;
 import projetotcc.estudandoquimica.view.usuario.PerfilUsuarioActivity;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, CadastrarTurmaDialog.CadastrarTurmaListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
 
     private NavigationView navigationView;
     private Toolbar toolbar;
+    private TurmaFragment turmaFragment;
+    private FirebaseAuth auth;
+    //private DatabaseReference databaseReference;
+    private FirebaseAuth.AuthStateListener authStateListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,28 +76,24 @@ public class MainActivity extends AppCompatActivity
         LiveData<List<UsuarioEntity>> usuarios = usuarioRepositorio.getAll();
         List<UsuarioEntity> us = usuarios.getValue();
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        auth.signInWithEmailAndPassword("iurysoulyuli@gmail.com", "iury1320");
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
 
-        Log.i("code", GerarCodigoTurma.gerar(8));
+                if( firebaseAuth.getCurrentUser() == null ){
+                    Intent intent = new Intent( MainActivity.this, LoginActivity.class );
+                    startActivity( intent );
+                    finish();
+                }
+            }
+        };
+
+        auth = FirebaseAuth.getInstance();
+        auth.addAuthStateListener( authStateListener );
+       // databaseReference = LibraryClass.getFirebase();
+//        auth.signInWithEmailAndPassword("iurysoulyuli@gmail.com", "iury1320");
 
         getSupportActionBar().setTitle(getString(R.string.app_name));
-        //TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        /*TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-*//*        tabLayout.addTab(tabLayout.newTab().setText("1"));
-        tabLayout.addTab(tabLayout.newTab().setText("2"));
-        tabLayout.addTab(tabLayout.newTab().setText("3"));*//*
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-        TabsAdapter tabsAdapter = new TabsAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-
-        viewPager.setAdapter(tabsAdapter);
-        tabLayout.setupWithViewPager(viewPager);*/
-
-
-       // MenuItem menuItem = toolbar.getMenu().findItem(R.id.action_add_conteudo);
-        //onOptionsItemSelected(null);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -100,6 +104,7 @@ public class MainActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setItemIconTintList(null);
+
         if(navigationView.getMenu().getItem(0).isChecked()){
             setTextColorForMenuItem(navigationView.getMenu().getItem(0), R.color.colorItemHome);
         }
@@ -134,6 +139,15 @@ public class MainActivity extends AppCompatActivity
 
         //ref.child("turmas").push().setValue(new Turma("Iury", new Date(), "UIU"));
 
+        CircleImageView iv =  navigationView.getHeaderView(0).findViewById(R.id.foto_perfil_header);
+
+        TextView nome = navigationView.getHeaderView(0).findViewById(R.id.nome_header);
+        TextView email = navigationView.getHeaderView(0).findViewById(R.id.email_header);
+
+        nome.setText(auth.getCurrentUser().getDisplayName());
+        email.setText(auth.getCurrentUser().getEmail());
+        Glide.with(this).load(auth.getCurrentUser().getPhotoUrl()).into(iv);
+
         Query query1 = ref.child("turmas").orderByChild("nome").equalTo("Turma 1").limitToFirst(1);
         query1.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -164,24 +178,38 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+
+
+
+
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-
-
-        TurmaFragment nomeFragment = (TurmaFragment) getSupportFragmentManager().findFragmentByTag("TAG_TURMA");
-
-        if (nomeFragment != null && nomeFragment.isVisible()) {
-            //supportInvalidateOptionsMenu();
-            menu.findItem(R.id.action_add_conteudo).setVisible(false);
-
-        }else{
-            menu.findItem(R.id.action_add_conteudo).setVisible(true);
-
+    protected void onDestroy() {
+        super.onDestroy();
+        if( authStateListener != null ){
+            auth.removeAuthStateListener( authStateListener );
         }
-        return super.onPrepareOptionsMenu(menu);
     }
+
+//    @Override
+//    public boolean onPrepareOptionsMenu(Menu menu) {
+//
+//
+//        TurmaFragment nomeFragment = (TurmaFragment) getSupportFragmentManager().findFragmentByTag("TAG_TURMA");
+//
+//        if (nomeFragment != null && nomeFragment.isVisible()) {
+//            //supportInvalidateOptionsMenu();
+//            menu.findItem(R.id.action_publicacao).setVisible(false);
+//
+//        }else{
+//            menu.findItem(R.id.action_publicacao).setVisible(true);
+//
+//        }
+//
+//
+//        return true;
+//    }
 
     @Override
     public void onBackPressed() {
@@ -192,37 +220,6 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-
-        return true;
-    }
-
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-
-        int id = item.getItemId();
-
-
-        if (id == R.id.action_add_conteudo) {
-
-
-//            item.setVisible(false);
-//            return true;
-            Intent it = new Intent(this, CadastrarPublicacaoActivity.class);
-            startActivity(it);
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    TurmaFragment turmaFragment;
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -250,8 +247,17 @@ public class MainActivity extends AppCompatActivity
 
         switch (id){
             case R.id.nav_home:
-                setTextColorForMenuItem(item, R.color.colorItemHome);
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment()).commit();
+
+//                HomeFragment home = (HomeFragment) getSupportFragmentManager().findFragmentByTag("TAG_HOME");
+//
+//                if(home != null && !home.isVisible()){
+                    setTextColorForMenuItem(item, R.color.colorItemHome);
+                    //invalidateOptionsMenu();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment(), "TAG_HOME").commit();
+
+//                }else if(home != null){
+//                    getSupportFragmentManager().beginTransaction().replace(R.id.container, home).commit();
+//                }
                 break;
 //            case R.id.nav_agenda:
 //                setTextColorForMenuItem(item, R.color.colorItemAgenda);
@@ -271,10 +277,19 @@ public class MainActivity extends AppCompatActivity
 //                break;
             case R.id.nav_sair:
 
-                FirebaseAuth auth = FirebaseAuth.getInstance();
+//                FirebaseAuth auth = FirebaseAuth.getInstance();
+//                auth.signOut();
+//
+//                GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//                        .requestEmail()
+//                        .build();
+//
+//                GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+//                mGoogleSignInClient.signOut();
+//
+//                startActivity(new Intent(this, LoginActivity.class));
+//                finish();
                 auth.signOut();
-
-                startActivity(new Intent(this, LoginActivity.class));
                 finish();
 
                 break;
@@ -322,22 +337,4 @@ public class MainActivity extends AppCompatActivity
             setTextColorForMenuItem(navigationView.getMenu().getItem(i), R.color.colorTextMainDefault);
     }
 
-    @Override
-    public void onDialogPositiveClick(CadastrarTurmaDialog dialog) {
-
-        String nome = dialog.getNome();
-        ///TurmaFragment turma = new TurmaFragment();
-        if(!TextUtils.isEmpty(nome)) {
-
-            turmaFragment.setNome(nome);
-            dialog.dismiss();
-        }
-
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, turmaFragment).commit();
-    }
-
-    @Override
-    public void onDialogNegativeClick(CadastrarTurmaDialog dialog) {
-        dialog.dismiss();
-    }
 }

@@ -41,7 +41,7 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
 
         UsuarioViewModel usuarioViewModel = new UsuarioViewModel(
                 new Usuario(nome, email, null, false,
-                        "(16)99115-6158", BindingUtils.converterStringToDate("13/08/1997"), true,""));
+                        "(16)99115-6158", BindingUtils.converterStringToDate("13/08/1997"), true, auth.getCurrentUser().getPhotoUrl().toString()));
 
         binding.setUsuario(usuarioViewModel);
 

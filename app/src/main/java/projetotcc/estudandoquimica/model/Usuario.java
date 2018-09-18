@@ -1,11 +1,19 @@
 package projetotcc.estudandoquimica.model;
 
+import android.content.Context;
 import android.text.TextUtils;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Exclude;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Date;
 
+import projetotcc.estudandoquimica.view.usuario.LibraryClass;
+
 public class Usuario {
 
+    public static String PROVIDER = "projetotcc.estudandoquimica.model.Usuario.PROVIDER";
 
     private String id;
     private String nome;
@@ -54,6 +62,7 @@ public class Usuario {
         this.urlFoto = urlFoto;
     }
 
+    @Exclude
     public String getId() {
         return id;
     }
@@ -78,6 +87,7 @@ public class Usuario {
         this.email = email;
     }
 
+    @Exclude
     public String getSenha() {
         return senha;
     }
@@ -137,6 +147,32 @@ public class Usuario {
             return false;
         }
         return senha.length() > 6;
+    }
+
+    public void saveProviderSP(Context context, String token ){
+
+        LibraryClass.saveSP( context, PROVIDER, token );
+    }
+    public String getProviderSP(Context context ){
+
+        return( LibraryClass.getSP( context, PROVIDER) );
+    }
+
+    public void saveDB( DatabaseReference.CompletionListener... completionListener ){
+        DatabaseReference firebase = LibraryClass.getFirebase().child("usuarios").child( getId() );
+
+        if( completionListener.length == 0 ){
+            firebase.setValue(this);
+        }
+        else{
+            firebase.setValue(this, completionListener[0]);
+        }
+    }
+
+    public void contextDataDB( Context context ){
+        DatabaseReference firebase = LibraryClass.getFirebase().child("usuarios").child( getId() );
+
+        firebase.addListenerForSingleValueEvent( (ValueEventListener) context );
     }
 
 

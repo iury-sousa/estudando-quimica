@@ -1,0 +1,12 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <!-- <solid android:color=""/>  cor do sólido -->
+            <corners android:radius="100dp"/> <!-- valor do arredondamento das bordas -->
+            <!--<stroke android:color="@color/colorPrimary" android:width="2dp"/> &lt;!&ndash; cor da borda e tamanho dela &ndash;&gt;-->
+            <padding android:bottom="8dp" android:left="8dp" android:right="8dp" android:top="8dp"/>
+            <solid android:color="@color/colorButtonPrincipal"/>
+        </shape>
+    </item>
+
+</layer-list>

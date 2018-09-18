@@ -32,6 +32,20 @@ public class PesquisarTurmaActivity extends AppCompatActivity implements SearchV
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()){
+
+            case R.id.nav_home:
+                onBackPressed();
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    @Override
     public boolean onSearchRequested() {
         return super.onSearchRequested();
     }

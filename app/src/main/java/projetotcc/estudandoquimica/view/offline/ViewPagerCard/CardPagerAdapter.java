@@ -16,18 +16,18 @@ import java.util.List;
 import projetotcc.estudandoquimica.interfaces.CardAdapter;
 import projetotcc.estudandoquimica.model.ConteudoOffline;
 import projetotcc.estudandoquimica.R;
-import projetotcc.estudandoquimica.view.offline.ConteudoActivity;
-import projetotcc.estudandoquimica.view.offline.SubConteudoActivity;
+import projetotcc.estudandoquimica.view.offline.ExibirConteudoActivity;
+import projetotcc.estudandoquimica.view.offline.ListaAssuntoActivity;
 
 public class CardPagerAdapter extends PagerAdapter implements CardAdapter, Button.OnClickListener {
 
     private List<CardView> cardViews;
     private List<CardItem> cardItems;
     private float mBaseElevation;
-    private SubConteudoActivity subConteudoActivity;
+    private ListaAssuntoActivity listaAssuntoActivity;
 
-    public CardPagerAdapter(SubConteudoActivity subConteudoActivity) {
-        this.subConteudoActivity = subConteudoActivity;
+    public CardPagerAdapter(ListaAssuntoActivity listaAssuntoActivity) {
+        this.listaAssuntoActivity = listaAssuntoActivity;
         cardItems = new ArrayList<>();
         cardViews = new ArrayList<>();
     }
@@ -41,8 +41,11 @@ public class CardPagerAdapter extends PagerAdapter implements CardAdapter, Butto
 
         TextView tituloTextView = (TextView) view.findViewById(R.id.titleTextView);
         TextView contentTextView = (TextView) view.findViewById(R.id.contentTextView);
+        TextView textView1 = view.findViewById(R.id.id_card);
+
         tituloTextView.setText(item.getTitle());
         contentTextView.setText(item.getText());
+        textView1.setText(item.getId());
     }
 
     @NonNull
@@ -98,19 +101,24 @@ public class CardPagerAdapter extends PagerAdapter implements CardAdapter, Butto
     @Override
     public void onClick(View v) {
 
-        CardView cardView = getCardViewAt(subConteudoActivity.getViewPager().getCurrentItem());
+        CardView cardView = getCardViewAt(listaAssuntoActivity.getViewPager().getCurrentItem());
 
         ConteudoOffline conteudoOffline = new ConteudoOffline();
 
+
+
         TextView titulo = cardView.findViewById(R.id.titleTextView);
         TextView assunto = cardView.findViewById(R.id.contentTextView);
+        TextView id = cardView.findViewById(R.id.id_card);
 
         conteudoOffline.setAssunto(assunto.getText().toString());
         conteudoOffline.setTitulo(titulo.getText().toString());
+        conteudoOffline.setId(Integer.parseInt(id.getText().toString()));
 
-        Intent it = new Intent(subConteudoActivity.getApplicationContext(), ConteudoActivity.class);
+
+        Intent it = new Intent(listaAssuntoActivity.getApplicationContext(), ExibirConteudoActivity.class);
         it.putExtra("conteudo", conteudoOffline);
-        subConteudoActivity.startActivity(it);
+        listaAssuntoActivity.startActivity(it);
     }
 
 }

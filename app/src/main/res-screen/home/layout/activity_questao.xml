@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_marginBottom="10dp"
+    tools:context=".view.quiz.QuestaoActivity">
+
+    <TextView
+        android:layout_alignParentTop="true"
+        android:id="@+id/pergunta"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="10dp"
+
+        android:gravity="center"
+        android:text="Qual elemento possui o número 1 como número atômico?"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        android:textSize="20sp"
+       />
+    <LinearLayout
+        android:id="@+id/respost"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_below="@+id/pergunta"
+        android:orientation="vertical"
+        android:layout_margin="20dp">
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/rgResposta"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1">
+
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/rbResposta1"
+                android:textSize="20sp"
+                android:layout_marginBottom="5dp"
+                android:text="Nitrogenio"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/rbResposta2"
+                android:layout_marginBottom="5dp"
+                android:textSize="20sp"
+                android:text="Hidrogenio"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:id="@+id/rbResposta3"
+                android:textSize="20sp"
+                android:text="Boro"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:id="@+id/rbResposta4"
+                android:textSize="20sp"
+                android:text="Carbono"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+
+        </RadioGroup>
+    </LinearLayout>
+
+
+    <Button
+        android:layout_alignParentBottom="true"
+        android:layout_alignBottom="@+id/respost"
+        android:id="@+id/btnResponder"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/borda"
+        android:textColor="#FFF"
+        android:gravity="center"
+        android:backgroundTint="@color/colorPrimary"
+        android:onClick="btnResponderOnClick"
+        android:text="Responder"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:visibility="visible"
+    />
+</RelativeLayout>

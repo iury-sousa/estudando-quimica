@@ -14,7 +14,7 @@ import projetotcc.estudandoquimica.view.offline.ViewPagerCard.CardPagerAdapter;
 import projetotcc.estudandoquimica.view.offline.ViewPagerCard.ShandowTransformer;
 
 
-public class SubConteudoActivity extends AppCompatActivity{
+public class ListaAssuntoActivity extends AppCompatActivity{
 
     private ViewPager viewPager;
 
@@ -31,6 +31,8 @@ public class SubConteudoActivity extends AppCompatActivity{
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+
+        toolbar.setTitle("Ligações químicas");
 
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         cardPagerAdapter = new CardPagerAdapter(this);

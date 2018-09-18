@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/logo2"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
@@ -43,7 +43,7 @@
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar2" />
         <activity
-            android:name=".view.offline.SubConteudoActivity"
+            android:name=".view.offline.ListaAssuntoActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <!--
@@ -62,13 +62,13 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
-            android:name=".view.offline.ConteudoActivity"
+            android:name=".view.offline.ExibirConteudoActivity"
             android:label="@string/title_activity_conteudo"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".view.compartilhado.CadastrarPublicacaoActivity"
             android:parentActivityName=".MainActivity"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity android:name=".view.turma.PesquisarTurmaActivity">
             <meta-data
                 android:name="android.app.default_searchable"
@@ -78,7 +78,7 @@
             android:name=".view.usuario.ListaUsuariosActivity"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".view.DialogTurmaActivity"
+            android:name=".view.turma.DialogTurmaActivity"
             android:excludeFromRecents="true"
             android:theme="@style/Theme.UserDialog"
             android:windowSoftInputMode="stateAlwaysVisible" />
@@ -86,7 +86,11 @@
             android:name=".view.turma.TurmaActivity"
             android:label="@string/title_activity_turma"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".view.quiz.QuestaoActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".view.quiz.RespostaActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

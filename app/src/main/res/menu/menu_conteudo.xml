@@ -1,12 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="projetotcc.estudandoquimica.view.offline.ConteudoActivity">
+    tools:context="projetotcc.estudandoquimica.view.offline.ExibirConteudoActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_publicacao"
         android:orderInCategory="100"
-        android:icon="@drawable/ic_send"
-        android:iconTint="#fff"
-        app:showAsAction="ifRoom|withText"
+        android:icon="@drawable/ic_send_3"
+        app:showAsAction="ifRoom"
         android:title="Estudando quimica" />
 </menu>

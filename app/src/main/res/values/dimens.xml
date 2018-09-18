@@ -21,7 +21,7 @@
     <dimen name="text_margin">16dp</dimen>
 
     <dimen name="botao_redondo_conteudo_offline">100dp</dimen>
-    <dimen name="tamanho_titulo_conteudo_offline">20sp</dimen>
+    <dimen name="tamanho_titulo_conteudo_offline">16sp</dimen>
 
 
     <dimen name="tamanho_texto_padrao">16sp</dimen>

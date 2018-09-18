@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    tools:context=".view.quiz.RespostaActivity">
+
+    <ImageView
+        android:id="@+id/imgResposta"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:adjustViewBounds="true"
+        android:layout_centerInParent="true"
+        app:srcCompat="@drawable/acertou"
+        android:layout_alignParentTop="true"/>
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:id="@+id/resposta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Acertou!"
+        android:layout_below="@+id/imgResposta"
+        android:textSize="30sp"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="40dp"
+       />
+
+    <Button
+
+        android:id="@+id/btnJogarNovamente"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/borda"
+        android:backgroundTint="@color/colorAccent"
+        android:layout_below="@+id/resposta"
+        android:onClick="btnJogarNovamenteOnClick"
+        android:text="Jogar Novamente"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="10dp"
+        android:textColor="#FFF"
+       />
+
+    <Button
+
+        android:id="@+id/btnVoltarTela"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_below="@id/btnJogarNovamente"
+        android:background="@drawable/borda"
+        android:backgroundTint="@color/colorPrimary"
+        android:onClick="btnVoltarTelaOnClick"
+        android:text="Tela Inicial"
+        android:textColor="#FFF"
+      />
+</RelativeLayout>

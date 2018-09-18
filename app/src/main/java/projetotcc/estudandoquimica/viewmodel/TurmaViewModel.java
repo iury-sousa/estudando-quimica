@@ -1,41 +1,28 @@
 package projetotcc.estudandoquimica.viewmodel;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
-import android.databinding.BindingAdapter;
 import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Observable;
 
 import projetotcc.estudandoquimica.FirebaseQueryLiveData;
-import projetotcc.estudandoquimica.GerarCodigoTurma;
-import projetotcc.estudandoquimica.R;
+import projetotcc.estudandoquimica.view.turma.GerarCodigoTurma;
 import projetotcc.estudandoquimica.model.Turma;
-import projetotcc.estudandoquimica.model.Usuario;
 
 public class TurmaViewModel extends ViewModel{
 
@@ -156,7 +143,7 @@ public class TurmaViewModel extends ViewModel{
 
         turma.setNome(nome);
         turma.setData_criacao(strDate);
-        turma.setAdministradorTurma(auth.getCurrentUser().getUid());
+        turma.setAdministradorTurma("-LLumZs9sVwOTqlQqRHU");
         turma.setCodeTurma(GerarCodigoTurma.gerar(8));
 
 
