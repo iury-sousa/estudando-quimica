@@ -66,12 +66,13 @@ public class CadastrarUsuarioActivity extends AppCompatActivity implements View.
 DatabaseReference.CompletionListener{
 
     private Bitmap bitmap;
+    private boolean processVisible = false;
 
     private DatabaseReference database = FirebaseDatabase.getInstance().getReference();
     private static String urlImagem = "";
-
-    CadastrarUsuarioViewModel viewModel;
-
+    private static final int IMAGE_GALLERY_REQUEST = 1;
+    private CadastrarUsuarioViewModel viewModel;
+    private Uri uri;
     private ActivityUsuarioBinding usuarioBinding;
     private Activity activity;
 
@@ -209,19 +210,12 @@ DatabaseReference.CompletionListener{
         });
     }
 
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        return super.onContextItemSelected(item);
-    }
-
     public void selecionarGaleria(){
         Intent abrirGaleria = new Intent(Intent.ACTION_GET_CONTENT);
         abrirGaleria.setType("image/*");
         abrirGaleria.addCategory(Intent.CATEGORY_OPENABLE);
         startActivityForResult(abrirGaleria,IMAGE_GALLERY_REQUEST);
     }
-
-    private static final int IMAGE_GALLERY_REQUEST = 1;
 
     public void selectImageClick(View view) {
         if (ActivityCompat.checkSelfPermission(this,
@@ -242,7 +236,6 @@ DatabaseReference.CompletionListener{
         }
     }
 
-    Uri uri;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -305,20 +298,6 @@ DatabaseReference.CompletionListener{
         }
     }
 
-
-/*    public void onCreateUserClicked(View v){
-        //viewModel = ViewModelProviders.of(this).get(CadastrarUsuarioViewModel.class);
-
-        viewModel.getUsuarioMutableLiveData().observe(this, usuarioViewModel ->{
-                    if(!TextUtils.isEmpty(usuarioViewModel.getNome())){
-                        Toast.makeText(this, "Nome" + usuarioViewModel.getNome(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-
-        );
-    }*/
-
     public void onCreateUserClicked(View view){
 
        if(validarCampos(viewModel.getUsuario())){
@@ -331,6 +310,7 @@ DatabaseReference.CompletionListener{
                return;
            }
 
+           showProgress(true);
 
            auth.createUserWithEmailAndPassword(viewModel.getUsuario().getEmail(), viewModel.getUsuario().getSenha())
             .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -339,21 +319,18 @@ DatabaseReference.CompletionListener{
 
                     if(task.isSuccessful()){
 
-                        if(bitmap != null){
-                            uploadImagem();
-////                            StorageReference ref = storageReference.child("imagens/perfils/" +
-////                                    viewModel.getUsuario().getNome() + "/" + auth.getCurrentUser().getUid());
-//
-//                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("usuarios/" + auth.getCurrentUser().getUid());
-//                            UploadFiles uploadFiles = new UploadFiles(CadastrarUsuarioActivity.this);
-//                            uploadFiles.upload(bitmap, "usuarios/" + auth.getCurrentUser().getUid() + "/", reference);
-                        }
-                        showProgress(true);
-                        //saveUserInformation();
-
-                        Intent it = new Intent(CadastrarUsuarioActivity.this, MainActivity.class);
-                        startActivity(it);
-                        finish();
+                        Log.i("TAG", "usuario cadastrado");
+//                        if(bitmap != null){
+//                            uploadImagem();
+//////                            StorageReference ref = storageReference.child("imagens/perfils/" +
+//////                                    viewModel.getUsuario().getNome() + "/" + auth.getCurrentUser().getUid());
+////
+////                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("usuarios/" + auth.getCurrentUser().getUid());
+////                            UploadFiles uploadFiles = new UploadFiles(CadastrarUsuarioActivity.this);
+////                            uploadFiles.upload(bitmap, "usuarios/" + auth.getCurrentUser().getUid() + "/", reference);
+//                        }
+                       // showProgress(true);
+                       // saveUserInformation();
 
                     }else{
 
@@ -371,7 +348,20 @@ DatabaseReference.CompletionListener{
                     }
 
                 }
-            });
+            }).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+               @Override
+               public void onSuccess(AuthResult authResult) {
+                   if(bitmap != null){
+                       uploadImagem();
+                   }else {
+                       showProgress(false);
+                       Intent it = new Intent(CadastrarUsuarioActivity.this, ProfessorAlunoActivity.class);
+                       startActivity(it);
+                       overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
+                       finish();
+                   }
+               }
+           });
        }
 
 
@@ -380,6 +370,7 @@ DatabaseReference.CompletionListener{
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
 
+        processVisible = show;
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
         usuarioBinding.formCadastro.setVisibility(show ? View.GONE : View.VISIBLE);
@@ -466,15 +457,25 @@ DatabaseReference.CompletionListener{
         storageReference = storage.getReference();
 
         if(uri != null){
-            //final ProgressDialog progressDialog = new ProgressDialog(this);
-            //progressDialog.setTitle("Enviando imagem...");
-            //progressDialog.show();
+//            final ProgressDialog progressDialog = new ProgressDialog(this);
+//            progressDialog.setTitle("Salvando informações...");
+//            progressDialog.show();
+//            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            progressDialog.setIndeterminate(false);
+            showProgress(true);
             //UUID.randomUUID().toString()
             StorageReference ref = storageReference.child("imagens/perfils/" +
                     viewModel.getUsuario().getNome() + "/" + auth.getCurrentUser().getUid());
 
             UploadTask uploadTask = ref.putFile(uri);
-            uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                    double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot
+                            .getTotalByteCount());
+                   // progressDialog.setMessage("Enviando: "+(int)progress + "%");
+                }
+            }).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                 @Override
                 public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
                     if (!task.isSuccessful()) {
@@ -487,40 +488,31 @@ DatabaseReference.CompletionListener{
                 @Override
                 public void onComplete(@NonNull Task<Uri> task) {
                     if (task.isSuccessful()) {
+
                         Uri downloadUri = task.getResult();
                       //  user.setUrlFoto(downloadUri.toString());
                         saveUserInformation(downloadUri);
 
+                        //progressDialog.dismiss();
+
+
+
                     } else {
+
+                        showProgress(false);
                         Toast.makeText(CadastrarUsuarioActivity.this, "Falha no UPLOAD", Toast.LENGTH_SHORT).show();
 
                     }
                 }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    //progressDialog.dismiss();
+                    showProgress(false);
+                    Toast.makeText(CadastrarUsuarioActivity.this, "Falha: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
             });
-//            ref.putFile(uri)
-//                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//                        @Override
-//                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                            //progressDialog.dismiss();
-//                            //url = ref.getPath();
-//                            Toast.makeText(CadastrarUsuarioActivity.this, "Envio concluido", Toast.LENGTH_SHORT).show();
-//                        }
-//                    })
-//                    .addOnFailureListener(new OnFailureListener() {
-//                        @Override
-//                        public void onFailure(@NonNull Exception e) {
-//                            //progressDialog.dismiss();
-//                            Toast.makeText(CadastrarUsuarioActivity.this, "Falha: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-//                        }
-//                    });
-//                    /*.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-//                        @Override
-//                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-//                            double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot
-//                                    .getTotalByteCount());
-//                            progressDialog.setMessage("Enviando: "+(int)progress + "%");
-//                        }
-//                    });*/
+
         }
     }
 
@@ -591,8 +583,6 @@ DatabaseReference.CompletionListener{
 
 
     }
-String url;
-
 
     private void saveUserInformation(Uri pathImagem) {
 
@@ -608,7 +598,7 @@ String url;
                     .setPhotoUri(pathImagem)
                     .build();
 
-            //Log.i("PATH", user.getPhotoUrl().toString() + user.getDisplayName());
+//            Log.i("PATH", user.getPhotoUrl().toString() + user.getDisplayName());
 
             user.updateProfile(profile)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -618,6 +608,19 @@ String url;
                                 Toast.makeText(CadastrarUsuarioActivity.this, "Falha ao cadastrar perfil", Toast.LENGTH_SHORT).show();
                             }
                         }
+                    }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            DatabaseReference ref = FirebaseDatabase.getInstance().
+                                    getReference("usuarios/" +  auth.getCurrentUser().getUid());
+
+                            ref.child("urlFoto").setValue(pathImagem.toString());
+                            showProgress(false);
+                            Intent it = new Intent(CadastrarUsuarioActivity.this, ProfessorAlunoActivity.class);
+                            startActivity(it);
+                            finish();
+                            overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
+                        }
                     });
         }
     }
@@ -625,7 +628,15 @@ String url;
     @Override
     public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
 
-        Toast.makeText(this, "Usuário cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Usuário cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if(!processVisible){
+            super.onBackPressed();
+        }
     }
 }
 

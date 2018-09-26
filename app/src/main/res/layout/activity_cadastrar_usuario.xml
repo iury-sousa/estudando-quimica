@@ -20,8 +20,7 @@
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:fitsSystemWindows="true"
-        android:orientation="vertical"
-        android:background="@drawable/fundo_dois">
+        android:orientation="vertical">
         <ProgressBar
             android:id="@+id/cadastro_progress"
             style="?android:attr/progressBarStyleLarge"
@@ -60,7 +59,7 @@
                             android:layout_centerHorizontal="true"
                             android:layout_marginTop="10dp"
                             android:src="@drawable/ic_person_2"
-                            app:civ_circle_background_color="#b6afb9"
+                            app:civ_circle_background_color="#a994d5"
                             android:background="@drawable/borda_foto_perfil" />
 
                         <ImageView
@@ -88,8 +87,8 @@
                         android:maxLines="1"
                         android:padding="12dp"
                         android:singleLine="false"
-                        android:textColor="#fff"
-                        android:textColorHint="#c7aee8"
+                        android:textColor="#000"
+                        android:textColorHint="#a994d5"
                         android:text="@={user.nome}"/>
 
                     <EditText
@@ -104,8 +103,8 @@
                         android:maxLines="1"
                         android:padding="12dp"
                         android:singleLine="false"
-                        android:textColor="#fff"
-                        android:textColorHint="#c7aee8"
+                        android:textColor="#000"
+                        android:textColorHint="#a994d5"
                         android:text="@={user.email}"/>
 
                     <EditText
@@ -124,8 +123,8 @@
                         android:maxLines="1"
                         android:padding="12dp"
                         android:singleLine="true"
-                        android:textColor="#fff"
-                        android:textColorHint="#c7aee8"
+                        android:textColor="#000"
+                        android:textColorHint="#a994d5"
                         android:text="@={user.senha}"
 
                         />

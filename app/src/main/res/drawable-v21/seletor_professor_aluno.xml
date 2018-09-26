@@ -1,0 +1,8 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <padding android:bottom="8dp" android:left="8dp" android:right="8dp" android:top="8dp"/>
+            <stroke android:color="@color/colorButtonPrincipal" android:width="2dp"/> <!-- cor da borda e tamanho dela -->
+        </shape>
+    </item>
+</selector>

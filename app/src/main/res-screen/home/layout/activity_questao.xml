@@ -16,7 +16,6 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginTop="10dp"
-
         android:gravity="center"
         android:text="Qual elemento possui o número 1 como número atômico?"
         android:textAlignment="center"

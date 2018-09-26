@@ -69,7 +69,8 @@
             android:name=".view.compartilhado.CadastrarPublicacaoActivity"
             android:parentActivityName=".MainActivity"
             android:windowSoftInputMode="adjustResize|stateHidden" />
-        <activity android:name=".view.turma.PesquisarTurmaActivity">
+        <activity android:name=".view.turma.PesquisarTurmaActivity"
+            android:parentActivityName=".view.usuario.CadastrarUsuarioActivity">
             <meta-data
                 android:name="android.app.default_searchable"
                 android:value=".view.turma.PesquisarTurmaActivity" />
@@ -86,10 +87,15 @@
             android:name=".view.turma.TurmaActivity"
             android:label="@string/title_activity_turma"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".view.quiz.QuestaoActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".view.quiz.RespostaActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".view.quiz.QuestaoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.quiz.RespostaActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".view.usuario.ProfessorAlunoActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"/>
     </application>
 

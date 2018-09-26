@@ -276,12 +276,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
-
-    /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
-     */
     private boolean attemptLogin() {
         if (mAuthTask != null) {
             return false;
@@ -487,7 +481,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     user.saveDB();
                 }
 
-                callMainActivity();
+                Intent intent = new Intent( LoginActivity.this, ProfessorAlunoActivity.class );
+                startActivity(intent);
+                finish();
+                overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
             }
         };
         return( callback );
@@ -537,25 +534,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             AuthCredential credential = GoogleAuthProvider.getCredential( tokens[0], null);
 
             user.saveProviderSP( LoginActivity.this, "google" );
-
-//            auth.getCurrentUser()
-//                    .linkWithCredential(credential)
-//                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<AuthResult> task) {
-//
-//                            if(!task.isSuccessful()){
-//                                return;
-//                            }
-//
-//                            Toast.makeText(LoginActivity.this, "Conta vinculada com sucesso!", Toast.LENGTH_SHORT).show();
-//                        }
-//                    }).addOnFailureListener(new OnFailureListener() {
-//                        @Override
-//                        public void onFailure(@NonNull Exception e) {
-//                            Toast.makeText(LoginActivity.this, "Erro: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-//                        }
-//                    });
 
             auth.signInWithCredential(credential)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {

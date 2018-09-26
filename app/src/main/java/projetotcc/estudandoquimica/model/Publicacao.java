@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import com.google.firebase.database.Exclude;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Publicacao {
@@ -19,6 +20,7 @@ public class Publicacao {
     private int numComentarios;
     private boolean curtiu;
     private Drawable iconeCurtida;
+    private List<Publicacao> publicacaoList;
 
     public Publicacao() {
     }
@@ -116,6 +118,14 @@ public class Publicacao {
         this.curtiu = curtiu;
     }
 
+    public List<Publicacao> getPublicacaoList() {
+        return publicacaoList;
+    }
+
+    public void setPublicacaoList(List<Publicacao> publicacaoList) {
+        this.publicacaoList = publicacaoList;
+    }
+
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
@@ -123,6 +133,7 @@ public class Publicacao {
         result.put("textoPublicacao", textoPublicacao);
         result.put("administrador", admin.getId());
         result.put("dataPublicacao", dataPublicacao);
+        result.put("turmasPublicacao", publicacaoList);
 
         return result;
     }

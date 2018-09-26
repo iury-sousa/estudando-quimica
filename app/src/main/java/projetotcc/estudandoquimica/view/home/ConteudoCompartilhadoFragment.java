@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -49,6 +50,9 @@ public class ConteudoCompartilhadoFragment extends Fragment {
     private FragmentConteudoCompartilhadoBinding binding;
     private RecyclerView recyclerView;
     private PublicacaoViewModel viewModel;
+    private FirebaseAuth auth;
+    private String idTurma = "";
+    private boolean isProfessor = false;
 
     public ConteudoCompartilhadoFragment() {
     }
@@ -63,6 +67,9 @@ public class ConteudoCompartilhadoFragment extends Fragment {
                         container,false);
 
         setHasOptionsMenu(true);
+
+        auth = FirebaseAuth.getInstance();
+
         recyclerView =  binding.conteudoCompartilhado;
         List<Publicacao> list = new ArrayList<>();
 
@@ -84,12 +91,49 @@ public class ConteudoCompartilhadoFragment extends Fragment {
 
         viewModel = ViewModelProviders.of(this).get(PublicacaoViewModel.class);
 
+
+        DatabaseReference reference = FirebaseDatabase.getInstance()
+                .getReference("usuarios/" + auth.getCurrentUser().getUid());
+
+
+        Intent it = getActivity().getIntent();
+        Bundle b = it.getExtras();
+
+        if(b != null){
+            idTurma = getActivity().getIntent().getExtras().getString("idTurma");
+        }
+
+//        reference.child("professor").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//
+//                isProfessor = dataSnapshot.getValue(Boolean.class);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+
         viewModel.getDataSnapshotLiveData().observe(this, new Observer<DataSnapshot>() {
             @Override
             public void onChanged(@Nullable DataSnapshot dataSnapshot) {
 
                 if(dataSnapshot != null){
-                    dataSnapshot.getRef().addChildEventListener(new ChildEventListener() {
+
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                            .getReference("publicacoes/");
+
+//                    if(isProfessor){
+//
+//                    }
+
+                    dataSnapshot.getRef()
+                            .orderByChild("administrador")
+                            .equalTo(auth.getCurrentUser().getUid())
+                            .addChildEventListener(new ChildEventListener() {
+
                         @Override
                         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
@@ -146,9 +190,13 @@ public class ConteudoCompartilhadoFragment extends Fragment {
                     });
                 }
                 if(adapter.getItemCount() == 0){
-                    adapter.setPublicacao(list);
-                }
 
+                    //binding.semPublicacao.setVisibility(View.VISIBLE);
+                    adapter.setPublicacao(list);
+                }else{
+
+                    binding.semPublicacao.setVisibility(View.GONE);
+                }
 
             }
         });

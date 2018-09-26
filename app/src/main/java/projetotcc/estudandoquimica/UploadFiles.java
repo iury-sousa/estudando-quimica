@@ -1,6 +1,7 @@
 package projetotcc.estudandoquimica;
 
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -50,33 +51,34 @@ public class UploadFiles {
     public void upload(Bitmap imagem, String url, DatabaseReference reference) {
 
         if (imagem != null) {
-//            final ProgressDialog progressDialog = new ProgressDialog(context);
-//            progressDialog.setTitle("Enviando arquivo...");
-//            progressDialog.setCancelable(false);
-//            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-//            progressDialog.show();
+            final ProgressDialog progressDialog = new ProgressDialog(context);
+            progressDialog.setTitle("Enviando imagem...");
+            progressDialog.setCancelable(false);
+            progressDialog.setIcon(R.drawable.logo_quimica_no_title);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            progressDialog.show();
 
             StorageReference storageReference = FirebaseStorage.getInstance().
                     getReference(url);
             Intent intent = new Intent();
 
-            final PendingIntent pendingIntent = PendingIntent.getActivity(
-                    context, 0, intent, 0);
-
-            notificationManager = NotificationManagerCompat.from(context);
-
-
-            mBuilder =  new NotificationCompat.Builder(context, ID_UPLOAD)
-                            .setSmallIcon(R.drawable.logo_quimica_no_title)
-                            .setColorized(true)
-                            .setContentTitle("Enviando imagem")
-                            .setContentText("Upload em progresso...")
-                            .setColor(Color.parseColor("#8c28ff"))
-                            //.setColor(ContextCompat.getColor(context, R.color.colorPrimary))
-                            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-
-            mBuilder.setContentIntent(pendingIntent);
+//            final PendingIntent pendingIntent = PendingIntent.getActivity(
+//                    context, 0, intent, 0);
+//
+//            notificationManager = NotificationManagerCompat.from(context);
+//
+//
+//            mBuilder =  new NotificationCompat.Builder(context, ID_UPLOAD)
+//                            .setSmallIcon(R.drawable.logo_quimica_no_title)
+//                            .setColorized(true)
+//                            .setContentTitle("Enviando imagem")
+//                            .setContentText("Upload em progresso...")
+//                            .setColor(Color.parseColor("#8c28ff"))
+//                            //.setColor(ContextCompat.getColor(context, R.color.colorPrimary))
+//                            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+//
+//
+//            mBuilder.setContentIntent(pendingIntent);
 
             final StorageReference ref = storageReference.child(new StringBuilder("images/").append(UUID.randomUUID().toString()).toString());
 
@@ -94,9 +96,9 @@ public class UploadFiles {
                             Log.i("Upload está ",  progress + "% concluido");
 
                             int currentprogress = (int) progress;
-                            mBuilder.setProgress(100, currentprogress, false);
-                            notificationManager.notify(ID_NOTIfICACAO, mBuilder.build());
-                            //progressDialog.setProgress(currentprogress);
+//                            mBuilder.setProgress(100, currentprogress, false);
+//                            notificationManager.notify(ID_NOTIfICACAO, mBuilder.build());
+                            progressDialog.setProgress(currentprogress);
                         }
                     }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
                     @Override
@@ -119,12 +121,12 @@ public class UploadFiles {
                             if (task.isSuccessful()) {
                                 Uri downloadUri = task.getResult();
 
-                               // progressDialog.dismiss();
+                                progressDialog.dismiss();
                                 reference.child("imagens/url").setValue(downloadUri.toString());
 
-                                mBuilder.setContentText("Upload concluido")
-                                        .setProgress(0,0,false);
-                                notificationManager.notify(ID_NOTIfICACAO, mBuilder.build());
+//                                mBuilder.setContentText("Upload concluido")
+//                                        .setProgress(0,0,false);
+//                                notificationManager.notify(ID_NOTIfICACAO, mBuilder.build());
 
                                 ((CadastrarPublicacaoActivity) context).onBackPressed();
 

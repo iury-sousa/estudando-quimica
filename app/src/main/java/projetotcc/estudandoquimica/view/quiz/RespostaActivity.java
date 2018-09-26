@@ -54,7 +54,6 @@ public class RespostaActivity extends AppCompatActivity {
             btnJogarNovamente.setVisibility(View.VISIBLE);
             btnVoltarTela.setVisibility(View.VISIBLE);
 
-
             if(pontos >= 4) {
                 imgResposta.setImageResource(R.drawable.happy);
                 resposta.setText("Parabéns você fez " + pontos + " pontos!");

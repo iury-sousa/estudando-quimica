@@ -143,7 +143,7 @@ public class TurmaViewModel extends ViewModel{
 
         turma.setNome(nome);
         turma.setData_criacao(strDate);
-        turma.setAdministradorTurma("-LLumZs9sVwOTqlQqRHU");
+        turma.setAdministradorTurma(auth.getCurrentUser().getUid());
         turma.setCodeTurma(GerarCodigoTurma.gerar(8));
 
 

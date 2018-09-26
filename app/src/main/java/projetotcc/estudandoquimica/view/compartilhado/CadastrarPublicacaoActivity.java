@@ -15,6 +15,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,6 +31,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -40,7 +42,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -48,6 +53,7 @@ import projetotcc.estudandoquimica.R;
 import projetotcc.estudandoquimica.UploadFiles;
 import projetotcc.estudandoquimica.databinding.ActivityCadastrarPublicacaoBinding;
 import projetotcc.estudandoquimica.model.Publicacao;
+import projetotcc.estudandoquimica.model.Turma;
 import projetotcc.estudandoquimica.model.Usuario;
 import projetotcc.estudandoquimica.view.turma.PesquisarTurmaActivity;
 import projetotcc.estudandoquimica.viewmodel.CadastrarPublicacaoViewModel;
@@ -59,14 +65,16 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
     private Bitmap bitmap;
     private ActivityCadastrarPublicacaoBinding binding;
     private PublicacaoViewModel viewModel;
+    private InputStream inputStream;
+    private ArrayList<String> idTurmas;
+    private ArrayList<String> nomeTurmas;
+    private static final int RESULT_TURMAS = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_cadastrar_publicacao);
-
-
-
 
         viewModel = ViewModelProviders.of(this).get(PublicacaoViewModel.class);
         binding.setPub(viewModel);
@@ -85,11 +93,14 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
         binding.btnAddTurma.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(CadastrarPublicacaoActivity.this, PesquisarTurmaActivity.class));
+                startActivityForResult(new Intent(
+                        CadastrarPublicacaoActivity.this,
+                        PesquisarTurmaActivity.class), RESULT_TURMAS);
             }
         });
 
     }
+
 
     public void selecionarGaleria(){
         Intent abrirGaleria = new Intent(Intent.ACTION_GET_CONTENT);
@@ -101,13 +112,25 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == IMAGE_GALLERY_REQUEST && resultCode == Activity.RESULT_OK) {
 
-
             carregarImagemGaleria(data);
+
+        }else if(requestCode == RESULT_TURMAS && resultCode == RESULT_OK){
+
+            idTurmas = new ArrayList<>();
+
+            if(data != null){
+                idTurmas = data.getStringArrayListExtra("idTurmas");
+                nomeTurmas = data.getStringArrayListExtra("nomeTurmas");
+            }
+
         }
+
+
     }
-    InputStream inputStream;
+
     public void carregarImagemGaleria(Intent data){
 
         InputStream stream = null;
@@ -212,12 +235,39 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
         publicacao.setTextoPublicacao(viewModel.textoPublicacao.get());
         publicacao.setDataPublicacao(strDate);
 
+        List<Turma> turmas = new ArrayList<>();
+
+        HashMap<String, Boolean> mapList = new HashMap<>();
+
+
+        if(idTurmas != null) {
+
+            for (int i = 0; i < idTurmas.size(); i++) {
+
+                mapList.put(idTurmas.get(i), true);
+
+            }
+        }
+
         Map<String, Object> map = publicacao.toMap();
+        map.put("listaTurmas", mapList);
 
         viewModel.getPublicacaoRef().push().setValue(map, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError databaseError,
                                    @NonNull DatabaseReference databaseReference) {
+
+                if(idTurmas != null) {
+                    for (int i = 0; i < idTurmas.size(); i++) {
+
+                        DatabaseReference reference =
+                                FirebaseDatabase.getInstance()
+                                        .getReference("turmas/" + idTurmas.get(i));
+
+                        reference.child("listaPublicacoes").child(databaseReference.getKey()).setValue(true);
+
+                    }
+                }
 
                 if(bitmap == null){
                     onBackPressed();
@@ -226,10 +276,10 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
 
                 f.upload(bitmap, "publicacoes/" + auth.getCurrentUser().getUid()
                         + "/" + databaseReference.getKey() + "/", databaseReference);
+
+
             }
         });
-
-
 
     }
 
@@ -266,7 +316,5 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
         }
 
     }
-
-
 
 }

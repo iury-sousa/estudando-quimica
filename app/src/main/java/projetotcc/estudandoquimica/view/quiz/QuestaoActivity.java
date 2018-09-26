@@ -18,11 +18,11 @@ import projetotcc.estudandoquimica.model.Questoes;
 
 public class QuestaoActivity extends AppCompatActivity {
 
-        TextView pergunta;
-        RadioGroup rgResposta;
-        int pontos = 0;
-        RadioButton rbResposta1, rbResposta2, rbResposta3, rbResposta4;
-        int respostaCerta;
+        private TextView pergunta;
+        private RadioGroup rgResposta;
+        private int pontos = 0;
+        private RadioButton rbResposta1, rbResposta2, rbResposta3, rbResposta4;
+        private int respostaCerta;
 
         List<Questoes> questoes = new ArrayList<Questoes>() {
           {
@@ -51,12 +51,11 @@ public class QuestaoActivity extends AppCompatActivity {
              respostaCerta = q.getRespostaCerta();
              rgResposta.setSelected(false);
 
-
-
        } else {
           Intent intent = new Intent(this, RespostaActivity.class);
           intent.putExtra("pontos", pontos);
           startActivity(intent);
+          overridePendingTransition(R.anim.zoom_in, R.anim.exit_bottom  );
           finish();
        }
     }
@@ -66,7 +65,6 @@ public class QuestaoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_questao);
         getSupportActionBar().hide();
-
 
         pergunta = (TextView) findViewById(R.id.pergunta);
         rbResposta1 = (RadioButton) findViewById(R.id.rbResposta1);
@@ -80,7 +78,7 @@ public class QuestaoActivity extends AppCompatActivity {
         @Override
         protected void onRestart () {
         super.onRestart();
-      carregarQuestao();
+        carregarQuestao();
     }
 
         public void btnResponderOnClick (View view){
@@ -93,13 +91,18 @@ public class QuestaoActivity extends AppCompatActivity {
             if (rgResposta.getCheckedRadioButtonId() == respostaCerta) {
                 intent.putExtra("acertou", true);
                 pontos++;
-            } else intent.putExtra("acertou", false);
+            } else {
+                intent.putExtra("acertou", false);
+            }
+
             intent.putExtra("pontos", pontos);
             startActivity(intent);
+            overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
             //rb.setChecked(false);
             rgResposta.clearCheck();
         } else{
-           Toast.makeText(this, "Selecione uma resposta",Toast.LENGTH_SHORT).show();}
+           Toast.makeText(this, "Selecione uma resposta",Toast.LENGTH_SHORT).show();
+        }
           //  RadioGroup rgRespostas = (RadioGroup)findViewById(R.id.rgResposta);
         //    Intent intent = new Intent(this, resposta.class);
        //     intent.putExtra("acertou", rgRespostas.getCheckedRadioButtonId() == R.id.rbResposta2);

@@ -53,6 +53,7 @@ import projetotcc.estudandoquimica.view.home.HomeFragment;
 import projetotcc.estudandoquimica.view.usuario.LibraryClass;
 import projetotcc.estudandoquimica.view.usuario.LoginActivity;
 import projetotcc.estudandoquimica.view.usuario.PerfilUsuarioActivity;
+import projetotcc.estudandoquimica.view.usuario.ProfessorAlunoActivity;
 
 
 public class MainActivity extends AppCompatActivity
@@ -72,9 +73,12 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        UsuarioRepositorio usuarioRepositorio = new UsuarioRepositorio(getApplication());
-        LiveData<List<UsuarioEntity>> usuarios = usuarioRepositorio.getAll();
-        List<UsuarioEntity> us = usuarios.getValue();
+
+        auth = FirebaseAuth.getInstance();
+
+//        UsuarioRepositorio usuarioRepositorio = new UsuarioRepositorio(getApplication());
+//        LiveData<List<UsuarioEntity>> usuarios = usuarioRepositorio.getAll();
+//        List<UsuarioEntity> us = usuarios.getValue();
 
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -83,12 +87,13 @@ public class MainActivity extends AppCompatActivity
                 if( firebaseAuth.getCurrentUser() == null ){
                     Intent intent = new Intent( MainActivity.this, LoginActivity.class );
                     startActivity( intent );
+                    overridePendingTransition(R.anim.enter_top, R.anim.zoom_out);
                     finish();
                 }
             }
         };
 
-        auth = FirebaseAuth.getInstance();
+
         auth.addAuthStateListener( authStateListener );
        // databaseReference = LibraryClass.getFirebase();
 //        auth.signInWithEmailAndPassword("iurysoulyuli@gmail.com", "iury1320");
@@ -117,8 +122,8 @@ public class MainActivity extends AppCompatActivity
         fotoPerfil.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent it = new Intent(getApplicationContext(), PerfilUsuarioActivity.class);
-                startActivity(it);
+//                Intent it = new Intent(getApplicationContext(), ProfessorAlunoActivity.class);
+//                startActivity(it);
             }
         });
 
@@ -148,35 +153,35 @@ public class MainActivity extends AppCompatActivity
         email.setText(auth.getCurrentUser().getEmail());
         Glide.with(this).load(auth.getCurrentUser().getPhotoUrl()).into(iv);
 
-        Query query1 = ref.child("turmas").orderByChild("nome").equalTo("Turma 1").limitToFirst(1);
-        query1.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    //ref.child(dataSnapshot.getRef() + "/" + dataSnapshot. + "/usuarios/RSyxVCAQ3Sedcq4OxsLr3j95xrn2").setValue(true);
-                    dataSnapshot.getChildrenCount();
-
-                    String idUsuario = dataSnapshot.getRef().push().getKey();
-
-
-
-
-                 //objeto[0] = dataSnapshot.child(t).getValue(Turma.class);
-//                 for (DataSnapshot data : dataSnapshot.getChildren()){
-//                     Log.d("TAG", "PARENT: "+ data.getKey());
-//                     Log.d("TAG",""+ data.child("nome").getValue());
+//        Query query1 = ref.child("turmas").orderByChild("nome").equalTo("Turma 1").limitToFirst(1);
+//        query1.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                if(dataSnapshot.exists()){
+//                    //ref.child(dataSnapshot.getRef() + "/" + dataSnapshot. + "/usuarios/RSyxVCAQ3Sedcq4OxsLr3j95xrn2").setValue(true);
+//                    dataSnapshot.getChildrenCount();
 //
-//                     objeto[0] = data.getValue(Turma.class);
-//                 }
-
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                //Se ocorrer um erro
-            }
-        });
+//                    String idUsuario = dataSnapshot.getRef().push().getKey();
+//
+//
+//
+//
+//                 //objeto[0] = dataSnapshot.child(t).getValue(Turma.class);
+////                 for (DataSnapshot data : dataSnapshot.getChildren()){
+////                     Log.d("TAG", "PARENT: "+ data.getKey());
+////                     Log.d("TAG",""+ data.child("nome").getValue());
+////
+////                     objeto[0] = data.getValue(Turma.class);
+////                 }
+//
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                //Se ocorrer um erro
+//            }
+//        });
 
 
 

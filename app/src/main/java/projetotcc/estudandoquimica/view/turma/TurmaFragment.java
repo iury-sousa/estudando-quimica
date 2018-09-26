@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -129,6 +130,8 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
         viewModel = ViewModelProviders.of(this).get(TurmaViewModel.class);
         MutableLiveData<DataSnapshot> liveData = viewModel.getDataSnapshotLiveData();
 
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+
         final String[] nome = new String[1];
 
         liveData.observe(this, new Observer<DataSnapshot>() {
@@ -141,7 +144,10 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
 
                 if (dataSnapshot.exists()) {
 
-                    dataSnapshot.getRef().orderByChild("administradorTurma").equalTo("-LLumZs9sVwOTqlQqRHU").addChildEventListener(new ChildEventListener() {
+                    dataSnapshot.getRef().orderByChild("administradorTurma")
+                            .equalTo(auth.getCurrentUser().getUid())
+                            .addChildEventListener(new ChildEventListener() {
+
                         @Override
                         public void onChildAdded(@NonNull DataSnapshot t, @Nullable String s) {
                             Turma turma = new Turma();
@@ -166,7 +172,6 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
                                            // turma.setAdministradorTurma(dataSnapshot.child("nome").getValue(String.class));
                                             adapter.notifyItemChanged(c[0]);
                                             c[0]++;
-
 
                                         }
 
@@ -286,8 +291,6 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
         adapter.clearSelections();
     }
 
-
-
     @Override
     public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
         gestureDetector.onTouchEvent(e);
@@ -296,7 +299,6 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
 
     @Override
     public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-
     }
 
     @Override
@@ -446,7 +448,7 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
         }
     }
 
-    public class WrapContentLinearLayoutManager extends LinearLayoutManager {
+    public static class WrapContentLinearLayoutManager extends LinearLayoutManager {
 
         public WrapContentLinearLayoutManager(Context context, int orientation, boolean reverseLayout) {
             super(context, orientation, reverseLayout);
