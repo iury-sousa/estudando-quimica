@@ -4,9 +4,12 @@ import android.arch.lifecycle.LiveData;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -21,7 +24,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -65,6 +71,7 @@ public class MainActivity extends AppCompatActivity
     private TurmaFragment turmaFragment;
     private FirebaseAuth auth;
     //private DatabaseReference databaseReference;
+    private DrawerLayout drawer;
     private FirebaseAuth.AuthStateListener authStateListener;
 
     @Override
@@ -73,7 +80,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
         auth = FirebaseAuth.getInstance();
 
 //        UsuarioRepositorio usuarioRepositorio = new UsuarioRepositorio(getApplication());
@@ -100,15 +109,27 @@ public class MainActivity extends AppCompatActivity
 
         getSupportActionBar().setTitle(getString(R.string.app_name));
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = findViewById(R.id.drawer_layout);
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
+
+
+        //drawer.addDrawerListener(toggle);
+
+
+
+        drawer.addDrawerListener(new DrawerListener());
+
+        //navigationView.setNavigationItemSelectedListener(new DrawerItemClickListener());// setOnItemClickListener(new DrawerItemClickListener());
+
         toggle.syncState();
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        //navigationView.setNavigationItemSelectedListener(new NavigationViewClickListener());
         navigationView.setItemIconTintList(null);
+
 
         if(navigationView.getMenu().getItem(0).isChecked()){
             setTextColorForMenuItem(navigationView.getMenu().getItem(0), R.color.colorItemHome);
@@ -250,83 +271,41 @@ public class MainActivity extends AppCompatActivity
             toolbar.setLayoutParams(params2);
         }
 
+
         switch (id){
             case R.id.nav_home:
 
-//                HomeFragment home = (HomeFragment) getSupportFragmentManager().findFragmentByTag("TAG_HOME");
-//
-//                if(home != null && !home.isVisible()){
                     setTextColorForMenuItem(item, R.color.colorItemHome);
-                    //invalidateOptionsMenu();
-                    getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment(), "TAG_HOME").commit();
-
-//                }else if(home != null){
-//                    getSupportFragmentManager().beginTransaction().replace(R.id.container, home).commit();
-//                }
+                   // getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment(), "TAG_HOME").commit();
+                    mNextContentFragment = new HomeFragment();
                 break;
-//            case R.id.nav_agenda:
-//                setTextColorForMenuItem(item, R.color.colorItemAgenda);
-//                getSupportFragmentManager().beginTransaction().replace(R.id.container, new AgendaFragment()).commit();
-//                break;
+
             case R.id.nav_turma:
-                setTextColorForMenuItem(item, R.color.colorItemTurma);
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, turmaFragment, "TAG_TURMA").commit();
+                  setTextColorForMenuItem(item, R.color.colorItemTurma);
+                  //getSupportFragmentManager().beginTransaction().replace(R.id.container, turmaFragment, "TAG_TURMA").commit();
+                  mNextContentFragment = new TurmaFragment();
                 break;
 
-//            case R.id.nav_atividade:
-//                setTextColorForMenuItem(item, R.color.colorItemActivities);
-//                break;
-//
-//            case R.id.nav_desempenho:
-//                setTextColorForMenuItem(item, R.color.colorItemPerformance);
-//                break;
             case R.id.nav_sair:
 
-//                FirebaseAuth auth = FirebaseAuth.getInstance();
-//                auth.signOut();
-//
-//                GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-//                        .requestEmail()
-//                        .build();
-//
-//                GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-//                mGoogleSignInClient.signOut();
-//
-//                startActivity(new Intent(this, LoginActivity.class));
-//                finish();
                 auth.signOut();
                 finish();
 
                 break;
-
         }
 
-        /*if (id == R.id.nav_home) {
+        mChangeContentFragment = true;
 
-            setTextColorForMenuItem(item, R.color.colorItemHome);
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment()).commit();
+        navigationView.setCheckedItem(item.getItemId());
 
-        } else if (id == R.id.nav_agenda) {
+//        mHandler.postDelayed(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//                drawer.closeDrawer(navigationView);
+//            }
+//        }, 100);
 
-            setTextColorForMenuItem(item, R.color.colorItemAgenda);
-            Intent it = new Intent(getApplicationContext(), LoginActivity.class);
-            startActivity(it);
-
-        } else if (id == R.id.nav_atividade) {
-
-            setTextColorForMenuItem(item, R.color.colorItemActivities);
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, new ConteudoOfflineFragment()).commit();
-        } else if (id == R.id.nav_desempenho) {
-
-            setTextColorForMenuItem(item, R.color.colorItemPerformance);
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }*/
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -340,6 +319,39 @@ public class MainActivity extends AppCompatActivity
     private void resetAllMenuItemsTextColor(NavigationView navigationView) {
         for (int i = 0; i < navigationView.getMenu().size(); i++)
             setTextColorForMenuItem(navigationView.getMenu().getItem(i), R.color.colorTextMainDefault);
+    }
+
+    private Fragment mNextContentFragment;
+    private boolean mChangeContentFragment = false;
+
+    private Handler mHandler = new Handler();
+
+    private class DrawerListener implements android.support.v4.widget.DrawerLayout.DrawerListener {
+
+        @Override
+        public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {}
+
+        @Override
+        public void onDrawerOpened(@NonNull View drawerView) {}
+
+        @Override
+        public void onDrawerStateChanged(int newState) {}
+
+        @Override
+        public void onDrawerClosed(View view) {
+            if (mChangeContentFragment) {
+
+                if(mNextContentFragment != null) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.container, mNextContentFragment).commit();
+
+                    mNextContentFragment = null;
+
+                    mChangeContentFragment = false;
+                }
+            }
+        }
+
+
     }
 
 }

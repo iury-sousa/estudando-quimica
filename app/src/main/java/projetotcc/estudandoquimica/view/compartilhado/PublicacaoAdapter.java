@@ -1,32 +1,41 @@
 package projetotcc.estudandoquimica.view.compartilhado;
 
-import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import projetotcc.estudandoquimica.R;
+import projetotcc.estudandoquimica.componentesPersonalizados.StatefulRecyclerView;
 import projetotcc.estudandoquimica.databinding.PublicacaoItemBinding;
 import projetotcc.estudandoquimica.model.Publicacao;
 import projetotcc.estudandoquimica.viewmodel.PublicacaoViewModel;
 
-public class PublicacaoAdapter extends RecyclerView.Adapter<PublicacaoAdapter.BindingHolder> {
+public class PublicacaoAdapter extends StatefulRecyclerView.Adapter<PublicacaoAdapter.BindingHolder> {
 
     private List<Publicacao> lista_publicacao;
+    private Context context;
+    private CurtirClickListener curtirClickListener;
 
-    Context context;
-    public PublicacaoAdapter(Context context) {
+    public PublicacaoAdapter(List<Publicacao> lista_publicacao,
+                             Context context, CurtirClickListener curtirClickListener) {
         this.context = context;
+        this.lista_publicacao = lista_publicacao;
+        setHasStableIds(true);
+        this.curtirClickListener = curtirClickListener;
     }
+
 
     public void setPublicacao(List<Publicacao> lista_publicacao) {
 
@@ -38,9 +47,14 @@ public class PublicacaoAdapter extends RecyclerView.Adapter<PublicacaoAdapter.Bi
 
     public void addPublicacao(Publicacao publicacao, int posicao){
 
-        lista_publicacao.add(posicao,publicacao);
+        lista_publicacao.add(posicao, publicacao);
         notifyItemInserted(getItemCount());
         notifyItemRangeChanged(0, lista_publicacao.size());
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
     }
 
     @NonNull
@@ -54,17 +68,46 @@ public class PublicacaoAdapter extends RecyclerView.Adapter<PublicacaoAdapter.Bi
         return new BindingHolder(binding);
     }
 
+    @Override
+    public void onBindViewHolder(@NonNull BindingHolder holder, int position, @NonNull List<Object> payloads) {
+        if (payloads.isEmpty()){
+            super.onBindViewHolder(holder, position, payloads);
+        }
+        else {
+            Bundle o = (Bundle) payloads.get(0);
+            for (String key : o.keySet()) {
+                if(key.equals("curtiu")){
+
+                    Toast.makeText(holder.itemView.getContext(), "Contact "+position+" : Name Changed", Toast.LENGTH_SHORT).show();
+
+                    PublicacaoViewModel model = new PublicacaoViewModel();
+
+                    model.setPublicacao(lista_publicacao.get(position), context);
+                    holder.binding.setPublicacao(model);
+
+                }
+
+            }
+        }
+
+    }
 
     @Override
     public void onBindViewHolder(@NonNull PublicacaoAdapter.BindingHolder holder, int position) {
         PublicacaoItemBinding binding = holder.binding;
 
         PublicacaoViewModel publicacaoViewModel = new PublicacaoViewModel();
+
         publicacaoViewModel.setPublicacao(lista_publicacao.get(position),context);
 
-        //lista_publicacao.get(position).getCurtiu();
-        onBotaoCurtirClicked(binding, publicacaoViewModel);
-
+        onBotaoCurtirClicked(binding, publicacaoViewModel, position);
+//        binding.viewSwitcher.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                curtirClickListener.curtir(binding, lista_publicacao.get(position), publicacaoViewModel);
+//            }
+//        });
         binding.setPublicacao(publicacaoViewModel);
     }
 
@@ -73,53 +116,176 @@ public class PublicacaoAdapter extends RecyclerView.Adapter<PublicacaoAdapter.Bi
         return lista_publicacao != null ? lista_publicacao.size() : 0;
     }
 
-    private void onBotaoCurtirClicked(final PublicacaoItemBinding binding, final PublicacaoViewModel viewModel){
+    private void onBotaoCurtirClicked(final PublicacaoItemBinding binding, final PublicacaoViewModel viewModel, int position){
 
         binding.viewSwitcher.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                ViewSwitcher switcher = binding.viewSwitcher;
-
+                ViewSwitcher switcher = (ViewSwitcher) v;
+                //switcher.setDisplayedChild(viewModel.curtiu.get());
+                //viewModel.addCurtida();
                 if (switcher.getDisplayedChild() == 0) {
 
-                    if(Objects.equals(Objects.requireNonNull(
-                            context.getDrawable(R.drawable.ic_flask_cheio)).getConstantState(),
-                            binding.imageCurtir.getDrawable().getConstantState())){
-                        viewModel.curtiu.set(0);
-                        binding.imageCurtir.setImageResource(R.drawable.ic_flask_vazio);
-                    }else {
-                        binding.imageCurtir.setImageResource(R.drawable.ic_flask_cheio);
-                        viewModel.curtiu.set(1);
+                   // switcher.findViewById(R.id.)
+                    if(viewModel.iconeCurtida.get().getConstantState().
+                            equals(context.getDrawable(R.drawable.ic_flask_vazio).getConstantState())){
 
+                        //viewModel.curtiu.set(0);
+                        //binding.imageCurtir.setImageResource(R.drawable.ic_flask_vazio);
+                        //viewModel.curtida();
+                        viewModel.setI(true);
+                        //viewModel.iconeCurtida.set(context.getDrawable(R.drawable.ic_flask_vazio));
+
+                    }else {
+
+                        //viewModel.iconeCurtida.set(context.getDrawable(R.drawable.ic_flask_cheio));
+                       // viewModel.curtiu.set(1);
+                       // viewModel.curtida();
+                        viewModel.setI(false);
                     }
+                    viewModel.addCurtida();
                     switcher.showNext();
+
+
                 } else {
 
-                    if(Objects.equals(Objects.requireNonNull(
-                            context.getDrawable(R.drawable.ic_flask_cheio)).getConstantState(),
-                            binding.imageCurtir.getDrawable().getConstantState())){
+                    if(viewModel.iconeCurtida.get().getConstantState().
+                            equals(context.getDrawable(R.drawable.ic_flask_vazio).getConstantState())){
 
-                        binding.imageCurtir.setImageResource(R.drawable.ic_flask_vazio);
-                        viewModel.curtiu.set(0);
+                        //viewModel.curtiu.set(0);
+                        //binding.imageCurtir.setImageResource(R.drawable.ic_flask_vazio);
+                        //viewModel.curtida();
+                        viewModel.setI(true);
+                        //viewModel.iconeCurtida.set(context.getDrawable(R.drawable.ic_flask_vazio));
+
                     }else {
-                        binding.imageCurtir.setImageResource(R.drawable.ic_flask_cheio);
-                        viewModel.curtiu.set(1);
+
+                        //viewModel.iconeCurtida.set(context.getDrawable(R.drawable.ic_flask_cheio));
+                        // viewModel.curtiu.set(1);
+                        // viewModel.curtida();
+                        viewModel.setI(false);
                     }
+
+                    viewModel.addCurtida();
                     switcher.showPrevious();
+
                 }
+
+
             }
         });
     }
 
-    public static class BindingHolder extends RecyclerView.ViewHolder {
+    public void updatePublicacao(List<Publicacao> newPublicacoes){
+
+        if(this.lista_publicacao == null){
+            this.lista_publicacao = newPublicacoes;
+        }
+
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+            @Override
+            public int getOldListSize() {
+                return lista_publicacao != null ? lista_publicacao.size() : 0;
+            }
+
+            @Override
+            public int getNewListSize() {
+                return newPublicacoes != null ? newPublicacoes.size() : 0;
+            }
+
+            @Override
+            public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                return lista_publicacao.get(oldItemPosition).getId().
+                        equals(newPublicacoes.get(newItemPosition).getId());
+            }
+
+            @Override
+            public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+
+                notifyItemChanged(newItemPosition);
+
+                Publicacao antiga = lista_publicacao.get(oldItemPosition);
+                Publicacao nova = newPublicacoes.get(newItemPosition);
+
+                return   antiga.getCurtiu() == nova.getCurtiu()
+                        //&& antiga.getAdmin().equals(nova.getAdmin())
+                        //&& antiga.getDataPublicacao().equals(nova.getDataPublicacao())
+                        //&& antiga.getId().equals(nova.getId())
+                        //&& antiga.getImagemUrl().equals(nova.getImagemUrl())
+                        && antiga.getNumComentarios() == nova.getNumComentarios()
+                        && antiga.getNumCurtidas() == nova.getNumCurtidas();
+                        //&& antiga.getTextoPublicacao().equals(nova.getTextoPublicacao())
+                        //&& antiga.getTitulo().equals(nova.getTitulo());
+            }
+
+            @Nullable
+            @Override
+            public Object getChangePayload(int oldItemPosition, int newItemPosition) {
+
+
+               notifyItemChanged(newItemPosition);
+
+                Publicacao antiga = lista_publicacao.get(oldItemPosition);
+                Publicacao nova = newPublicacoes.get(newItemPosition);
+
+                Bundle bundle = new Bundle();
+
+                if(antiga.getCurtiu() != nova.getCurtiu()){
+                    bundle.putBoolean("curtiu", nova.getCurtiu());
+                }
+
+                if(antiga.getNumComentarios() != nova.getNumComentarios()){
+
+                    bundle.putInt("numComentarios", nova.getNumComentarios());
+                }
+
+                if(antiga.getNumCurtidas() != nova.getNumCurtidas()){
+
+                    bundle.putInt("numCurtidas", nova.getNumCurtidas());
+                }
+
+                if (bundle.size()==0){
+                    return null;
+                }
+                return bundle;
+
+            }
+        });
+
+
+        lista_publicacao.clear();
+        lista_publicacao = newPublicacoes;
+
+        diffResult.dispatchUpdatesTo(this);
+
+        //notifyDataSetChanged();
+
+    }
+
+    public class BindingHolder extends RecyclerView.ViewHolder {
 
         private PublicacaoItemBinding binding;
 
         private BindingHolder(PublicacaoItemBinding binding) {
             super(binding.cardView);
             this.binding = binding;
+
+            //onBotaoCurtirClicked(binding, binding.getPublicacao(), getAdapterPosition());
+
+            binding.viewSwitcher.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    curtirClickListener.curtir(binding, lista_publicacao.get(getAdapterPosition()), binding.getPublicacao());
+                }
+            });
         }
 
+    }
+
+    public interface CurtirClickListener{
+
+        void curtir(PublicacaoItemBinding binding, Publicacao publicacao, PublicacaoViewModel publicacaoViewModel);
     }
 }

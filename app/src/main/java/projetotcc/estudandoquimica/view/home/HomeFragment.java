@@ -11,6 +11,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -40,7 +41,12 @@ public class HomeFragment extends Fragment{
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         View viewContainer = (View) container.getParent();
+        TabsAdapter tabsAdapter = new TabsAdapter(getActivity().getSupportFragmentManager());
+
+
+
         appBar = (AppBarLayout) viewContainer.findViewById(R.id.appbar);
+
         tabLayout = new TabLayout(Objects.requireNonNull(getActivity()));
         tabLayout.setTabTextColors(Color.parseColor("#FF5D5D5D"), Color.parseColor("#410C5A"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
@@ -48,19 +54,23 @@ public class HomeFragment extends Fragment{
         tabLayout.setBackgroundColor(Color.parseColor("#FFFFFF"));
         tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#410C5A"));
         tabLayout.setSelectedTabIndicatorHeight(8);
+
         appBar.addView(tabLayout);
 
         AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) tabLayout.getLayoutParams();
         params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP);
         tabLayout.setLayoutParams(params);
+        ViewPager viewPager = view.findViewById(R.id.pagina);
+        viewPager.setOffscreenPageLimit(3);
 
-        ViewPager viewPager = (ViewPager) view.findViewById(R.id.pagina);
-
-        TabsAdapter tabsAdapter = new TabsAdapter(getFragmentManager(), tabLayout.getTabCount());
-        viewPager.setAdapter(tabsAdapter);
         tabLayout.setupWithViewPager(viewPager);
+        viewPager.setAdapter(tabsAdapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
+
 
         MainActivity activity = (MainActivity) getActivity();
+        activity.getSupportActionBar().setTitle(getString(R.string.app_name));
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -77,7 +87,7 @@ public class HomeFragment extends Fragment{
 
                 }else{
                     activity.getSupportActionBar().setTitle("Quiz química");
-                    appBar.setExpanded(false,true);
+                    activity.getSupportActionBar().show();
                 }
 
             }
@@ -114,9 +124,8 @@ public class HomeFragment extends Fragment{
     private String[] titles = new String[]{"Conteúdos", "Estudos", "Quiz"};
     private int tabCount = 3;
 
-    public TabsAdapter(FragmentManager fm, int tabCount) {
+    public TabsAdapter(FragmentManager fm) {
         super(fm);
-        this.tabCount = tabCount;
 
     }
 

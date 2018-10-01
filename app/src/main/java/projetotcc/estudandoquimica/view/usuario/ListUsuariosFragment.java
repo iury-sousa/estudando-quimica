@@ -126,7 +126,7 @@ public class ListUsuariosFragment extends Fragment implements SearchView.OnQuery
 
                         @Override
                         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                            Usuario usuario = new Usuario(dataSnapshot.getKey(), dataSnapshot.getValue(String.class), null, null);
+                            Usuario usuario = new Usuario(dataSnapshot.getKey(), null, null, null);
 
                             DatabaseReference reference = FirebaseDatabase.getInstance().getReference("usuarios/" + usuario.getId());
                             reference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -134,6 +134,7 @@ public class ListUsuariosFragment extends Fragment implements SearchView.OnQuery
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     usuario.setEmail(dataSnapshot.child("email").getValue(String.class));
                                     usuario.setUrlFoto(dataSnapshot.child("urlFoto").getValue(String.class));
+                                    usuario.setNome(dataSnapshot.child("nome").getValue(String.class));
                                    // adapter.notifyItemChanged(adapter.getItemCount());
 
 

@@ -92,6 +92,7 @@ public class Turma {
         result.put("nome", nome);
         result.put("administradorTurma", administradorTurma);
         result.put("data_criacao", data_criacao);
+        result.put("codeTurma", codeTurma);
 
         return result;
     }

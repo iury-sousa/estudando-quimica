@@ -95,12 +95,15 @@ public class ListaUsuariosActivity extends AppCompatActivity implements SearchVi
 
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Usuario usuario = new Usuario(dataSnapshot.getKey(), dataSnapshot.getValue(String.class), null, null);
+                Usuario usuario = new Usuario(dataSnapshot.getKey(), null, null, null);
 
-                DatabaseReference reference = FirebaseDatabase.getInstance().getReference("usuarios/" + usuario.getId());
-                reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                DatabaseReference reference = FirebaseDatabase.
+                        getInstance().getReference("usuarios/" + usuario.getId());
+
+                reference.orderByChild("nome").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        usuario.setNome(dataSnapshot.child("nome").getValue(String.class));
                         usuario.setEmail(dataSnapshot.child("email").getValue(String.class));
                         usuario.setUrlFoto(dataSnapshot.child("urlFoto").getValue(String.class));
                         c[0]++;

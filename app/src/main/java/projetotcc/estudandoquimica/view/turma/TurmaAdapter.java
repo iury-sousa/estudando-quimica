@@ -93,6 +93,7 @@ public class TurmaAdapter extends RecyclerView.Adapter<TurmaAdapter.BindingHolde
             public void onClick(View v) {
 
                 turmaClickListener.onClick(turmas.get(position));
+
             }
         });
         binding.setTurma(model);

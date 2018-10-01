@@ -179,9 +179,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
-                                        Intent it = new Intent(getApplicationContext(), MainActivity.class);
-                                        startActivity(it);
-                                        finish();
+                                       callMainActivity();
                                     } else {
                                         try {
                                             throw task.getException();
@@ -470,7 +468,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         user.setNome( userFirebase.getDisplayName() );
                     }
 
-                    if(user.getEmail() == null || user.getEmail().equals("")){
+                    if(user.getEmail() == null || user.getEmail().trim().isEmpty()){
                         user.setEmail( userFirebase.getEmail() );
                     }
 
@@ -480,11 +478,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                     user.saveDB();
                 }
+                callMainActivity();
 
-                Intent intent = new Intent( LoginActivity.this, ProfessorAlunoActivity.class );
-                startActivity(intent);
-                finish();
-                overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
+//                Intent intent = new Intent( LoginActivity.this, ProfessorAlunoActivity.class );
+//                startActivity(intent);
+//                finish();
+//                overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
             }
         };
         return( callback );

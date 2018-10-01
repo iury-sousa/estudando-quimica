@@ -19,7 +19,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:adjustViewBounds="true"
-                android:src="@drawable/quimica" />
+                android:src="@drawable/logo_quimica" />
 
             <TextView
                 android:layout_alignParentBottom="true"

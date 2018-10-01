@@ -27,6 +27,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -45,7 +46,7 @@ import projetotcc.estudandoquimica.model.Usuario;
 
 public class PublicacaoViewModel extends ViewModel {
 
-    private Drawable iconeCurtida;
+    public final ObservableField<Drawable> iconeCurtida = new ObservableField<>();
     public final ObservableField<Integer> curtiu = new ObservableField<>();
     public final ObservableField<String> nomeUsuario = new ObservableField<>();
     public final ObservableField<String> fotoUsuario = new ObservableField<>();
@@ -55,8 +56,9 @@ public class PublicacaoViewModel extends ViewModel {
     public final ObservableField<String> dataPublicacao = new ObservableField<>();
     public final ObservableField<String> numCurtidas = new ObservableField<>();
     public final ObservableField<String> numComentarios = new ObservableField<>();
+    private String id;
 
-    private static final DatabaseReference PUBLICACAO_REF =
+    private static DatabaseReference PUBLICACAO_REF =
             FirebaseDatabase.getInstance().getReference("publicacoes");
 
     private FirebaseQueryLiveData liveData = new FirebaseQueryLiveData(PUBLICACAO_REF);
@@ -64,6 +66,10 @@ public class PublicacaoViewModel extends ViewModel {
     public DatabaseReference getPublicacaoRef() {
         return PUBLICACAO_REF;
     }
+
+    private FirebaseAuth auth;
+
+    private Context context;
 
     public PublicacaoViewModel() {
 
@@ -74,10 +80,22 @@ public class PublicacaoViewModel extends ViewModel {
 //        }
 
         //titulo.set("Iury");
+        auth = FirebaseAuth.getInstance();
     }
-    Context context;
+
+    public void setPublicacaoRef(int opcao){
+
+        if(opcao == 1){
+            PUBLICACAO_REF =
+                    FirebaseDatabase.getInstance().getReference("publicacoes/listaTurmas/");
+        }
+    }
 
     public void setPublicacao(Publicacao publicacao, Context context){
+
+        iconeCurtida.set(!publicacao.getCurtiu() ? context.getDrawable(R.drawable.ic_flask_vazio) :
+                context.getDrawable(R.drawable.ic_flask_cheio)
+        );
 
         nomeUsuario.set(publicacao.getAdmin().getNome());
         fotoUsuario.set(publicacao.getAdmin().getUrlFoto());
@@ -87,15 +105,24 @@ public class PublicacaoViewModel extends ViewModel {
         dataPublicacao.set(String.valueOf(publicacao.getDataPublicacao()));
         numCurtidas.set(String.valueOf(publicacao.getNumCurtidas()));
         numComentarios.set(String.valueOf(publicacao.getNumCurtidas()));
-       // curtiu.set(Integer.parseInt(String.valueOf(publicacao.getCurtiu())));
-        curtiu.set(1);
-//        if(publicacao.getCurtiu()){
-//            setIconeCurtida(context.getDrawable(R.drawable.ic_flask_cheio));
-//        }else {
-//            setIconeCurtida(context.getDrawable(R.drawable.ic_flask_vazio));
-//        }
+        id = publicacao.getId();
+        curtiu.set(publicacao.getCurtiu() ? 1 : 0);
+        //curtida();
+
+
         this.context = context;
 
+    }
+
+    public void setI(boolean c){
+
+        if(c){
+            iconeCurtida.set(context.getDrawable(R.drawable.ic_flask_cheio));
+        }else{
+            iconeCurtida.set(context.getDrawable(R.drawable.ic_flask_vazio));
+        }
+//
+//        addCurtida();
     }
 
     @NonNull
@@ -116,8 +143,6 @@ public class PublicacaoViewModel extends ViewModel {
 
         Publicacao publicacao = new Publicacao();
 
-
-        FirebaseAuth auth = FirebaseAuth.getInstance();
         Usuario usuario = new Usuario();
         usuario.setId(auth.getCurrentUser().getUid());
         @SuppressLint
@@ -138,110 +163,106 @@ public class PublicacaoViewModel extends ViewModel {
             public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                 teste[0] = databaseReference.getKey();
 
-
             }
         });
 
-
-
     }
 
-//    public String getNomeUsuario(){
-//        return publicacao.getAdmin().getNome();
-//    }
-//
-//    public String getTitulo() {
-//        return publicacao.getTitulo();
-//    }
-//
-//    /*public void setTitulo(String titulo) {
-//        publicacao.setTitulo(titulo);
-//        notifyPropertyChanged(BR.titulo);
-//    }*/
-//
-//    public String getTextoPublicacao() {
-//        return publicacao.getTextoPublicacao();
-//    }
-//
-///*    public void setTextoPublicacao(String textoPublicacao) {
-//        publicacao.setTextoPublicacao(textoPublicacao);
-//        notifyPropertyChanged(BR.textoPublicacao);
-//    }*/
-//
-//    public String getImagemUrl() {
-//        return publicacao.getImagemUrl();
-//    }
-//
+    public void addCurtida(){
+
+        DatabaseReference reference = FirebaseDatabase.getInstance()
+                .getReference("publicacoes_curtida/" + id);
+
+        reference.child("listaCurtidas")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            Boolean curtiuUser = dataSnapshot.child(auth.getCurrentUser().getUid()).getValue(Boolean.class);
+
+                            if(curtiuUser != null){
+                                reference.child("listaCurtidas/" + auth.getCurrentUser().getUid()).removeValue();
+
+                               // curtiu.set(0);
+
+
+                            }else {
+
+                                reference.child("listaCurtidas/" + auth.getCurrentUser().getUid())
+                                        .setValue(true);
+
+
+                               // curtiu.set(1);
+                            }
+
+                        }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    private boolean isCurtiu = false;
+    public boolean curtida(){
+
+//        DatabaseReference reference = FirebaseDatabase.getInstance()
+//                .getReference("publicacoes/" + id);
+
+        PUBLICACAO_REF.child(id).child("listaCurtidas")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        Boolean curtiuUser = dataSnapshot.child(auth.getCurrentUser().getUid()).getValue(Boolean.class);
+
+                        if(curtiuUser != null){
+
+                            curtiu.set(0);
+                            isCurtiu = true;
+
+                        }else {
+
+
+                            curtiu.set(1);
+                            isCurtiu = false;
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+        return isCurtiu;
+    }
+
     @BindingAdapter({"image"})
     public static void loadImage(ImageView view, String url) {
         Glide.with(view.getContext()).load(url).into(view);
     }
-//
-//    public String getUrlFoto(){
-//        return publicacao.getAdmin().getUrlFoto();
-//    }
-//
+
     @BindingAdapter({"image"})
     public static void loadFoto(ImageView view, String url) {
         Glide.with(view.getContext()).load(url).into(view);
     }
-//
-//
-//    public Drawable getIconeCurtiu(){
-//        return publicacao.getCurtiu() ? context.getDrawable(R.drawable.ic_flask_cheio) :
-//                context.getDrawable(R.drawable.ic_flask_vazio);
-//    }
-//
-//    public void setCurtida(boolean curtida){
-//
-//        publicacao.setCurtiu(curtida);
-//
+
+//    @BindingAdapter({"image"})
+//    public static void loadIcone(ImageView view, Drawable id) {
+//        Glide.with(view.getContext()).load(id).into(view);
 //    }
 
-    @BindingAdapter({"image"})
-    public static void loadIcone(ImageView view, Drawable id) {
-        Glide.with(view.getContext()).load(id).into(view);
-    }
-
-    public Drawable getIconeCurtida(){
-
-        return curtiu.get() == 1 ? context.getDrawable(R.drawable.ic_flask_cheio) : context.getDrawable(R.drawable.ic_flask_vazio);
-    }
+//    public Drawable getIconeCurtida(){
 //
-//    @Bindable
-//    public String getCurtida(){
+////        if(curtiu.get() == null){
+////
+////            return context.getDrawable(R.drawable.ic_flask_vazio);
+////        }
 //
-//        return publicacao.getCurtiu() ? "1" : "0";
+//        return curtiu.get() == 0 ? context.getDrawable(R.drawable.ic_flask_cheio) : context.getDrawable(R.drawable.ic_flask_vazio);
 //    }
-//
-//    public String getDataPublicacao() {
-//        return String.valueOf(publicacao.getDataPublicacao()) + " h";
-//    }
-//
-///*    public void setDataPublicacao(int dataPublicacao) {
-//        publicacao.setDataPublicacao(dataPublicacao);
-//        notifyPropertyChanged(BR.dataPublicacao);
-//    }*/
-//
-//    public String getNumCurtidas() {
-//        return String.valueOf(publicacao.getNumCurtidas());
-//    }
-//
-///*    public void setNumCurtidas(int numCurtidas) {
-//        publicacao.setNumCurtidas(numCurtidas);
-//        notifyPropertyChanged(BR.numCurtidas);
-//    }*/
-//
-//    public String getNumComentarios() {
-//        return String.valueOf(publicacao.getNumComentarios());
-//    }
-//
-///*    public void setNumComentarios(int numComentarios) {
-//        publicacao.setNumComentarios(numComentarios);
-//        notifyPropertyChanged(BR.numComentarios);
-//    }*/
-//
-
 
     public int getVisibilidadeImagem(){
 
@@ -256,29 +277,5 @@ public class PublicacaoViewModel extends ViewModel {
     public int getVisibilidadeTexto(){
         return textoPublicacao.get() == null ? View.GONE : View.VISIBLE;
     }
-//
-//   // Drawable iconeCurtiu;
-//    /*public void setIconeCurtiu(Drawable icone){
-//
-//        if (Objects.equals(icone.getConstantState(),
-//                Objects.requireNonNull(context.getDrawable(R.drawable.ic_flask_cheio)).getConstantState())){
-//
-//            publicacao.setCurtiu(true);
-//            iconeCurtiu = context.getDrawable(R.drawable.ic_flask_cheio);
-//        }else{
-//            publicacao.setCurtiu(false);
-//            iconeCurtiu = context.getDrawable(R.drawable.ic_flask_vazio);
-//        }
-//        notifyPropertyChanged(BR.iconeCurtiu);
-//    }*/
-//
-//    @Bindable
-//    public Drawable getIconeCurtida() {
-//        return iconeCurtida;
-//    }
-//
-//    public void setIconeCurtida(Drawable iconeCurtida) {
-//        this.iconeCurtida = iconeCurtida;
-//        notifyPropertyChanged(BR.iconeCurtida);
-//    }
+
 }

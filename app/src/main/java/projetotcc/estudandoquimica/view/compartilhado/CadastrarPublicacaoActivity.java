@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
@@ -13,8 +14,10 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,6 +35,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -40,6 +44,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,6 +56,7 @@ import java.util.UUID;
 
 import projetotcc.estudandoquimica.R;
 import projetotcc.estudandoquimica.UploadFiles;
+import projetotcc.estudandoquimica.componentesPersonalizados.DividerItemDecoration;
 import projetotcc.estudandoquimica.databinding.ActivityCadastrarPublicacaoBinding;
 import projetotcc.estudandoquimica.model.Publicacao;
 import projetotcc.estudandoquimica.model.Turma;
@@ -75,6 +81,7 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_cadastrar_publicacao);
+        idTurmas = new ArrayList<>();
 
         viewModel = ViewModelProviders.of(this).get(PublicacaoViewModel.class);
         binding.setPub(viewModel);
@@ -82,6 +89,9 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
 
         getSupportActionBar().setTitle("Criar publicação");
+
+
+
 
         binding.btnImagem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,11 +129,39 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
 
         }else if(requestCode == RESULT_TURMAS && resultCode == RESULT_OK){
 
-            idTurmas = new ArrayList<>();
-
             if(data != null){
                 idTurmas = data.getStringArrayListExtra("idTurmas");
                 nomeTurmas = data.getStringArrayListExtra("nomeTurmas");
+
+                if(TextUtils.isEmpty(binding.textoPublicacao.getText().toString().trim())
+                        && TextUtils.isEmpty(binding.titulo.getText().toString().trim())
+                        && bitmap == null){
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+                    builder.setMessage("Insira pelo menos um texto ou uma imagem para poder cadastrar a publicação")
+                            .setTitle("Atenção!")
+
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+
+
+                                }
+                            })
+                            .setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int id) {
+
+                                }
+                            });
+
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }else {
+
+                    inserir(bitmap);
+                }
             }
 
         }
@@ -224,7 +262,7 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         Usuario usuario = new Usuario();
-        usuario.setId("-LLumZs9sVwOTqlQqRHU");
+        usuario.setId(auth.getCurrentUser().getUid());
         @SuppressLint
                 ("SimpleDateFormat") DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         Date date = new Date();
@@ -237,7 +275,8 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
 
         List<Turma> turmas = new ArrayList<>();
 
-        HashMap<String, Boolean> mapList = new HashMap<>();
+        HashMap<String, Object> mapList = new HashMap<>();
+
 
 
         if(idTurmas != null) {
@@ -249,8 +288,14 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
             }
         }
 
+
         Map<String, Object> map = publicacao.toMap();
         map.put("listaTurmas", mapList);
+
+        Timestamp dataDeHoje = new Timestamp(System.currentTimeMillis());
+        map.put("timestamp", dataDeHoje.getTime());
+
+        map.put("timestamp_admin",  String.valueOf(dataDeHoje.getTime()) + "_" + auth.getCurrentUser().getUid());
 
         viewModel.getPublicacaoRef().push().setValue(map, new DatabaseReference.CompletionListener() {
             @Override
@@ -266,6 +311,11 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
 
                         reference.child("listaPublicacoes").child(databaseReference.getKey()).setValue(true);
 
+                        DatabaseReference referenceTurma = FirebaseDatabase.getInstance()
+                                .getReference("turmas/" + idTurmas.get(i) + "/listaPublicacoes");
+
+                        referenceTurma.child(databaseReference.getKey()).setValue(true);
+
                     }
                 }
 
@@ -276,7 +326,6 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
 
                 f.upload(bitmap, "publicacoes/" + auth.getCurrentUser().getUid()
                         + "/" + databaseReference.getKey() + "/", databaseReference);
-
 
             }
         });
@@ -308,7 +357,27 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
 
             case R.id.action_publicacao:
 
-                inserir(bitmap);
+                if(idTurmas.size() > 0){
+
+                    inserir(bitmap);
+//                    Intent it = new Intent(
+//                            CadastrarPublicacaoActivity.this,
+//                            PesquisarTurmaActivity.class);
+//                    it.putStringArrayListExtra("id_turmas", idTurmas);
+//
+//                    startActivityForResult(it, RESULT_TURMAS);
+//
+//                    overridePendingTransition(R.anim.enter, R.anim.exit);
+                }else {
+
+                    startActivityForResult(new Intent(
+                            CadastrarPublicacaoActivity.this,
+                            PesquisarTurmaActivity.class), RESULT_TURMAS);
+                    overridePendingTransition(R.anim.enter, R.anim.exit);
+                }
+
+
+
                 return true;
 
             default:

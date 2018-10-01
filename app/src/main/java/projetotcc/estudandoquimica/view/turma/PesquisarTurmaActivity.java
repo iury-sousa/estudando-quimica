@@ -5,12 +5,14 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.view.ActionMode;
@@ -25,6 +27,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 //import android.widget.SearchView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -77,16 +80,29 @@ TurmaClickListener, RecyclerView.OnItemTouchListener, View.OnClickListener{
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
 
-        Intent intent = getIntent();
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            //doMySearch(query);
-        }
+//        Intent intent = getIntent();
+//        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+//            String query = intent.getStringExtra(SearchManager.QUERY);
+//            //doMySearch(query);
+//        }
+
+//        Intent it = getIntent();
+//        Bundle b = it.getExtras();
+//
+//        if(b != null){
+//
+//           ArrayList<String> listaTurmas =  b.getStringArrayList("id_turmas");
+//
+//
+//        }
+
+        adapter.getSelectedItems();
+
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        getSupportActionBar().setTitle("Turmas");
+        getSupportActionBar().setTitle("Selecionar turmas");
 
         viewModel = ViewModelProviders.of(this).get(TurmaViewModel.class);
         MutableLiveData<DataSnapshot> liveData = viewModel.getDataSnapshotLiveData();
@@ -188,13 +204,45 @@ TurmaClickListener, RecyclerView.OnItemTouchListener, View.OnClickListener{
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left  );
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()){
 
-            case R.id.nav_home:
+            case android.R.id.home:
                 onBackPressed();
-                overridePendingTransition(R.anim.zoom_in, R.anim.exit_bottom  );
+                //overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left  );
+                return true;
+
+            case R.id.action_info:
+                AlertDialog.Builder builder = new AlertDialog.Builder(PesquisarTurmaActivity.this);
+
+                builder.setMessage("Selecione pelo menos uma turma para concluir a operação.")
+                        .setTitle("Informação")
+                        .setIcon(R.drawable.ic_info)
+
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+
+
+                            }
+                        })
+                        .setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+
+                            }
+                        });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
                 return true;
 
             default:
@@ -223,8 +271,8 @@ TurmaClickListener, RecyclerView.OnItemTouchListener, View.OnClickListener{
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.menu_pesquisa, menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_info, menu);
 //
 //        // Get the SearchView and set the searchable configuration
 //        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
@@ -262,13 +310,14 @@ TurmaClickListener, RecyclerView.OnItemTouchListener, View.OnClickListener{
 
                 case R.id.action_add_turmas:
 
-                   for( int i : adapter.getSelectedItems()){
 
-                     Turma turma =  adapter.getTurma(i);
-                     idTurmas.add(turma.getId());
-                     nomeTurmas.add(turma.getNome());
+                    for (int i : adapter.getSelectedItems()) {
 
-                   }
+                        Turma turma = adapter.getTurma(i);
+                        idTurmas.add(turma.getId());
+                        nomeTurmas.add(turma.getNome());
+
+                    }
                     Intent it = new
                             Intent(PesquisarTurmaActivity.this, CadastrarPublicacaoActivity.class);
 
@@ -277,6 +326,7 @@ TurmaClickListener, RecyclerView.OnItemTouchListener, View.OnClickListener{
 
                     setResult(RESULT_OK, it);
                     finish();
+
                     return true;
 
                 default:
