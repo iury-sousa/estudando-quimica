@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data />
+
+    <LinearLayout xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".view.compartilhado.ComentariosActivity">
+
+
+
+        <!--<android.support.v4.widget.SwipeRefreshLayout-->
+            <!--android:id="@+id/swipeRefreshLayout"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="0dp"-->
+            <!--android:layout_weight="0.9">-->
+
+
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/lista_comentarios"
+                android:layout_weight="0.9"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="#FFF"
+                android:layoutAnimation="@anim/layout_animation" />
+
+
+        <!--</android.support.v4.widget.SwipeRefreshLayout>-->
+
+
+
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:background="@drawable/sombra"
+            />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFF"
+            android:minHeight="50dp">
+
+            <EditText
+                android:id="@+id/comentario"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
+                android:inputType="textMultiLine|textCapWords|textCapSentences"
+                android:background="@drawable/borda_add_comentario"
+                android:hint="Escreva um comentário..."
+                android:maxLines="6"
+                android:minHeight="38dp"
+                android:paddingEnd="46dp"
+                android:paddingStart="16dp"
+                android:textColorHint="#a994d5"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:id="@+id/btn_add_comentario"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignBottom="@+id/comentario"
+                android:layout_marginEnd="28dp"
+                android:layout_marginBottom="14dp"
+                android:visibility="gone"
+                android:padding="5dp"
+                android:src="@drawable/ic_send_2"
+
+                />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+</layout>

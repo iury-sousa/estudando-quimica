@@ -19,6 +19,7 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:id="@+id/scrool"
             android:paddingTop="50dp">
 
             <RelativeLayout
@@ -36,13 +37,15 @@
                     <EditText
                         android:id="@+id/titulo"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="wrap_content"
                         android:hint="Titulo"
-                        android:paddingEnd="15dp"
-                        android:paddingStart="15dp"
+                        android:minHeight="50dp"
+                        android:maxLines="3"
+                        android:paddingEnd="16dp"
+                        android:paddingStart="16dp"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title"
                         android:textSize="18sp"
-                        android:inputType="text"
+                        android:inputType="textCapSentences|textCapWords|textMultiLine"
                         android:textColor="#8c28ff"
                         android:background="#14000000"
                         android:text="@={pub.titulo}"
@@ -55,8 +58,13 @@
                         android:layout_height="wrap_content"
                         android:maxHeight="300dp"
                         android:textSize="18sp"
-                        android:paddingEnd="15dp"
-                        android:paddingStart="15dp"
+                        android:paddingEnd="16dp"
+                        android:paddingStart="16dp"
+                        android:paddingTop="10dp"
+                        android:scrollbars="vertical"
+                        android:fadeScrollbars="true"
+                        android:inputType="textCapSentences|textCapWords|textMultiLine"
+                        android:gravity="top|start"
                         android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
                         android:hint="Digite um conteúdo"
                         android:background="#fff"

@@ -12,7 +12,10 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -41,6 +44,7 @@ import java.util.Map;
 
 import projetotcc.estudandoquimica.FirebaseQueryLiveData;
 import projetotcc.estudandoquimica.R;
+import projetotcc.estudandoquimica.TempoCadastro;
 import projetotcc.estudandoquimica.model.Publicacao;
 import projetotcc.estudandoquimica.model.Usuario;
 
@@ -57,6 +61,7 @@ public class PublicacaoViewModel extends ViewModel {
     public final ObservableField<String> numCurtidas = new ObservableField<>();
     public final ObservableField<String> numComentarios = new ObservableField<>();
     private String id;
+    private Publicacao publicacao;
 
     private static DatabaseReference PUBLICACAO_REF =
             FirebaseDatabase.getInstance().getReference("publicacoes");
@@ -83,32 +88,30 @@ public class PublicacaoViewModel extends ViewModel {
         auth = FirebaseAuth.getInstance();
     }
 
-    public void setPublicacaoRef(int opcao){
-
-        if(opcao == 1){
-            PUBLICACAO_REF =
-                    FirebaseDatabase.getInstance().getReference("publicacoes/listaTurmas/");
-        }
-    }
-
     public void setPublicacao(Publicacao publicacao, Context context){
 
         iconeCurtida.set(!publicacao.getCurtiu() ? context.getDrawable(R.drawable.ic_flask_vazio) :
                 context.getDrawable(R.drawable.ic_flask_cheio)
         );
-
+        this.publicacao = publicacao;
         nomeUsuario.set(publicacao.getAdmin().getNome());
         fotoUsuario.set(publicacao.getAdmin().getUrlFoto());
         titulo.set(publicacao.getTitulo());
         textoPublicacao.set(publicacao.getTextoPublicacao());
         imagemUrl.set(publicacao.getImagemUrl());
-        dataPublicacao.set(String.valueOf(publicacao.getDataPublicacao()));
-        numCurtidas.set(String.valueOf(publicacao.getNumCurtidas()));
-        numComentarios.set(String.valueOf(publicacao.getNumCurtidas()));
+
+        numCurtidas.set(String.valueOf(publicacao.getNumCurtidas()) +
+                ( publicacao.getNumCurtidas() == 1 ? " curtida" : " curtidas" ));
+
+        numComentarios.set(String.valueOf(publicacao.getNumComentarios()) +
+                ( publicacao.getNumComentarios() == 1 ? " comentário" : " comentários" ));
+
         id = publicacao.getId();
         curtiu.set(publicacao.getCurtiu() ? 1 : 0);
         //curtida();
 
+        long timesStamp = Long.valueOf(publicacao.getDataPublicacao());
+        dataPublicacao.set(TempoCadastro.getTempo(timesStamp));
 
         this.context = context;
 
@@ -277,5 +280,26 @@ public class PublicacaoViewModel extends ViewModel {
     public int getVisibilidadeTexto(){
         return textoPublicacao.get() == null ? View.GONE : View.VISIBLE;
     }
+
+    public int getVisibilidadeNumCurtidas(){
+
+        return publicacao.getNumCurtidas() < 1 ? View.GONE : View.VISIBLE;
+    }
+
+    public int getVisibilidadeNumComentarios(){
+        return publicacao.getNumComentarios() < 1 ? View.GONE : View.VISIBLE;
+    }
+
+    public int getVisibilidadeLikeComment(){
+
+        return publicacao.getNumComentarios() == 0 && publicacao.getNumCurtidas() == 0 ?
+                View.GONE : View.VISIBLE;
+    }
+
+    public int getHeightEditTextTextoPublicacao(){
+
+        return TextUtils.isEmpty(imagemUrl.get().trim()) ? 300 : ViewGroup.LayoutParams.WRAP_CONTENT;
+    }
+
 
 }

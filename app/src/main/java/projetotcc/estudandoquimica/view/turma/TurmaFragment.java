@@ -54,7 +54,7 @@ import static android.app.Activity.RESULT_OK;
  * A simple {@link Fragment} subclass.
  */
 public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchListener,
-        View.OnClickListener, TurmaClickListener{
+        View.OnClickListener, TurmaClickListener {
 
     private List<Turma> list;
     private FragmentTurmaBinding binding;
@@ -70,11 +70,13 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
     private RecyclerView recyclerView;
     private static final int DIALOG_REQUEST = 1;
 
+    private FirebaseAuth auth;
+
     public TurmaFragment() {
 
     }
 
-//    private void runLayoutAnimation(final RecyclerView recyclerView) {
+    //    private void runLayoutAnimation(final RecyclerView recyclerView) {
 //        final Context context = recyclerView.getContext();
 //        final LayoutAnimationController controller =
 //                AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation);
@@ -83,7 +85,7 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
 //        recyclerView.getAdapter().notifyDataSetChanged();
 //        recyclerView.scheduleLayoutAnimation();
 //    }
-    public void setNome(String nome){
+    public void setNome(String nome) {
 
         this.nome = nome;
         adapter.addTurma(viewModel.inserir(nome), adapter.getItemCount());
@@ -94,7 +96,7 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        binding = DataBindingUtil.inflate(inflater,R.layout.fragment_turma, container,false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_turma, container, false);
         list = new ArrayList<>();
 
 //        Turma t = new Turma("Teste1", "13/09/2018 16:10:55", "Iury");
@@ -105,10 +107,10 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
 
         recyclerView = binding.listaTurma;
 
-        if(VerificarUsuario.verificarUsuario()) {
+        if (VerificarUsuario.verificarUsuario()) {
 
             binding.fab.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             binding.fab.setVisibility(View.GONE);
         }
 
@@ -135,101 +137,9 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
                 new GestureDetectorCompat(this.getContext(), new RecyclerViewDemoOnGestureListener());
 
         viewModel = ViewModelProviders.of(this).get(TurmaViewModel.class);
-        MutableLiveData<DataSnapshot> liveData = viewModel.getDataSnapshotLiveData();
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
+        auth = FirebaseAuth.getInstance();
 
-        final String[] nome = new String[1];
-
-        liveData.observe(this, new Observer<DataSnapshot>() {
-
-
-            @Override
-            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
-                List<Turma> turmas = new ArrayList<>();
-                final int[] c = {0};
-
-                if (dataSnapshot.exists()) {
-
-                    dataSnapshot.getRef().orderByChild("administradorTurma")
-                            .equalTo(auth.getCurrentUser().getUid())
-                            .addChildEventListener(new ChildEventListener() {
-
-                        @Override
-                        public void onChildAdded(@NonNull DataSnapshot t, @Nullable String s) {
-                            Turma turma = new Turma();
-                            turma.setNome(t.child("nome").getValue(String.class));
-                            turma.setId(t.getKey());
-                            turma.setData_criacao(t.child("data_criacao").getValue(String.class));
-                            turma.setAdministradorTurma(t.child("administradorTurma").getValue(String.class));
-                            turma.setCodeTurma(t.child("codeTurma").getValue(String.class));
-                            turma.setProfessor(new Turma.Professor(turma.getAdministradorTurma(), null));
-
-
-                            final DatabaseReference reference =
-                                    FirebaseDatabase.getInstance().getReference("usuarios/" +
-                                            t.child("administradorTurma").getValue(String.class));
-
-                                    reference
-                                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            turma.setProfessor(new Turma.Professor(t.child("administradorTurma").
-                                                    getValue(String.class), dataSnapshot.child("nome").getValue(String.class)));
-                                           // turma.setAdministradorTurma(dataSnapshot.child("nome").getValue(String.class));
-                                            adapter.notifyItemChanged(c[0]);
-                                            c[0]++;
-
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                        }
-                                    });
-                            //turma.setAdministradorTurma(nome[0]);
-                            turmas.add(turma);
-                        }
-
-                        @Override
-                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                        }
-
-                        @Override
-                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                        }
-
-                        @Override
-                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-
-                }
-
-                if(adapter.getItemCount() == 0){
-                    adapter.updateTurmas(turmas);
-                }
-
-                binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                    @Override
-                    public void onRefresh() {
-                        adapter.updateTurmas(turmas);
-                       // list.addAll(adapter.get);
-                        binding.swipeRefreshLayout.setRefreshing(false);
-                    }
-                });
-
-                binding.executePendingBindings();
-            }
-        });
 
         MainActivity activity = (MainActivity) getActivity();
 
@@ -245,48 +155,277 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
             }
         });
 
-       // setHasOptionsMenu(true);
+        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                if(atualizarTurmas()){
+                    carregarPorAdmin();
+                }else{
+                    carregarPorAluno();
+                }
+
+                binding.swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
+        if(atualizarTurmas()){
+
+        }else{
+
+        }
+        // setHasOptionsMenu(true);
         return binding.getRoot();
     }
 
+    private boolean atualizarTurmas(){
+
+        final boolean[] retorno = {false};
+        DatabaseReference ref = FirebaseDatabase.getInstance()
+                .getReference("usuarios/" + auth.getCurrentUser().getUid());
+
+        ref.child("professor").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.getValue(Boolean.class)){
+
+                    carregarPorAdmin();
+                }else{
+                    carregarPorAluno();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        return retorno[0];
+    }
+
+    private void carregarPorAdmin() {
+        viewModel.getDataSnapshotLiveData().observe(this, new Observer<DataSnapshot>() {
+
+            @Override
+            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
+                List<Turma> turmas = new ArrayList<>();
+                final int[] c = {0};
+
+                if (dataSnapshot.exists()) {
+
+                    dataSnapshot.getRef().orderByChild("administradorTurma")
+                            .equalTo(auth.getCurrentUser().getUid())
+                            .addChildEventListener(new ChildEventListener() {
+
+                                @Override
+                                public void onChildAdded(@NonNull DataSnapshot t, @Nullable String s) {
+                                    Turma turma = new Turma();
+                                    turma.setNome(t.child("nome").getValue(String.class));
+                                    turma.setId(t.getKey());
+                                    turma.setData_criacao(t.child("data_criacao").getValue(String.class));
+                                    turma.setAdministradorTurma(t.child("administradorTurma").getValue(String.class));
+                                    turma.setCodeTurma(t.child("codeTurma").getValue(String.class));
+                                    turma.setProfessor(new Turma.Professor(turma.getAdministradorTurma(), null));
 
 
-//    @Override
-//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//
-//        inflater.inflate(R.menu.menu_conteudo, menu);
-//        super.onCreateOptionsMenu(menu, inflater);
-//
-//    }
+                                    final DatabaseReference reference =
+                                            FirebaseDatabase.getInstance().getReference("usuarios/" +
+                                                    t.child("administradorTurma").getValue(String.class));
 
-    public void DialogCadastrarTurma(Turma turma){
+                                    reference
+                                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                    turma.setProfessor(new Turma.Professor(t.child("administradorTurma").
+                                                            getValue(String.class), dataSnapshot.child("nome").getValue(String.class)));
+                                                    // turma.setAdministradorTurma(dataSnapshot.child("nome").getValue(String.class));
+                                                    adapter.notifyItemChanged(c[0]);
+                                                    c[0]++;
+
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                }
+                                            });
+                                    //turma.setAdministradorTurma(nome[0]);
+                                    turmas.add(turma);
+                                }
+
+                                @Override
+                                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                }
+
+                                @Override
+                                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                                }
+
+                                @Override
+                                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
+                }
+
+                if (adapter.getItemCount() == 0) {
+                    adapter.updateTurmas(turmas);
+                }
+
+                binding.executePendingBindings();
+            }
+
+        });
+
+
+    }
+
+    private void carregarPorAluno() {
+
+        viewModel.getDataSnapshotLiveDataEstudante().observe(this, new Observer<DataSnapshot>() {
+            @Override
+            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
+                List<Turma> turmas = new ArrayList<>();
+                final int[] c = {0};
+
+                dataSnapshot.child(auth.getCurrentUser().getUid()).getRef().addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
+                        dataSnapshot.getRef().addChildEventListener(new ChildEventListener() {
+                            @Override
+                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                dataSnapshot.getKey();
+
+                                DatabaseReference reference = FirebaseDatabase.getInstance()
+                                        .getReference("turmas/" + dataSnapshot.getKey());
+
+                                reference.orderByChild("nome").getRef()
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot t) {
+                                                Turma turma = new Turma();
+                                                turma.setNome(t.child("nome").getValue(String.class));
+                                                turma.setId(t.getKey());
+                                                turma.setData_criacao(t.child("data_criacao").getValue(String.class));
+                                                turma.setAdministradorTurma(t.child("administradorTurma").getValue(String.class));
+                                                turma.setCodeTurma(t.child("codeTurma").getValue(String.class));
+                                                turma.setProfessor(new Turma.Professor(turma.getAdministradorTurma(), null));
+
+
+                                                final DatabaseReference reference =
+                                                        FirebaseDatabase.getInstance().getReference("usuarios/" +
+                                                                t.child("administradorTurma").getValue(String.class));
+
+                                                reference
+                                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                            @Override
+                                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                                turma.setProfessor(new Turma.Professor(t.child("administradorTurma").
+                                                                        getValue(String.class), dataSnapshot.child("nome").getValue(String.class)));
+                                                                 adapter.notifyItemChanged(c[0]);
+                                                                 c[0]++;
+
+
+                                                            }
+
+                                                            @Override
+                                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                            }
+                                                        });
+                                                //turma.setAdministradorTurma(nome[0]);
+                                                turmas.add(turma);
+
+
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
+
+                            }
+
+                            @Override
+                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            }
+
+                            @Override
+                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                            }
+
+                            @Override
+                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+                if (adapter.getItemCount() == 0) {
+                    adapter.updateTurmas(turmas);
+                }
+
+                binding.executePendingBindings();
+            }
+        });
+    }
+
+
+    public void DialogCadastrarTurma(Turma turma) {
 
         Intent it = new Intent(getContext(), DialogTurmaActivity.class);
 
-        if(turma != null){
+        if (turma != null) {
             it.putExtra("nome", turma.getNome());
         }
 
         startActivityForResult(it, DIALOG_REQUEST);
 
 
-//        final android.support.v4.app.DialogFragment dialogFragment = new CadastrarTurmaDialog();
-//        dialogFragment.show(getFragmentManager(), "CadastrarTurmaDialog");
-
     }
+
     Turma turma;
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == DIALOG_REQUEST) {
-            if(resultCode == RESULT_OK){
+            if (resultCode == RESULT_OK) {
                 String resultado = data.getStringExtra("resultado");
                 int opcao = data.getIntExtra("opcao", 0);
 
-                if(opcao == 1) {
+                if (opcao == 1) {
                     viewModel.inserir(resultado);
-                }else if(opcao == 2){
+                } else if (opcao == 2) {
 
                     turma.setNome(resultado);
                     viewModel.atualizar(turma);
@@ -315,7 +454,7 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
     @Override
     public void onClick(View v) {
 
-        if(!(v instanceof CardView)){
+        if (!(v instanceof CardView)) {
             return;
         }
 
@@ -333,18 +472,18 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
         String title = String.valueOf(adapter.getSelectedItemCount());
 
         actionMode.setTitle(title);
-        if(adapter.getSelectedItemCount() != 1) {
-           // actionMode.getMenu().findItem(R.id.action_membros).setVisible(false);
+        if (adapter.getSelectedItemCount() != 1) {
+            // actionMode.getMenu().findItem(R.id.action_membros).setVisible(false);
 
-            if(actionMode.getMenu().findItem(R.id.action_edit) != null)
+            if (actionMode.getMenu().findItem(R.id.action_edit) != null)
                 actionMode.getMenu().findItem(R.id.action_edit).setVisible(false);
-        }else{
-           // actionMode.getMenu().findItem(R.id.action_membros).setVisible(true);
-            if(actionMode.getMenu().findItem(R.id.action_edit) != null)
+        } else {
+            // actionMode.getMenu().findItem(R.id.action_membros).setVisible(true);
+            if (actionMode.getMenu().findItem(R.id.action_edit) != null)
                 actionMode.getMenu().findItem(R.id.action_edit).setVisible(true);
         }
 
-        if(adapter.getSelectedItemCount() == 0){
+        if (adapter.getSelectedItemCount() == 0) {
 
             actionMode.finish();
         }
@@ -356,10 +495,10 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 
             MenuInflater inflater = mode.getMenuInflater();
-            if(VerificarUsuario.verificarUsuario()) {
+            if (VerificarUsuario.verificarUsuario()) {
 
                 inflater.inflate(R.menu.menu_turma, menu);
-            }else{
+            } else {
 
                 inflater.inflate(R.menu.menu_sair, menu);
             }
@@ -377,7 +516,7 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 
 
-            switch (item.getItemId()){
+            switch (item.getItemId()) {
 
                 case R.id.action_delete:
                     List<Integer> selectedItemPositions = adapter.getSelectedItems();
@@ -407,7 +546,7 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
 //                    return true;
                 case R.id.action_edit:
 
-                    if(adapter.getSelectedItems().size() == 1){
+                    if (adapter.getSelectedItems().size() == 1) {
                         turma = adapter.getTurma(adapter.getSelectedItems().get(0));
                         DialogCadastrarTurma(turma);
                     }
@@ -434,7 +573,7 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
     @Override
     public void onClick(Turma turma) {
 
-        if(adapter.getSelectedItemCount() == 0) {
+        if (adapter.getSelectedItemCount() == 0) {
             Intent it = new Intent(getContext(), TurmaActivity.class);
             it.putExtra("idTurma", turma.getId());
             it.putExtra("nome", turma.getNome());
@@ -454,7 +593,7 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
         public void onLongPress(MotionEvent e) {
             View view = recyclerView.findChildViewUnder(e.getX(), e.getY());
 
-            if(!(view instanceof CardView)){
+            if (!(view instanceof CardView)) {
                 return;
             }
 
@@ -462,7 +601,7 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
                 return;
             }
 
-            actionMode =  ((MainActivity) TurmaFragment.this.getActivity()).startSupportActionMode(startActionMode);
+            actionMode = ((MainActivity) TurmaFragment.this.getActivity()).startSupportActionMode(startActionMode);
 
             int idx = recyclerView.getChildAdapterPosition(view);
             myToggleSelection(idx);

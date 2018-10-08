@@ -42,7 +42,10 @@ public class Usuario {
         this.senha = senha;
     }
 
-
+    public Usuario(String nome, String urlFoto) {
+        this.nome = nome;
+        this.urlFoto = urlFoto;
+    }
 
     public Usuario(String nome,
                    String email,

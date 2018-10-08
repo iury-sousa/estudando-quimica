@@ -3,7 +3,6 @@ package projetotcc.estudandoquimica.view.compartilhado;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.util.DiffUtil;
@@ -26,14 +25,14 @@ public class PublicacaoAdapter extends StatefulRecyclerView.Adapter<PublicacaoAd
 
     private List<Publicacao> lista_publicacao;
     private Context context;
-    private CurtirClickListener curtirClickListener;
+    private BotoesClickListener botoesClickListener;
 
     public PublicacaoAdapter(List<Publicacao> lista_publicacao,
-                             Context context, CurtirClickListener curtirClickListener) {
+                             Context context, BotoesClickListener botoesClickListener) {
         this.context = context;
-        this.lista_publicacao = lista_publicacao;
+        //this.lista_publicacao = lista_publicacao;
         setHasStableIds(true);
-        this.curtirClickListener = curtirClickListener;
+        this.botoesClickListener = botoesClickListener;
     }
 
 
@@ -47,7 +46,7 @@ public class PublicacaoAdapter extends StatefulRecyclerView.Adapter<PublicacaoAd
 
     public void addPublicacao(Publicacao publicacao, int posicao){
 
-        lista_publicacao.add(posicao, publicacao);
+        lista_publicacao.add(publicacao);
         notifyItemInserted(getItemCount());
         notifyItemRangeChanged(0, lista_publicacao.size());
     }
@@ -105,7 +104,7 @@ public class PublicacaoAdapter extends StatefulRecyclerView.Adapter<PublicacaoAd
 //            @Override
 //            public void onClick(View v) {
 //
-//                curtirClickListener.curtir(binding, lista_publicacao.get(position), publicacaoViewModel);
+//                botoesClickListener.curtir(binding, lista_publicacao.get(position), publicacaoViewModel);
 //            }
 //        });
         binding.setPublicacao(publicacaoViewModel);
@@ -180,6 +179,7 @@ public class PublicacaoAdapter extends StatefulRecyclerView.Adapter<PublicacaoAd
     public void updatePublicacao(List<Publicacao> newPublicacoes){
 
         if(this.lista_publicacao == null){
+
             this.lista_publicacao = newPublicacoes;
         }
 
@@ -277,15 +277,33 @@ public class PublicacaoAdapter extends StatefulRecyclerView.Adapter<PublicacaoAd
                 @Override
                 public void onClick(View v) {
 
-                    curtirClickListener.curtir(binding, lista_publicacao.get(getAdapterPosition()), binding.getPublicacao());
+                    botoesClickListener.curtir(binding, lista_publicacao.get(getAdapterPosition()), binding.getPublicacao());
+                    botoesClickListener.comentar(lista_publicacao.get(getAdapterPosition()));
+                }
+            });
+
+            binding.btnComentario.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    botoesClickListener.comentar(lista_publicacao.get(getAdapterPosition()));
+                }
+            });
+
+            binding.qtdComentarios.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    botoesClickListener.btnComentariosClick(lista_publicacao.get(getAdapterPosition()));
                 }
             });
         }
 
     }
 
-    public interface CurtirClickListener{
+    public interface BotoesClickListener {
 
         void curtir(PublicacaoItemBinding binding, Publicacao publicacao, PublicacaoViewModel publicacaoViewModel);
+        void comentar(Publicacao publicacao);
+        void btnComentariosClick(Publicacao publicacao);
     }
 }

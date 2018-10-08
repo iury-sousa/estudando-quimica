@@ -16,7 +16,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import projetotcc.estudandoquimica.R;
+import projetotcc.estudandoquimica.VerificarUsuario;
 import projetotcc.estudandoquimica.WrapContentLinearLayoutManager;
 import projetotcc.estudandoquimica.componentesPersonalizados.DividerItemDecoration;
 import projetotcc.estudandoquimica.databinding.FragmentListUsuariosBinding;
@@ -42,14 +42,16 @@ import projetotcc.estudandoquimica.model.Usuario;
 import projetotcc.estudandoquimica.viewmodel.ListaEstudanteViewModel;
 
 
-public class ListUsuariosFragment extends Fragment implements SearchView.OnQueryTextListener {
+public class ListUsuariosFragment extends Fragment implements SearchView.OnQueryTextListener,
+        ListaUsuariosAdapter.ClickAddListener{
 
 
     private RecyclerView recyclerView;
     private SearchView searchView;
-    private List<Usuario> list;
     private ListaUsuariosAdapter adapter;
     private String idTurma = "";
+    List<Usuario> list;
+    private ListaEstudanteViewModel viewModel;
 
     private String text;
 
@@ -82,6 +84,13 @@ public class ListUsuariosFragment extends Fragment implements SearchView.OnQuery
         FragmentListUsuariosBinding binding =
                 DataBindingUtil.inflate(inflater,R.layout.fragment_list_usuarios, container,false);
 
+        if(VerificarUsuario.verificarUsuario()){
+
+            binding.fab.setVisibility(View.VISIBLE);
+        }else{
+            binding.fab.setVisibility(View.GONE);
+        }
+
         recyclerView = binding.listaUsuarios;
 
         recyclerView.setLayoutManager(new WrapContentLinearLayoutManager(getContext(),
@@ -92,12 +101,15 @@ public class ListUsuariosFragment extends Fragment implements SearchView.OnQuery
         //recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
+        list = new ArrayList<>();
+
         recyclerView.addItemDecoration(
                 new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST, 80));
-        adapter = new ListaUsuariosAdapter();
+
+        adapter = new ListaUsuariosAdapter(list ,ListaUsuariosAdapter.Opcao.NENHUM, this, getContext());
         recyclerView.setAdapter(adapter);
 
-        ListaEstudanteViewModel viewModel = ViewModelProviders.of(this).get(ListaEstudanteViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(ListaEstudanteViewModel.class);
 
 
 
@@ -110,14 +122,39 @@ public class ListUsuariosFragment extends Fragment implements SearchView.OnQuery
 //        list.add(new Usuario("1","Angelina Werneck", "werneck.angel@hotmail.com", "https://i.pinimg.com/originals/ef/f5/01/eff501055582c6acf764e197ab5d5902.jpg"));
 
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("estudantes/" + idTurma);
 
+        binding.fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-        MutableLiveData<DataSnapshot> liveData = viewModel.getDataSnapshotLiveData();
-        liveData.observe(this, new Observer<DataSnapshot>() {
+                Intent it = new Intent(getActivity(), ListaUsuariosActivity.class);
+                it.putExtra("idTurma", idTurma);
+                getActivity().startActivity(it);
+                getActivity().overridePendingTransition(R.anim.enter_top, R.anim.zoom_out);
+                //getActivity().overridePendingTransition(R.anim.zoom_in, R.anim.exit_bottom);
+            }
+        });
+
+        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                updateUsuarios();
+                binding.swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+        binding.executePendingBindings();
+
+        updateUsuarios();
+
+        return binding.getRoot();
+    }
+
+    private void updateUsuarios(){
+        viewModel.getDataSnapshotLiveData().observe(this, new Observer<DataSnapshot>() {
             @Override
             public void onChanged(@Nullable DataSnapshot dataSnapshot) {
-                list = new ArrayList<>();
+                List<Usuario> list = new ArrayList<>();
                 final int[] c = {0};
                 if(dataSnapshot.exists()){
 
@@ -128,18 +165,20 @@ public class ListUsuariosFragment extends Fragment implements SearchView.OnQuery
                         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                             Usuario usuario = new Usuario(dataSnapshot.getKey(), null, null, null);
 
-                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("usuarios/" + usuario.getId());
-                            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                            DatabaseReference reference = FirebaseDatabase.getInstance()
+                                    .getReference("usuarios/" + usuario.getId());
+
+                            reference.orderByChild("nome").addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     usuario.setEmail(dataSnapshot.child("email").getValue(String.class));
                                     usuario.setUrlFoto(dataSnapshot.child("urlFoto").getValue(String.class));
                                     usuario.setNome(dataSnapshot.child("nome").getValue(String.class));
-                                   // adapter.notifyItemChanged(adapter.getItemCount());
+                                    adapter.notifyItemChanged(c[0]);
 
 
                                     //list.add(usuario);
-                                    adapter.add(usuario, adapter.getItemCount());
+                                    //adapter.add(usuario, adapter.getItemCount());
                                     c[0]++;
 
                                 }
@@ -150,7 +189,7 @@ public class ListUsuariosFragment extends Fragment implements SearchView.OnQuery
                                 }
                             });
 
-                            //list.add(usuario);
+                            list.add(usuario);
                         }
 
 
@@ -173,27 +212,18 @@ public class ListUsuariosFragment extends Fragment implements SearchView.OnQuery
                         public void onCancelled(@NonNull DatabaseError databaseError) {
 
                         }
+
+
                     });
-
-
-                }
-                if(adapter.getItemCount() == 0){
-                    adapter.setUsuarios(list);
-                }
-
-                binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                    @Override
-                    public void onRefresh() {
+                    if(adapter.getItemCount() == 0){
                         adapter.setUsuarios(list);
-                        // list.addAll(adapter.get);
-                        binding.swipeRefreshLayout.setRefreshing(false);
                     }
-                });
-                binding.executePendingBindings();
+
+                }
+
+
             }
         });
-
-        return binding.getRoot();
     }
 
     @Override
@@ -237,4 +267,8 @@ public class ListUsuariosFragment extends Fragment implements SearchView.OnQuery
         return false;
     }
 
+    @Override
+    public void click(Usuario usuario, int position) {
+
+    }
 }

@@ -20,6 +20,19 @@
             android:paddingTop="14dp"
             android:paddingBottom="14dp">
 
+            <ImageView
+                android:id="@+id/btn_add"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/ic_add"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/borda"
+                android:backgroundTint="@color/colorButtonPrincipal"
+
+                />
+
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/foto"
                 android:layout_width="50dp"
@@ -28,7 +41,7 @@
                 android:src="@drawable/iury"
                 app:imageUrl="@{usuario.imageUrl}"
                 android:layout_alignParentTop="true"
-                android:layout_marginEnd="16dp"/>
+                android:layout_marginEnd="10dp"/>
 
             <TextView
                 android:id="@+id/nome"
@@ -36,6 +49,7 @@
                 android:layout_height="wrap_content"
                 android:text="@{usuario.nome}"
                 android:layout_toEndOf="@+id/foto"
+                android:layout_toStartOf="@id/btn_add"
                 android:layout_alignParentTop="true"
                 android:paddingTop="3dp"
                 android:textSize="16sp"
@@ -45,6 +59,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@{usuario.email}"
+                android:layout_toStartOf="@id/btn_add"
                 android:layout_toEndOf="@+id/foto"
                 android:layout_below="@+id/nome"
                 android:textSize="15sp"

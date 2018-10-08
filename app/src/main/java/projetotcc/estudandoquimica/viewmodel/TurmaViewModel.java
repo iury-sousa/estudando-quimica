@@ -1,6 +1,7 @@
 package projetotcc.estudandoquimica.viewmodel;
 
 import android.annotation.SuppressLint;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
@@ -37,6 +38,11 @@ public class TurmaViewModel extends ViewModel{
             FirebaseDatabase.getInstance().getReference("turmas");
 
     private FirebaseQueryLiveData liveData = new FirebaseQueryLiveData(turmas);
+
+    private static final DatabaseReference ESTUDANTE =
+            FirebaseDatabase.getInstance().getReference("estudante_turmas");
+
+    private FirebaseQueryLiveData liveDataEstudante = new FirebaseQueryLiveData(ESTUDANTE);
 
     public void setTurma(Turma turma, Context context) {
 
@@ -127,6 +133,10 @@ public class TurmaViewModel extends ViewModel{
     @NonNull
     public MutableLiveData<DataSnapshot> getDataSnapshotLiveData() {
         return liveData;
+    }
+
+    public LiveData<DataSnapshot> getDataSnapshotLiveDataEstudante() {
+        return liveDataEstudante;
     }
 
 

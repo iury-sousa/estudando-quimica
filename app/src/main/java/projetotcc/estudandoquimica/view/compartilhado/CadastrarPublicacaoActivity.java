@@ -90,9 +90,6 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
 
         getSupportActionBar().setTitle("Criar publicação");
 
-
-
-
         binding.btnImagem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -109,14 +106,16 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
             }
         });
 
+
+
     }
 
 
-    public void selecionarGaleria(){
+    public void selecionarGaleria() {
         Intent abrirGaleria = new Intent(Intent.ACTION_GET_CONTENT);
         abrirGaleria.setType("image/*");
         abrirGaleria.addCategory(Intent.CATEGORY_OPENABLE);
-        startActivityForResult(abrirGaleria,IMAGE_GALLERY_REQUEST);
+        startActivityForResult(abrirGaleria, IMAGE_GALLERY_REQUEST);
     }
 
     @Override
@@ -127,15 +126,15 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
 
             carregarImagemGaleria(data);
 
-        }else if(requestCode == RESULT_TURMAS && resultCode == RESULT_OK){
+        } else if (requestCode == RESULT_TURMAS && resultCode == RESULT_OK) {
 
-            if(data != null){
+            if (data != null) {
                 idTurmas = data.getStringArrayListExtra("idTurmas");
                 nomeTurmas = data.getStringArrayListExtra("nomeTurmas");
 
-                if(TextUtils.isEmpty(binding.textoPublicacao.getText().toString().trim())
+                if (TextUtils.isEmpty(binding.textoPublicacao.getText().toString().trim())
                         && TextUtils.isEmpty(binding.titulo.getText().toString().trim())
-                        && bitmap == null){
+                        && bitmap == null) {
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -143,8 +142,8 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
                             .setTitle("Atenção!")
 
                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
+                                @Override
+                                public void onClick(DialogInterface dialog, int id) {
 
 
                                 }
@@ -158,7 +157,7 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
 
                     AlertDialog dialog = builder.create();
                     dialog.show();
-                }else {
+                } else {
 
                     inserir(bitmap);
                 }
@@ -169,11 +168,11 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
 
     }
 
-    public void carregarImagemGaleria(Intent data){
+    public void carregarImagemGaleria(Intent data) {
 
         InputStream stream = null;
         try {
-            if(bitmap != null){
+            if (bitmap != null) {
                 bitmap.recycle();
             }
             stream = getContentResolver().openInputStream(data.getData());
@@ -189,7 +188,7 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
 //            f.upload(bitmap, "publicacoes/iury");
 
 
-        } catch(FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         } finally {
             if (stream != null) {
@@ -255,7 +254,7 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
 //        }
 //    }
 
-    public void inserir(Bitmap bitmap){
+    public void inserir(Bitmap bitmap) {
 
         Publicacao publicacao = new Publicacao();
 
@@ -278,8 +277,7 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
         HashMap<String, Object> mapList = new HashMap<>();
 
 
-
-        if(idTurmas != null) {
+        if (idTurmas != null) {
 
             for (int i = 0; i < idTurmas.size(); i++) {
 
@@ -295,14 +293,14 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
         Timestamp dataDeHoje = new Timestamp(System.currentTimeMillis());
         map.put("timestamp", dataDeHoje.getTime());
 
-        map.put("timestamp_admin",  String.valueOf(dataDeHoje.getTime()) + "_" + auth.getCurrentUser().getUid());
+        map.put("timestamp_admin", String.valueOf(dataDeHoje.getTime()) + "_" + auth.getCurrentUser().getUid());
 
         viewModel.getPublicacaoRef().push().setValue(map, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError databaseError,
                                    @NonNull DatabaseReference databaseReference) {
 
-                if(idTurmas != null) {
+                if (idTurmas != null) {
                     for (int i = 0; i < idTurmas.size(); i++) {
 
                         DatabaseReference reference =
@@ -319,7 +317,7 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
                     }
                 }
 
-                if(bitmap == null){
+                if (bitmap == null) {
                     onBackPressed();
                 }
                 UploadFiles f = new UploadFiles(CadastrarPublicacaoActivity.this);
@@ -335,7 +333,7 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        overridePendingTransition(R.anim.zoom_in, R.anim.exit_bottom  );
+        overridePendingTransition(R.anim.zoom_in, R.anim.exit_bottom);
     }
 
     @Override
@@ -352,12 +350,12 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
             case android.R.id.home:
 
                 finish();
-                overridePendingTransition(R.anim.zoom_in, R.anim.exit_bottom  );
+                overridePendingTransition(R.anim.zoom_in, R.anim.exit_bottom);
                 return true;
 
             case R.id.action_publicacao:
 
-                if(idTurmas.size() > 0){
+                if (idTurmas.size() > 0) {
 
                     inserir(bitmap);
 //                    Intent it = new Intent(
@@ -368,14 +366,13 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
 //                    startActivityForResult(it, RESULT_TURMAS);
 //
 //                    overridePendingTransition(R.anim.enter, R.anim.exit);
-                }else {
+                } else {
 
                     startActivityForResult(new Intent(
                             CadastrarPublicacaoActivity.this,
                             PesquisarTurmaActivity.class), RESULT_TURMAS);
                     overridePendingTransition(R.anim.enter, R.anim.exit);
                 }
-
 
 
                 return true;

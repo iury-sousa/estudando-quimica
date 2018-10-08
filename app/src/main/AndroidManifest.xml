@@ -34,8 +34,8 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name"
             android:hardwareAccelerated="true"
+            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar2"
             android:windowSoftInputMode="adjustResize" />
         <activity
@@ -70,7 +70,8 @@
             android:name=".view.compartilhado.CadastrarPublicacaoActivity"
             android:parentActivityName=".MainActivity"
             android:windowSoftInputMode="adjustResize|stateHidden" />
-        <activity android:name=".view.turma.PesquisarTurmaActivity"
+        <activity
+            android:name=".view.turma.PesquisarTurmaActivity"
             android:parentActivityName=".view.usuario.CadastrarUsuarioActivity">
             <meta-data
                 android:name="android.app.default_searchable"
@@ -95,9 +96,17 @@
         <activity
             android:name=".view.quiz.RespostaActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".view.usuario.ProfessorAlunoActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".view.usuario.ProfessorAlunoActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".view.compartilhado.ComentariosActivity"
+            android:windowSoftInputMode="adjustResize|stateVisible" />
+        <activity android:name=".view.compartilhado.EditarComentarioActivity"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.UserDialog"
+            android:windowSoftInputMode="stateAlwaysVisible"/>
     </application>
 
 </manifest>

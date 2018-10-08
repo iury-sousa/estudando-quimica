@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditText
+        android:id="@+id/comentario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:inputType="textMultiLine|textCapWords|textCapSentences"
+        android:background="@drawable/borda_add_comentario"
+        android:hint="Escreva um comentário..."
+        android:maxLines="6"
+        android:scrollbars="vertical"
+        android:minHeight="38dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:textColorHint="#a994d5"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/btn_cancel"
+        android:layout_width="100dp"
+        android:layout_height="30dp"
+        android:layout_below="@+id/comentario"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="14dp"
+        android:text="Cancelar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/borda_add_comentario"
+        android:backgroundTint="@color/colorItemTurma"
+        android:textColor="#FFF"
+        />
+
+    <Button
+        android:id="@+id/btn_atualizar"
+        android:layout_width="120dp"
+        android:layout_height="30dp"
+        android:layout_toEndOf="@+id/btn_cancel"
+        android:layout_below="@+id/comentario"
+        android:layout_marginBottom="14dp"
+        android:text="Atualizar"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/borda_comentario"
+        android:backgroundTint="@color/colorPrimary"
+        android:textColor="#FFF"
+        android:visibility="visible"
+
+        />
+
+
+
+</RelativeLayout>

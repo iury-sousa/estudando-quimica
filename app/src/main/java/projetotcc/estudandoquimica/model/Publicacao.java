@@ -176,9 +176,9 @@ public class Publicacao implements Parcelable{
         result.put("titulo", titulo);
         result.put("textoPublicacao", textoPublicacao);
         result.put("administrador", admin.getId());
-        result.put("dataPublicacao", dataPublicacao);
+        //result.put("dataPublicacao", dataPublicacao);
         result.put("turmasPublicacao", publicacaoList);
-        //result.put("timestamp", ServerValue.TIMESTAMP);
+        result.put("timestamp", timestamp);
 
         return result;
     }

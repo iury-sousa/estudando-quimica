@@ -1,16 +1,12 @@
 package projetotcc.estudandoquimica.view.usuario;
 
-import android.animation.Animator;
-import android.annotation.TargetApi;
+import android.content.Context;
 import android.databinding.DataBindingUtil;
-import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.transition.TransitionManager;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -29,6 +25,21 @@ public class ListaUsuariosAdapter extends RecyclerView.Adapter<ListaUsuariosAdap
     private List<Usuario> usuarios;
     private List<Usuario> filtroUsuarios;
     private DiffUtil.DiffResult result;
+    private Opcao opcao;
+    private Context context;
+    private static ClickAddListener clickAddListener;
+
+    public enum Opcao{
+
+        ADD,
+        REMOVER,
+        NENHUM
+    }
+
+    public interface ClickAddListener{
+
+        void click(Usuario usuario, int position);
+    }
 
     public void add(Usuario usuario, int posicao){
 
@@ -37,7 +48,14 @@ public class ListaUsuariosAdapter extends RecyclerView.Adapter<ListaUsuariosAdap
         notifyItemRangeChanged(0, usuarios.size());
     }
 
-    public ListaUsuariosAdapter() {
+    public ListaUsuariosAdapter(List<Usuario> usuarios, Opcao opcao, ClickAddListener clickAddListener, Context context) {
+
+        this.opcao = opcao;
+        this.context = context;
+        //this.clickAddListener = clickAddListener;
+        this.usuarios = usuarios;
+
+
     }
 
     @NonNull
@@ -46,6 +64,7 @@ public class ListaUsuariosAdapter extends RecyclerView.Adapter<ListaUsuariosAdap
 
         final UsuarioItemBinding  binding = DataBindingUtil.inflate(
                 LayoutInflater.from(parent.getContext()), R.layout.usuario_item, parent, false);
+
 
         return new BindingHolder(binding);
     }
@@ -58,6 +77,7 @@ public class ListaUsuariosAdapter extends RecyclerView.Adapter<ListaUsuariosAdap
         ListaEstudanteViewModel model = new ListaEstudanteViewModel();
         model.setViewModel(filtroUsuarios.get(position));
 
+
         binding.setUsuario(model);
     }
 
@@ -68,17 +88,31 @@ public class ListaUsuariosAdapter extends RecyclerView.Adapter<ListaUsuariosAdap
 
     public void setUsuarios(List<Usuario> usuarios){
 
+
         if(this.usuarios == null){
+
+            //this.usuarios = usuarios;
             this.usuarios = usuarios;
-            //this.filtroUsuarios = usuarios;
+        }
+        if(this.filtroUsuarios == null){
+
+            //this.usuarios = usuarios;
+            this.filtroUsuarios = usuarios;
+        }
 
             result = DiffUtil.calculateDiff(
-                    new DiffUtilUsuario(filtroUsuarios, this.usuarios), false);
+                    new DiffUtilUsuario(this.filtroUsuarios, usuarios), false);
 
-            filtroUsuarios = usuarios;
+            this.filtroUsuarios = usuarios;
             //notifyItemRangeChanged(0, getItemCount());
             result.dispatchUpdatesTo(this);
-        }
+
+        result = DiffUtil.calculateDiff(
+                new DiffUtilUsuario(this.usuarios, usuarios), false);
+
+        this.usuarios = usuarios;
+        result.dispatchUpdatesTo(this);
+
 
     }
 
@@ -91,6 +125,13 @@ public class ListaUsuariosAdapter extends RecyclerView.Adapter<ListaUsuariosAdap
 //            anim.start();
 //        }
   //  }
+
+    public void removerItem(int position) {
+
+        usuarios.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, usuarios.size());
+    }
 
     @Override
     public Filter getFilter() {
@@ -172,15 +213,35 @@ public class ListaUsuariosAdapter extends RecyclerView.Adapter<ListaUsuariosAdap
         }
     }
 
+    public void setOnItemClickListener(ClickAddListener clickListener) {
+        ListaUsuariosAdapter.clickAddListener = clickListener;
+    }
 
-    public class BindingHolder extends RecyclerView.ViewHolder {
+    public class BindingHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private UsuarioItemBinding binding;
 
         public BindingHolder(UsuarioItemBinding binding) {
             super(binding.cardView);
 
+            if(opcao == Opcao.ADD) {
+
+                //binding.btnAdd.setImageDrawable(context.getDrawable(R.drawable.ic_add));
+                binding.btnAdd.setVisibility(View.VISIBLE);
+            }
+            else{
+                binding.btnAdd.setVisibility(View.GONE);
+            }
+
+            binding.btnAdd.setOnClickListener(this);
+
             this.binding = binding;
+        }
+
+
+        @Override
+        public void onClick(View v) {
+            clickAddListener.click(usuarios.get(getAdapterPosition()), getAdapterPosition());
         }
     }
 }

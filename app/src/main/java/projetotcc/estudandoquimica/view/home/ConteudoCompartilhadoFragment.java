@@ -14,17 +14,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ViewSwitcher;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -32,12 +29,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import projetotcc.estudandoquimica.R;
 import projetotcc.estudandoquimica.VerificarConexaoInternet;
@@ -49,6 +44,7 @@ import projetotcc.estudandoquimica.databinding.PublicacaoItemBinding;
 import projetotcc.estudandoquimica.model.Publicacao;
 import projetotcc.estudandoquimica.model.Usuario;
 import projetotcc.estudandoquimica.view.compartilhado.CadastrarPublicacaoActivity;
+import projetotcc.estudandoquimica.view.compartilhado.ComentariosActivity;
 import projetotcc.estudandoquimica.view.compartilhado.PublicacaoAdapter;
 import projetotcc.estudandoquimica.viewmodel.PublicacaoViewModel;
 
@@ -57,7 +53,7 @@ import projetotcc.estudandoquimica.viewmodel.PublicacaoViewModel;
  * A simple {@link Fragment} subclass.
  */
 public class ConteudoCompartilhadoFragment extends Fragment
-implements PublicacaoAdapter.CurtirClickListener{
+        implements PublicacaoAdapter.BotoesClickListener {
 
     private PublicacaoAdapter adapter;
     private FragmentConteudoCompartilhadoBinding binding;
@@ -85,20 +81,22 @@ implements PublicacaoAdapter.CurtirClickListener{
                              Bundle savedInstanceState) {
 
         binding =
-                DataBindingUtil.inflate(inflater,R.layout.fragment_conteudo_compartilhado,
-                        container,false);
+                DataBindingUtil.inflate(inflater, R.layout.fragment_conteudo_compartilhado,
+                        container, false);
 
         setHasOptionsMenu(true);
 
         auth = FirebaseAuth.getInstance();
         viewModel = ViewModelProviders.of(this).get(PublicacaoViewModel.class);
-        recyclerView =  binding.conteudoCompartilhado;
+
+        recyclerView = binding.conteudoCompartilhado;
 
         list = new ArrayList<>();//carregarPublicacoes(viewModel);
 
         wcl = new WrapContentLinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL, false);
-
+        wcl.setReverseLayout(true);
+        wcl.setStackFromEnd(true);
         recyclerView.setLayoutManager(wcl);
 
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -111,7 +109,7 @@ implements PublicacaoAdapter.CurtirClickListener{
 
 //        binding.semPublicacao.setVisibility(View.GONE);
 //        binding.conteudoCompartilhado.setVisibility(View.VISIBLE);
-        carregarPublicacoes(viewModel);
+
 
         recyclerView.setAdapter(adapter);
 
@@ -131,7 +129,7 @@ implements PublicacaoAdapter.CurtirClickListener{
         Intent it = getActivity().getIntent();
         Bundle b = it.getExtras();
 
-        if(b != null){
+        if (b != null) {
             idTurma = getActivity().getIntent().getExtras().getString("idTurma");
 
         }
@@ -150,8 +148,6 @@ implements PublicacaoAdapter.CurtirClickListener{
 //        });
 
 
-
-
         binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -160,18 +156,20 @@ implements PublicacaoAdapter.CurtirClickListener{
             }
         });
 
+        carregarPublicacoes(viewModel);
+
         return binding.getRoot();
     }
 
-    private Publicacao getPublicacao(DataSnapshot dataSnapshot, int[] c){
+    private Publicacao getPublicacao(DataSnapshot dataSnapshot, int[] c) {
         Publicacao p = new Publicacao();
         p.setId(dataSnapshot.getKey());
         p.setTextoPublicacao(dataSnapshot.child("textoPublicacao").getValue(String.class));
         p.setTitulo(dataSnapshot.child("titulo").getValue(String.class));
-        p.setDataPublicacao(dataSnapshot.child("dataPublicacao").getValue(String.class));
+        p.setDataPublicacao(String.valueOf(dataSnapshot.child("timestamp").getValue(Long.class)));
         p.setAdmin(new Usuario(dataSnapshot.child("administrador").getValue(String.class), "", "", ""));
-        p.setNumComentarios(0);
-        p.setNumCurtidas(0);
+
+        p.setImagemUrl(dataSnapshot.child("imagens/url").getValue(String.class));
 
         DatabaseReference reference = FirebaseDatabase.getInstance()
                 .getReference("publicacoes_curtida/" + p.getId());
@@ -183,11 +181,14 @@ implements PublicacaoAdapter.CurtirClickListener{
 
                         Boolean curtiuUser = dataSnapshot.child(auth.getCurrentUser().getUid()).getValue(Boolean.class);
 
-                        if(curtiuUser != null){
+                        p.setNumCurtidas((int) dataSnapshot.getChildrenCount());
+
+                        if (curtiuUser != null) {
 
                             p.setCurtiu(true);
 
-                        }else {
+
+                        } else {
 
                             p.setCurtiu(false);
 
@@ -201,7 +202,19 @@ implements PublicacaoAdapter.CurtirClickListener{
                     }
                 });
 
-        p.setImagemUrl(dataSnapshot.child("imagens/url").getValue(String.class));
+        dataSnapshot.child("comentarios").getRef().addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                Log.i("TAG", String.valueOf(dataSnapshot.getChildrenCount()));
+                p.setNumComentarios((int) dataSnapshot.getChildrenCount());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         final DatabaseReference ref = FirebaseDatabase.getInstance().
                 getReference("usuarios/" + dataSnapshot.child("administrador").getValue(String.class));
@@ -211,7 +224,7 @@ implements PublicacaoAdapter.CurtirClickListener{
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 p.setAdmin(new Usuario(dataSnapshot.getKey(),
                         dataSnapshot.child("nome").getValue(String.class), null,
-                        dataSnapshot.child("urlFoto").getValue(String.class)  ));
+                        dataSnapshot.child("urlFoto").getValue(String.class)));
                 //adapter.addPublicacao(p, adapter.getItemCount());
                 adapter.notifyItemChanged(c[0]);
                 c[0]++;
@@ -226,7 +239,7 @@ implements PublicacaoAdapter.CurtirClickListener{
         return p;
     }
 
-    public List<Publicacao> carregarPorTurmas(DataSnapshot dataSnapshot1, List<Publicacao> lista, int[] c){
+    public List<Publicacao> carregarPorTurmas(DataSnapshot dataSnapshot1, List<Publicacao> lista, int[] c) {
 
         DatabaseReference databaseReference1 = FirebaseDatabase.getInstance()
                 .getReference("turmas/" + idTurma + "/listaPublicacoes");
@@ -297,52 +310,56 @@ implements PublicacaoAdapter.CurtirClickListener{
         return lista;
     }
 
-    public List<Publicacao> carregarPorAdmin(DataSnapshot dataSnapshot, List<Publicacao> lista, int[] c){
+    public List<Publicacao> carregarPorAdmin(DataSnapshot dataSnapshot, List<Publicacao> lista, int[] c) {
 
         dataSnapshot.getRef()
-                .orderByChild("timestamp_admin")
+                //.orderByKey()
+                .orderByChild("administrador").equalTo(auth.getCurrentUser().getUid())
                 .limitToLast(100)
                 .addChildEventListener(new ChildEventListener() {
 
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 //                dataSnapshot.getRef().child("timestamp_admin").equalTo(
 //                        String.valueOf(dataSnapshot.child("timestamp").getValue(Long.class))
 //                                + "_" +  auth.getCurrentUser().getUid()).li;
 
-                lista.add(getPublicacao(dataSnapshot, c));
-            }
+                        lista.add(getPublicacao(dataSnapshot, c));
+                        //adapter.addPublicacao(getPublicacao(dataSnapshot, c), 0);
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-            }
+                    }
 
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-            }
+                    }
 
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
 
-            }
+                    }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-            }
-        });
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
 
         return lista;
     }
 
-    List<Publicacao> listaRetorno = null;
-    public List<Publicacao> carregarPublicacoes(PublicacaoViewModel viewModel){
+    public void carregarPublicacoes(PublicacaoViewModel viewModel) {
 
-        if(!VerificarConexaoInternet.verificaConexao(getContext())){
+        if (!VerificarConexaoInternet.verificaConexao(getContext())) {
 
-            Snackbar.make(binding.getRoot(), "Sem acesso à internet!", Snackbar.LENGTH_SHORT).show();
+            // Snackbar.make(binding.principal, "Sem acesso à internet!", Snackbar.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Sem acesso à internet!", Toast.LENGTH_SHORT).show();
         }
 
         viewModel.getDataSnapshotLiveData().observe(this, new Observer<DataSnapshot>() {
@@ -352,15 +369,14 @@ implements PublicacaoAdapter.CurtirClickListener{
                 List<Publicacao> lista = new ArrayList<>();
                 final int[] c = {0};
 
-                if(dataSnapshot.exists()){
+                if (dataSnapshot.exists()) {
 
 
-                    if(!idTurma.isEmpty()){
+                    if (!idTurma.isEmpty()) {
 
                         lista = carregarPorTurmas(dataSnapshot, lista, c);
 
-                    }else{
-
+                    } else {
 
                         lista = carregarPorAdmin(dataSnapshot, lista, c);
 
@@ -368,22 +384,23 @@ implements PublicacaoAdapter.CurtirClickListener{
 
 
                 }
-
-                if(adapter.getItemCount() == 0){
+                if (adapter.getItemCount() == 0) {
 
                     adapter.updatePublicacao(lista);
+
                 }
 
-                if(adapter.getItemCount() == 0) {
+                if (adapter.getItemCount() == 0) {
 
                     binding.semPublicacao.setVisibility(View.VISIBLE);
                     binding.conteudoCompartilhado.setVisibility(View.GONE);
-                }else{
+                } else {
 
                     binding.semPublicacao.setVisibility(View.GONE);
                     binding.conteudoCompartilhado.setVisibility(View.VISIBLE);
 
                 }
+
                 binding.executePendingBindings();
 
 
@@ -395,22 +412,20 @@ implements PublicacaoAdapter.CurtirClickListener{
 //                    }
 //                });
 //                binding.executePendingBindings();
-                listaRetorno = lista;
             }
         });
 
-        return listaRetorno;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
-        if(menu.findItem(R.id.action_publicacao) != null){
+        if (menu.findItem(R.id.action_publicacao) != null) {
             menu.removeItem(R.id.action_publicacao);
         }
 
-        if(VerificarUsuario.verificarUsuario()){
+        if (VerificarUsuario.verificarUsuario()) {
 
             inflater.inflate(R.menu.menu_conteudo, menu);
         }
@@ -419,7 +434,7 @@ implements PublicacaoAdapter.CurtirClickListener{
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
 
             case R.id.action_publicacao:
 
@@ -435,8 +450,6 @@ implements PublicacaoAdapter.CurtirClickListener{
 
     @Override
     public void curtir(PublicacaoItemBinding binding, Publicacao publicacao, PublicacaoViewModel publicacaoViewModel) {
-
-
 
 
 //        binding.viewSwitcher.setOnClickListener(new View.OnClickListener() {
@@ -484,6 +497,21 @@ implements PublicacaoAdapter.CurtirClickListener{
 //                }
 //            }
 //        });
+    }
+
+    @Override
+    public void comentar(Publicacao publicacao) {
+        Intent it = new Intent(getActivity(), ComentariosActivity.class);
+        it.putExtra("idPublicacao", publicacao.getId());
+        startActivity(it);
+
+    }
+
+    @Override
+    public void btnComentariosClick(Publicacao publicacao) {
+        Intent it = new Intent(getActivity(), ComentariosActivity.class);
+        it.putExtra("idPublicacao", publicacao.getId());
+        startActivity(it);
     }
 
 }
