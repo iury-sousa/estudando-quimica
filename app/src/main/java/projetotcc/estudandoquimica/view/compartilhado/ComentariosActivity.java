@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import projetotcc.estudandoquimica.R;
+import projetotcc.estudandoquimica.VerificarConexaoInternet;
 import projetotcc.estudandoquimica.WrapContentLinearLayoutManager;
 import projetotcc.estudandoquimica.databinding.ActivityComentariosBinding;
 import projetotcc.estudandoquimica.model.Comentario;
@@ -50,6 +51,10 @@ public class ComentariosActivity extends AppCompatActivity implements View.OnCli
     private ActivityComentariosBinding binding;
     private String idPublicacao;
     private PopupMenu popup;
+    private static int RESULT = 1;
+    private Comentario comentario;
+    private int posicaoComentario;
+    private static FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +62,7 @@ public class ComentariosActivity extends AppCompatActivity implements View.OnCli
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_comentarios);
         usuario = FirebaseAuth.getInstance().getCurrentUser();
-
+        user = FirebaseAuth.getInstance().getCurrentUser();
         Bundle b = getIntent().getExtras();
 
         if (b != null) {
@@ -233,10 +238,6 @@ public class ComentariosActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-
-    private Comentario comentario;
-    private int posicaoComentario;
-
     public void showMenu(View v, Comentario comentario, int posicao) {
         popup = new PopupMenu(this, v);
 
@@ -246,8 +247,6 @@ public class ComentariosActivity extends AppCompatActivity implements View.OnCli
         popup.inflate(R.menu.menu_manipular_comentario);
         popup.show();
     }
-
-    private static int RESULT = 1;
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
@@ -264,19 +263,25 @@ public class ComentariosActivity extends AppCompatActivity implements View.OnCli
 
             case R.id.action_delete:
 
-                DatabaseReference reference = FirebaseDatabase
-                        .getInstance().getReference("publicacoes/" + idPublicacao );
+                if(!VerificarConexaoInternet.verificaConexao(getApplicationContext())){
 
-                reference.child("comentarios").child(comentario.getId()).removeValue((databaseError, databaseReference) -> {
+                    VerificarConexaoInternet.getMensagem(binding.getRoot());
+                }else {
 
-                    adapter.removerComentario(posicaoComentario);
+                    DatabaseReference reference = FirebaseDatabase
+                            .getInstance().getReference("publicacoes/" + idPublicacao);
 
-                    Snackbar mySnackbar = Snackbar.make(binding.getRoot(),
-                            "Comentário excluido com sucesso!", Snackbar.LENGTH_SHORT);
+                    reference.child("comentarios").child(comentario.getId()).removeValue((databaseError, databaseReference) -> {
 
-                    mySnackbar.show();
+                        adapter.removerComentario(posicaoComentario);
 
-                });
+                        Snackbar mySnackbar = Snackbar.make(binding.getRoot(),
+                                "Comentário excluido com sucesso!", Snackbar.LENGTH_SHORT);
+
+                        mySnackbar.show();
+
+                    });
+                }
 
                 return true;
 
@@ -292,7 +297,31 @@ public class ComentariosActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onPressComentario(View v, Comentario comentario, int posicao) {
 
-        showMenu(v, comentario, posicao);
+
+//        DatabaseReference ref = FirebaseDatabase.getInstance()
+//                .getReference("publicacoes/" + idPublicacao);
+
+        if(comentario.getUsuario().getId().equals(user.getUid())){
+            showMenu(v, comentario, posicao);
+        }
+
+//        ref.child("comentarios").child(comentario.getId())
+//                .addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//
+//                if(dataSnapshot.child("usuario").getValue(String.class).equals(user.getUid())){
+//                    showMenu(v, comentario, posicao);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+
+
     }
 
     @Override
@@ -312,7 +341,16 @@ public class ComentariosActivity extends AppCompatActivity implements View.OnCli
                 Map<String, Object> map = comentario.toMap();
 
 
-                reference.child("comentarios").child(comentario.getId()).updateChildren(map);
+                reference.child("comentarios").child(comentario.getId()).updateChildren(map, new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+
+                        adapter.removerComentario(posicaoComentario);
+                        adapter.addComentario(comentario, posicaoComentario);
+                    }
+                });
+
+
 
 
             }

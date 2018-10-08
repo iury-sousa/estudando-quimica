@@ -1,6 +1,9 @@
 package projetotcc.estudandoquimica.view.compartilhado;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -11,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import projetotcc.estudandoquimica.R;
+import projetotcc.estudandoquimica.VerificarConexaoInternet;
 
 public class EditarComentarioActivity extends AppCompatActivity {
 
@@ -21,7 +25,6 @@ public class EditarComentarioActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editar_comentario);
 
-
         EditText editText = findViewById(R.id.comentario);
         Bundle bundle = getIntent().getExtras();
 
@@ -31,7 +34,7 @@ public class EditarComentarioActivity extends AppCompatActivity {
         }
 
         editText.setText(texto);
-
+        editText.setSelection(editText.getText().length());
 
         Button cancel = findViewById(R.id.btn_cancel);
         Button atualizar = findViewById(R.id.btn_atualizar);
@@ -56,8 +59,14 @@ public class EditarComentarioActivity extends AppCompatActivity {
 
                     atualizar.setEnabled(false);
 
+                    atualizar.setBackgroundTintList(ColorStateList.valueOf(
+                            ContextCompat.getColor(getApplicationContext(), R.color.colorBtnAtualizar)));
+
                 }else{
                     atualizar.setEnabled(true);
+                    atualizar.setBackgroundTintList(ColorStateList.valueOf(
+                            ContextCompat.getColor(getApplicationContext(), R.color.colorButtonPrincipal)));
+
                 }
             }
 
@@ -71,10 +80,10 @@ public class EditarComentarioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                String texto = editText.getText().toString().trim();
+                    String texto = editText.getText().toString().trim();
 
                     Intent returnIntent = new Intent();
-                    returnIntent.putExtra("resultado",texto);
+                    returnIntent.putExtra("resultado", texto);
                     setResult(RESULT_OK, returnIntent);
 
                     finish();

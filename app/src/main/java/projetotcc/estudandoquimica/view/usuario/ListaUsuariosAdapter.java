@@ -28,6 +28,7 @@ public class ListaUsuariosAdapter extends RecyclerView.Adapter<ListaUsuariosAdap
     private Opcao opcao;
     private Context context;
     private static ClickAddListener clickAddListener;
+    private boolean exibirBotaoAdd = true;
 
     public enum Opcao{
 
@@ -58,6 +59,11 @@ public class ListaUsuariosAdapter extends RecyclerView.Adapter<ListaUsuariosAdap
 
     }
 
+    public void setExibirBotaoAdd(boolean exibirBotaoAdd){
+
+        this.exibirBotaoAdd = exibirBotaoAdd;
+    }
+
     @NonNull
     @Override
     public BindingHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -76,7 +82,7 @@ public class ListaUsuariosAdapter extends RecyclerView.Adapter<ListaUsuariosAdap
 
         ListaEstudanteViewModel model = new ListaEstudanteViewModel();
         model.setViewModel(filtroUsuarios.get(position));
-
+        model.visibilidadeBotaoAdd.set(exibirBotaoAdd ? View.VISIBLE : View.GONE);
 
         binding.setUsuario(model);
     }

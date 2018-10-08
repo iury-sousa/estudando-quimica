@@ -521,12 +521,12 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
                 case R.id.action_delete:
                     List<Integer> selectedItemPositions = adapter.getSelectedItems();
                     int currPos;
-                    String delete = null;
+
                     for (int i = selectedItemPositions.size() - 1; i >= 0; i--) {
                         currPos = selectedItemPositions.get(i);
                         Turma t = adapter.getTurma(currPos);
                         t.setNome("Teste Tudo");
-                        delete = viewModel.deletar(t);
+                        viewModel.deletar(t);
                         adapter.removerTurma(currPos);
 
                     }

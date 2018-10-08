@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,8 +23,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -41,11 +44,15 @@ import projetotcc.estudandoquimica.WrapContentLinearLayoutManager;
 import projetotcc.estudandoquimica.componentesPersonalizados.StatefulRecyclerView;
 import projetotcc.estudandoquimica.databinding.FragmentConteudoCompartilhadoBinding;
 import projetotcc.estudandoquimica.databinding.PublicacaoItemBinding;
+import projetotcc.estudandoquimica.model.Comentario;
 import projetotcc.estudandoquimica.model.Publicacao;
 import projetotcc.estudandoquimica.model.Usuario;
 import projetotcc.estudandoquimica.view.compartilhado.CadastrarPublicacaoActivity;
 import projetotcc.estudandoquimica.view.compartilhado.ComentariosActivity;
+import projetotcc.estudandoquimica.view.compartilhado.ConteudoItemActivity;
+import projetotcc.estudandoquimica.view.compartilhado.EditarComentarioActivity;
 import projetotcc.estudandoquimica.view.compartilhado.PublicacaoAdapter;
+import projetotcc.estudandoquimica.view.usuario.ListaUsuariosActivity;
 import projetotcc.estudandoquimica.viewmodel.PublicacaoViewModel;
 
 
@@ -53,7 +60,7 @@ import projetotcc.estudandoquimica.viewmodel.PublicacaoViewModel;
  * A simple {@link Fragment} subclass.
  */
 public class ConteudoCompartilhadoFragment extends Fragment
-        implements PublicacaoAdapter.BotoesClickListener {
+        implements PublicacaoAdapter.BotoesClickListener, PopupMenu.OnMenuItemClickListener {
 
     private PublicacaoAdapter adapter;
     private FragmentConteudoCompartilhadoBinding binding;
@@ -65,6 +72,9 @@ public class ConteudoCompartilhadoFragment extends Fragment
     private List<Publicacao> list;
     private WrapContentLinearLayoutManager wcl;
     private Parcelable listState;
+    private PopupMenu popup;
+    private Publicacao publicacao;
+    private int posicaoPublicacao;
 
     public ConteudoCompartilhadoFragment() {
     }
@@ -451,52 +461,17 @@ public class ConteudoCompartilhadoFragment extends Fragment
     @Override
     public void curtir(PublicacaoItemBinding binding, Publicacao publicacao, PublicacaoViewModel publicacaoViewModel) {
 
+    }
 
-//        binding.viewSwitcher.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                ViewSwitcher switcher = (ViewSwitcher) v;
-//                //switcher.setDisplayedChild(viewModel.curtiu.get());
-//                //viewModel.addCurtida();
-//                if(publicacaoViewModel.iconeCurtida.get().getConstantState().
-//                        equals(getActivity().getDrawable(R.drawable.ic_flask_vazio).getConstantState())){
-//
-//                    // switcher.findViewById(R.id.)
-//                    if(publicacaoViewModel.curtiu.get() == 0){
-//
-//                        publicacaoViewModel.setI(true);
-//
-//
-//                    }else {
-//
-//                        publicacaoViewModel.setI(false);
-//                    }
-//                    publicacaoViewModel.addCurtida();
-//                    switcher.showNext();
-//
-//
-//                } else {
-//
-//                    if(publicacaoViewModel.iconeCurtida.get().getConstantState().
-//                            equals(getActivity().getDrawable(R.drawable.ic_flask_vazio).getConstantState())){
-//
-//
-//                        publicacaoViewModel.setI(true);
-//
-//
-//                    }else {
-//
-//
-//                        publicacaoViewModel.setI(false);
-//                    }
-//
-//                    publicacaoViewModel.addCurtida();
-//                    switcher.showPrevious();
-//
-//                }
-//            }
-//        });
+    @Override
+    public void clickCurtidas(String idPublicacao) {
+
+        Intent it = new Intent(getActivity(), ListaUsuariosActivity.class);
+
+        it.putExtra("idPublicacao", idPublicacao);
+        it.putExtra("opcao", 1);
+
+        startActivity(it);
     }
 
     @Override
@@ -514,4 +489,114 @@ public class ConteudoCompartilhadoFragment extends Fragment
         startActivity(it);
     }
 
+    @Override
+    public void onClickPublicacao(Publicacao publicacao) {
+
+//       Intent it = new Intent(getActivity(), ConteudoItemActivity.class );
+//       it.putExtra("idPub", publicacao.getId());
+//
+//       startActivity(it);
+
+    }
+
+    @Override
+    public void onClickConfPublicacao(View v, Publicacao publicacao, int posicao) {
+
+        showMenu(v, publicacao, posicao);
+    }
+
+    public void showMenu(View v, Publicacao publicacao, int posicao) {
+
+        this.publicacao = publicacao;
+        this.posicaoPublicacao = posicao;
+
+        popup = new PopupMenu(getActivity(), v);
+
+        popup.setOnMenuItemClickListener(this);
+        popup.inflate(R.menu.menu_manipular_comentario);
+        popup.show();
+    }
+
+    private DatabaseReference reference;
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()){
+
+            case R.id.action_edit:
+
+                return true;
+
+            case R.id.action_delete:
+
+                if(!VerificarConexaoInternet.verificaConexao(getActivity())){
+
+                    VerificarConexaoInternet.getMensagem(binding.getRoot());
+                }else{
+
+                    reference = FirebaseDatabase.getInstance()
+                            .getReference("publicacoes/" + publicacao.getId());
+
+
+
+
+                    reference.removeValue(new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(@Nullable DatabaseError databaseError,
+                                               @NonNull DatabaseReference databaseReference) {
+
+                            reference = FirebaseDatabase.getInstance()
+                                    .getReference("publicacoes_curtida/" + publicacao.getId());
+
+                            reference.removeValue();
+
+                            reference = FirebaseDatabase.getInstance().getReference("turmas");
+
+                            reference.orderByChild("administradorTurma")
+                                    .equalTo(auth.getCurrentUser().getUid())
+                                    .addChildEventListener(new ChildEventListener() {
+
+                                @Override
+                                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                    dataSnapshot.child("listaPublicacoes").child(
+                                            publicacao.getId()).getRef().removeValue();
+
+                                }
+
+                                @Override
+                                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                }
+
+                                @Override
+                                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                                }
+
+                                @Override
+                                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
+                            adapter.remover(posicaoPublicacao);
+                        }
+                    });
+                }
+
+                return true;
+
+            case R.id.action_cancel:
+                popup.dismiss();
+                return true;
+
+            default:
+                return false;
+        }
+    }
 }

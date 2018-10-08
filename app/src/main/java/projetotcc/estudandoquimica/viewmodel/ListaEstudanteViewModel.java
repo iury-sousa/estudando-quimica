@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModel;
 import android.databinding.BindingAdapter;
 import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -20,16 +21,22 @@ public class ListaEstudanteViewModel extends ViewModel {
     public final ObservableField<String> nome = new ObservableField<>();
     public final ObservableField<String> email = new ObservableField<>();
     public final ObservableField<String> imageUrl = new ObservableField<>();
+    public final ObservableField<Integer> visibilidadeBotaoAdd = new ObservableField<>();
 
     private Usuario usuario;
 
-    private static final DatabaseReference usuarios =
+    private static final DatabaseReference estudantes =
             FirebaseDatabase.getInstance().getReference("estudantes");
 
-    private FirebaseQueryLiveData liveData = new FirebaseQueryLiveData(usuarios);
+    private static final DatabaseReference usuarios =
+            FirebaseDatabase.getInstance().getReference("usuarios");
+
+    private FirebaseQueryLiveData liveData = new FirebaseQueryLiveData(estudantes);
 
     public ListaEstudanteViewModel() {
+
         this.usuario = new Usuario();
+
     }
 
     public void setViewModel(Usuario usuario) {
@@ -48,5 +55,14 @@ public class ListaEstudanteViewModel extends ViewModel {
     public MutableLiveData<DataSnapshot> getDataSnapshotLiveData() {
         return liveData;
     }
+
+    @NonNull
+    public MutableLiveData<DataSnapshot> getDataSnapshotLiveDataEstudantes() {
+
+        liveData = new FirebaseQueryLiveData(usuarios);
+        return liveData;
+    }
+
+
 
 }

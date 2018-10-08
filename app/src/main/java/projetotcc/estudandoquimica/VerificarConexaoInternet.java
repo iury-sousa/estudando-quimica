@@ -2,6 +2,10 @@ package projetotcc.estudandoquimica;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.support.design.widget.Snackbar;
+import android.view.View;
+
+import static android.support.design.widget.Snackbar.make;
 
 public class VerificarConexaoInternet {
 
@@ -13,5 +17,11 @@ public class VerificarConexaoInternet {
                 && conectivtyManager.getActiveNetworkInfo().isAvailable()
                 && conectivtyManager.getActiveNetworkInfo().isConnected();
         return conectado;
+    }
+
+
+    public static void getMensagem(View view){
+        Snackbar snackbar = Snackbar.make(view, "Sem conexão com a internet!", Snackbar.LENGTH_SHORT);
+        snackbar.show();
     }
 }

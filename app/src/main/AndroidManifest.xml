@@ -103,10 +103,12 @@
         <activity
             android:name=".view.compartilhado.ComentariosActivity"
             android:windowSoftInputMode="adjustResize|stateVisible" />
-        <activity android:name=".view.compartilhado.EditarComentarioActivity"
+        <activity
+            android:name=".view.compartilhado.EditarComentarioActivity"
             android:excludeFromRecents="true"
             android:theme="@style/Theme.UserDialog"
-            android:windowSoftInputMode="stateAlwaysVisible"/>
+            android:windowSoftInputMode="stateAlwaysVisible" />
+        <activity android:name=".view.compartilhado.ConteudoItemActivity"></activity>
     </application>
 
 </manifest>

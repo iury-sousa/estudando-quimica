@@ -5,23 +5,18 @@
             name="publicacao"
             type="projetotcc.estudandoquimica.viewmodel.PublicacaoViewModel"
             />
-        <variable
-            name="callback"
-            type="projetotcc.estudandoquimica.interfaces.PublicacaoItemCallback"/>
+
     </data>
-    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/cardView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:contentPadding="2dp"
-        app:cardElevation="4dp"
-        android:layout_marginBottom="15dp">
+        android:background="#f7f7f7"
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#FFF"
             android:orientation="vertical">
             <RelativeLayout
                 android:id="@+id/conteudo"
@@ -51,7 +46,6 @@
                         android:text="@{publicacao.nomeUsuario}"
                         android:maxLines="2"
                         android:textSize="18sp"
-                        android:paddingEnd="24dp"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
 
                     <TextView
@@ -62,37 +56,29 @@
                         android:textColor="#7f7f7f"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
                 </LinearLayout>
-                    <ImageView
-                        android:id="@+id/conf"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_more_vert"
-                        android:visibility="@{publicacao.visibilidadeMenuAcoes}"
-                       android:layout_alignParentEnd="true"/>
-                    <TextView
-                        android:id="@+id/titulo"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:maxLength="100"
-                        android:textSize="14sp"
-                        android:layout_below="@+id/image_perfil"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                        android:textStyle="bold"
-                        android:text="@{publicacao.titulo}"
-                        android:textColor="#8c28ff"
-                        android:layout_marginTop="10dp"
-                        android:visibility="@{publicacao.visibilidadeTitulo}"
-                        />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@{publicacao.textoPublicacao}"
-                        android:textColor="#000"
-                        android:textSize="14sp"
-                        android:layout_marginTop="10dp"
-                        android:layout_below="@+id/titulo"
-                        android:maxLength="500"
-                        android:visibility="@{publicacao.visibilidadeTexto}"/>
+
+                <TextView
+                    android:id="@+id/titulo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:layout_below="@+id/image_perfil"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textStyle="bold"
+                    android:text="@{publicacao.titulo}"
+                    android:textColor="#8c28ff"
+                    android:layout_marginTop="10dp"
+                    android:visibility="@{publicacao.visibilidadeTitulo}"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{publicacao.textoPublicacao}"
+                    android:textColor="#000"
+                    android:textSize="14sp"
+                    android:layout_marginTop="10dp"
+                    android:layout_below="@+id/titulo"
+                    android:visibility="@{publicacao.visibilidadeTexto}"/>
 
 
             </RelativeLayout>
@@ -119,7 +105,7 @@
                     android:adjustViewBounds="true"
                     android:visibility="visible"
                     android:layout_below="@id/view"
-                     />
+                    />
             </RelativeLayout>
 
             <RelativeLayout
@@ -181,23 +167,16 @@
                         android:padding="12dp"
                         android:src="@drawable/ic_flask_vazio"
                         app:image="@{publicacao.iconeCurtida}"
-                       />
+                        />
                 </ViewSwitcher>
-                <ViewSwitcher
-                    android:id="@+id/viewSwitcherComentar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:inAnimation="@anim/zoom_in"
-                    android:outAnimation="@anim/zoom_out">
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_gravity="center"
-                        android:padding="12dp"
-                        android:id="@+id/btn_comentario"
-                        android:src="@drawable/ic_comment"/>
-                </ViewSwitcher>
+                <android.support.v7.widget.AppCompatImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="12dp"
+                    android:padding="12dp"
+                    android:id="@+id/btn_comentario"
+                    android:src="@drawable/ic_comment"/>
 
                 <android.support.v7.widget.AppCompatImageView
                     android:layout_width="30dp"
@@ -208,5 +187,5 @@
                     android:visibility="gone"/>
             </LinearLayout>
         </LinearLayout>
-    </android.support.v7.widget.CardView>
+    </android.support.v4.widget.NestedScrollView>
 </layout>

@@ -105,11 +105,7 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
                         PesquisarTurmaActivity.class), RESULT_TURMAS);
             }
         });
-
-
-
     }
-
 
     public void selecionarGaleria() {
         Intent abrirGaleria = new Intent(Intent.ACTION_GET_CONTENT);

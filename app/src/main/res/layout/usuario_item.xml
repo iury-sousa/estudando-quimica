@@ -28,6 +28,7 @@
                 android:src="@drawable/ic_add"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="10dp"
+                android:visibility="@{usuario.visibilidadeBotaoAdd}"
                 android:background="@drawable/borda"
                 android:backgroundTint="@color/colorButtonPrincipal"
 

@@ -51,6 +51,14 @@ public class PublicacaoAdapter extends StatefulRecyclerView.Adapter<PublicacaoAd
         notifyItemRangeChanged(0, lista_publicacao.size());
     }
 
+    public void remover(int posicao){
+
+        lista_publicacao.remove(posicao);
+
+        notifyItemRemoved(posicao);
+        notifyItemRangeRemoved(posicao, getItemCount());
+    }
+
     @Override
     public long getItemId(int position) {
         return position;
@@ -107,6 +115,9 @@ public class PublicacaoAdapter extends StatefulRecyclerView.Adapter<PublicacaoAd
 //                botoesClickListener.curtir(binding, lista_publicacao.get(position), publicacaoViewModel);
 //            }
 //        });
+
+        onBotaoComentarClicked(binding, position);
+
         binding.setPublicacao(publicacaoViewModel);
     }
 
@@ -172,6 +183,27 @@ public class PublicacaoAdapter extends StatefulRecyclerView.Adapter<PublicacaoAd
                 }
 
 
+            }
+        });
+    }
+
+    private void onBotaoComentarClicked(final PublicacaoItemBinding binding, int pos){
+
+        binding.viewSwitcherComentar.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                ViewSwitcher switcher = (ViewSwitcher) v;
+
+                //if (switcher.getDisplayedChild() == 0) {
+
+                    switcher.showNext();
+                botoesClickListener.comentar(lista_publicacao.get(pos));
+//
+//                } else {
+//
+//                    switcher.showPrevious();
+//                }
             }
         });
     }
@@ -278,11 +310,11 @@ public class PublicacaoAdapter extends StatefulRecyclerView.Adapter<PublicacaoAd
                 public void onClick(View v) {
 
                     botoesClickListener.curtir(binding, lista_publicacao.get(getAdapterPosition()), binding.getPublicacao());
-                    botoesClickListener.comentar(lista_publicacao.get(getAdapterPosition()));
+                    //botoesClickListener.comentar(lista_publicacao.get(getAdapterPosition()));
                 }
             });
 
-            binding.btnComentario.setOnClickListener(new View.OnClickListener() {
+            binding.viewSwitcherComentar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
@@ -296,14 +328,43 @@ public class PublicacaoAdapter extends StatefulRecyclerView.Adapter<PublicacaoAd
                     botoesClickListener.btnComentariosClick(lista_publicacao.get(getAdapterPosition()));
                 }
             });
+
+            binding.conteudo.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    botoesClickListener.onClickPublicacao(lista_publicacao.get(getAdapterPosition()));
+                }
+            });
+
+            binding.conf.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    botoesClickListener.onClickConfPublicacao(binding.conf,
+                            lista_publicacao.get(getAdapterPosition()), getAdapterPosition());
+
+                }
+            });
+
+            binding.qtdCurtidas.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    botoesClickListener.clickCurtidas(lista_publicacao.get(getAdapterPosition()).getId());
+                }
+            });
         }
+
 
     }
 
     public interface BotoesClickListener {
 
         void curtir(PublicacaoItemBinding binding, Publicacao publicacao, PublicacaoViewModel publicacaoViewModel);
+        void clickCurtidas(String idPublicacao);
         void comentar(Publicacao publicacao);
         void btnComentariosClick(Publicacao publicacao);
+        void onClickPublicacao(Publicacao publicacao);
+        void onClickConfPublicacao(View v, Publicacao publicacao, int posicao);
     }
 }

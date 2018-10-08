@@ -43,6 +43,14 @@ public class ComentarioAdapter extends RecyclerView.Adapter<ComentarioAdapter.Co
 
     }
 
+    public void addComentario(Comentario comentario, int posicao){
+
+        comentarios.add(posicao, comentario);
+        notifyItemInserted(posicao);
+        notifyItemRangeChanged(posicao, getItemCount());
+
+    }
+
     public void removerComentario(int position){
 
         comentarios.remove(position);
@@ -95,7 +103,7 @@ public class ComentarioAdapter extends RecyclerView.Adapter<ComentarioAdapter.Co
             this.binding.cardView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    clickComentarioListener.onPressComentario( v,
+                    clickComentarioListener.onPressComentario( binding.foto,
                             comentarios.get(getAdapterPosition()), getAdapterPosition());
                     return false;
                 }

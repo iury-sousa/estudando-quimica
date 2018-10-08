@@ -19,4 +19,5 @@
     <color name="colorActionMode">#650792</color>
     <color name="colorItemAtivado">#91b7ec</color>
     <color name="colorItemDesativado">#f7f4ff</color>
+    <color name="colorBtnAtualizar">#509d30fb</color>
 </resources>

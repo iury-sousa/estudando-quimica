@@ -42,6 +42,7 @@ import projetotcc.estudandoquimica.componentesPersonalizados.DividerItemDecorati
 import projetotcc.estudandoquimica.databinding.ActivityListaUsuariosBinding;
 import projetotcc.estudandoquimica.model.Usuario;
 import projetotcc.estudandoquimica.view.TurmaFragment;
+import projetotcc.estudandoquimica.viewmodel.ListaEstudanteViewModel;
 import projetotcc.estudandoquimica.viewmodel.ListaUsuarioViewModel;
 
 public class ListaUsuariosActivity extends AppCompatActivity implements SearchView.OnQueryTextListener,
@@ -52,7 +53,8 @@ public class ListaUsuariosActivity extends AppCompatActivity implements SearchVi
     private List<Usuario> list;
     private ListaUsuariosAdapter adapter;
     private String idTurma = "";
-    private ListaUsuarioViewModel viewModel;
+    private String idPublicacao = "";
+    private ListaEstudanteViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +70,14 @@ public class ListaUsuariosActivity extends AppCompatActivity implements SearchVi
         Bundle b = it.getExtras();
 
         if (b != null) {
-            idTurma = getIntent().getExtras().getString("idTurma");
+
+            if(getIntent().getExtras().getInt("opcao") == 1){
+
+                idPublicacao = getIntent().getExtras().getString("idPublicacao");
+            }else {
+                idTurma = getIntent().getExtras().getString("idTurma");
+            }
+
         }
 
         list = new ArrayList<>();
@@ -102,25 +111,37 @@ public class ListaUsuariosActivity extends AppCompatActivity implements SearchVi
         //DatabaseReference ref = FirebaseDatabase.getInstance().getReference("usuarios");
 
 
-        viewModel = ViewModelProviders.of(this).get(ListaUsuarioViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(ListaEstudanteViewModel.class);
         binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
 
-                updateUsuarios();
+                if(idPublicacao.equals("")){
+
+                    updateUsuarios();
+                }else{
+
+                    updateUsuariosCurtidas();
+                }
                 // list.addAll(adapter.get);
                 binding.swipeRefreshLayout.setRefreshing(false);
             }
         });
         binding.executePendingBindings();
-        updateUsuarios();
+
+        if(idPublicacao.equals("")){
+
+            updateUsuarios();
+        }else{
+
+            updateUsuariosCurtidas();
+        }
+
     }
 
-
-        private void updateUsuarios(){
-
-
-            viewModel.getDataSnapshotLiveData().observe(this, new Observer<DataSnapshot>() {
+    private void updateUsuarios(){
+            adapter.setExibirBotaoAdd(true);
+            viewModel.getDataSnapshotLiveDataEstudantes().observe(this, new Observer<DataSnapshot>() {
                 @Override
                 public void onChanged(@Nullable DataSnapshot dataSnapshot) {
                     List<Usuario> list = new ArrayList<>();
@@ -377,6 +398,242 @@ public class ListaUsuariosActivity extends AppCompatActivity implements SearchVi
 
     }
 
+    private void updateUsuariosCurtidas(){
+        adapter.setExibirBotaoAdd(false);
+        viewModel.getDataSnapshotLiveDataEstudantes().observe(this, new Observer<DataSnapshot>() {
+            @Override
+            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
+                List<Usuario> list = new ArrayList<>();
+//                List<String> ids = new ArrayList<>();
+                if(dataSnapshot.exists()){
+
+                    dataSnapshot.getRef().orderByChild("nome").addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            final int[] c = {0};
+
+                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("publicacoes_curtida/" + idPublicacao);
+                            String id = dataSnapshot.getKey();
+                            Usuario usuario = new Usuario(dataSnapshot.getKey(), null, null, null);
+
+//                            ids.add("");
+
+                            reference.child("listaCurtidas").addChildEventListener(new ChildEventListener() {
+                                @Override
+                                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                    if(dataSnapshot.exists()){
+
+                                        Log.i("TAG", id + "_" + dataSnapshot.getKey() + " " + String.valueOf(id.equals(dataSnapshot.getKey())));
+                                        // Log.i("TAG", "Not Existe " + id + "_" + dataSnapshot.getKey());
+
+                                        if(id.equals(dataSnapshot.getKey())) {
+                                            DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference("usuarios/" + id);
+
+                                            reference1.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                    usuario.setId(dataSnapshot.getKey());
+                                                    usuario.setEmail(dataSnapshot.child("email").getValue(String.class));
+                                                    usuario.setUrlFoto(dataSnapshot.child("urlFoto").getValue(String.class));
+                                                    usuario.setNome(dataSnapshot.child("nome").getValue(String.class));
+                                                    //adapter.add(usuario, adapter.getItemCount());
+                                                    adapter.notifyItemChanged(c[0]);
+
+                                                    c[0]++;
+
+//                                                    if (!ids.contains(usuario.getId()))
+                                                        list.add(usuario);
+
+//                                                    ids.add(usuario.getId());
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                }
+                                            });
+
+
+                                        }
+                                        else{
+//                                            ids.add(id);
+                                        }
+
+
+                                    }
+
+                                }
+
+                                @Override
+                                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                }
+
+                                @Override
+                                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                                }
+
+                                @Override
+                                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
+                            if(list.isEmpty()){
+
+                            }
+
+                            if(adapter.getItemCount() == 0){
+
+                                adapter.setUsuarios(list);
+                            }
+
+                        }
+
+                        @Override
+                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        }
+
+                        @Override
+                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                        }
+
+                        @Override
+                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
+
+
+
+            }
+        });
+
+
+//        ref.orderByChild("nome").addChildEventListener(new ChildEventListener() {
+//            @Override
+//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                List<Usuario> list = new ArrayList<>();
+//                final int[] c = {0};
+//                DatabaseReference reference = FirebaseDatabase.getInstance().getReference("estudantes/" + idTurma);
+//                String id = dataSnapshot.getKey();
+//                Usuario usuario = new Usuario(dataSnapshot.getKey(), null, null, null);
+//
+//                reference.addChildEventListener(new ChildEventListener() {
+//                    @Override
+//                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//                        if(dataSnapshot.exists()){
+//
+//                            Log.i("TAG", "Existe " + String.valueOf(id.equals(dataSnapshot.getKey())));
+//                            Log.i("TAG", "Not Existe " + id + "_" + dataSnapshot.getKey());
+//
+//                            DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference("usuarios/" + id);
+//
+//                            if(!id.equals(dataSnapshot.getKey())) {
+//                                reference1.addListenerForSingleValueEvent(new ValueEventListener() {
+//                                    @Override
+//                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                        usuario.setId(dataSnapshot.getKey());
+//                                        usuario.setEmail(dataSnapshot.child("email").getValue(String.class));
+//                                        usuario.setUrlFoto(dataSnapshot.child("urlFoto").getValue(String.class));
+//                                        usuario.setNome(dataSnapshot.child("nome").getValue(String.class));
+//                                        //adapter.add(usuario, adapter.getItemCount());
+//                                        adapter.notifyItemChanged(c[0]);
+//
+//                                        c[0]++;
+//
+//                                        list.add(usuario);
+//                                    }
+//
+//                                    @Override
+//                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                    }
+//                                });
+//                            }
+//
+//                        }
+//
+//                    }
+//
+//                    @Override
+//                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                    }
+//                });
+//                if(adapter.getItemCount() == 0){
+//                    adapter.setUsuarios(list);
+//                }
+//
+//                binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//                    @Override
+//                    public void onRefresh() {
+//                        adapter.setUsuarios(list);
+//                        // list.addAll(adapter.get);
+//                        binding.swipeRefreshLayout.setRefreshing(false);
+//                    }
+//                });
+//                binding.executePendingBindings();
+//            }
+//
+//            @Override
+//            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//            }
+//
+//            @Override
+//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+//
+//            }
+//
+//            @Override
+//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+
+
+
+    }
+
 //    private void whiteNotificationBar(View view) {
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 //            int flags = view.getSystemUiVisibility();
@@ -461,10 +718,15 @@ public class ListaUsuariosActivity extends AppCompatActivity implements SearchVi
                 @Override
                 public void onSuccess(Void aVoid) {
 
+                    adapter.removerItem(position);
+
+                    DatabaseReference reference = FirebaseDatabase.getInstance()
+                            .getReference("estudante_turmas");
+
+                    reference.child(usuario.getId()).child(idTurma).setValue(true);
+
                     Toast.makeText(ListaUsuariosActivity.this,
                             "Aluno adicionado com sucesso!", Toast.LENGTH_SHORT).show();
-
-                    adapter.removerItem(position);
                 }
             });
         }

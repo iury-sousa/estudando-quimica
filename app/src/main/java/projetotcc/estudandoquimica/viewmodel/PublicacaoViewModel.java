@@ -26,6 +26,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.SuccessContinuation;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -94,6 +95,7 @@ public class PublicacaoViewModel extends ViewModel {
                 context.getDrawable(R.drawable.ic_flask_cheio)
         );
         this.publicacao = publicacao;
+
         nomeUsuario.set(publicacao.getAdmin().getNome());
         fotoUsuario.set(publicacao.getAdmin().getUrlFoto());
         titulo.set(publicacao.getTitulo());
@@ -296,9 +298,12 @@ public class PublicacaoViewModel extends ViewModel {
                 View.GONE : View.VISIBLE;
     }
 
-    public int getHeightEditTextTextoPublicacao(){
 
-        return TextUtils.isEmpty(imagemUrl.get().trim()) ? 300 : ViewGroup.LayoutParams.WRAP_CONTENT;
+    public int getVisibilidadeMenuAcoes(){
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        return user.getUid().equals(publicacao.getAdmin().getId()) ? View.VISIBLE : View.GONE;
     }
 
 

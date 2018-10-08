@@ -151,6 +151,7 @@ public class ListUsuariosFragment extends Fragment implements SearchView.OnQuery
     }
 
     private void updateUsuarios(){
+        adapter.setExibirBotaoAdd(false);
         viewModel.getDataSnapshotLiveData().observe(this, new Observer<DataSnapshot>() {
             @Override
             public void onChanged(@Nullable DataSnapshot dataSnapshot) {
