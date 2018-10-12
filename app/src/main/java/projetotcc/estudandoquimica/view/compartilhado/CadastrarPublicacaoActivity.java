@@ -11,6 +11,7 @@ import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -36,14 +37,23 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -52,8 +62,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
+import projetotcc.estudandoquimica.MyFirebaseMessagingService;
 import projetotcc.estudandoquimica.R;
 import projetotcc.estudandoquimica.UploadFiles;
 import projetotcc.estudandoquimica.componentesPersonalizados.DividerItemDecoration;
@@ -75,6 +87,8 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
     private ArrayList<String> idTurmas;
     private ArrayList<String> nomeTurmas;
     private static final int RESULT_TURMAS = 2;
+    private Publicacao publicacao;
+    FirebaseAuth auth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,13 +96,30 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_cadastrar_publicacao);
         idTurmas = new ArrayList<>();
+        getSupportActionBar().setTitle("Criar publicação");
+
+        Bundle b = getIntent().getExtras();
+
+
+        if (b != null) {
+
+            publicacao = (Publicacao) getIntent().getExtras().getParcelable("pub");
+            publicacao.setAdmin(getIntent().getExtras().getParcelable("administrador"));
+            getSupportActionBar().setTitle("Alterar publicação");
+
+        }
 
         viewModel = ViewModelProviders.of(this).get(PublicacaoViewModel.class);
         binding.setPub(viewModel);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        getSupportActionBar().setTitle("Criar publicação");
+        if (publicacao != null) {
+
+            viewModel.setPublicacao(publicacao, getApplicationContext());
+
+        }
+
 
         binding.btnImagem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,9 +131,12 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
         binding.btnAddTurma.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
                 startActivityForResult(new Intent(
                         CadastrarPublicacaoActivity.this,
                         PesquisarTurmaActivity.class), RESULT_TURMAS);
+
             }
         });
     }
@@ -155,7 +189,7 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
                     dialog.show();
                 } else {
 
-                    inserir(bitmap);
+                    notificarUsuarios(inserir(bitmap));
                 }
             }
 
@@ -176,7 +210,7 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
 
             inputStream = stream;
             final ImageView imageView = binding.imagemConteudo;
-            viewModel.imagemUrl.set("true");
+           // viewModel.imagemUrl.set();
             imageView.setVisibility(View.VISIBLE);
             imageView.setImageBitmap(bitmap);
 //            UploadFiles f = new UploadFiles(CadastrarPublicacaoActivity.this);
@@ -250,23 +284,23 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
 //        }
 //    }
 
-    public void inserir(Bitmap bitmap) {
+    public Publicacao inserir(Bitmap bitmap) {
 
         Publicacao publicacao = new Publicacao();
 
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
         Usuario usuario = new Usuario();
         usuario.setId(auth.getCurrentUser().getUid());
-        @SuppressLint
-                ("SimpleDateFormat") DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        Date date = new Date();
-        String strDate = dateFormat.format(date);
+        usuario.setNome(auth.getCurrentUser().getDisplayName());
+        usuario.setUrlFoto(auth.getCurrentUser().getPhotoUrl().toString());
+//        @SuppressLint
+//                ("SimpleDateFormat") DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+//        Date date = new Date();
+//        String strDate = dateFormat.format(date);
 
         publicacao.setAdmin(usuario);
         publicacao.setTitulo(viewModel.titulo.get());
         publicacao.setTextoPublicacao(viewModel.textoPublicacao.get());
-        publicacao.setDataPublicacao(strDate);
 
         List<Turma> turmas = new ArrayList<>();
 
@@ -323,6 +357,31 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
 
             }
         });
+        return publicacao;
+    }
+
+    public void alterar() {
+
+        publicacao.setTitulo(viewModel.titulo.get());
+        publicacao.setTextoPublicacao(viewModel.textoPublicacao.get());
+
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("titulo", publicacao.getTitulo());
+        result.put("textoPublicacao", publicacao.getTextoPublicacao());
+
+
+        viewModel.getPublicacaoRef().child(publicacao.getId()).updateChildren(result, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                if (bitmap == null) {
+                    onBackPressed();
+                }
+                UploadFiles f = new UploadFiles(CadastrarPublicacaoActivity.this);
+
+                f.upload(bitmap, "publicacoes/" + auth.getCurrentUser().getUid()
+                        + "/" + databaseReference.getKey() + "/", databaseReference);
+            }
+        });
 
     }
 
@@ -351,9 +410,15 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
 
             case R.id.action_publicacao:
 
-                if (idTurmas.size() > 0) {
+                if(publicacao != null){
 
-                    inserir(bitmap);
+                    alterar();
+
+
+                }else if(idTurmas.size() > 0) {
+
+
+                    notificarUsuarios(inserir(bitmap));
 //                    Intent it = new Intent(
 //                            CadastrarPublicacaoActivity.this,
 //                            PesquisarTurmaActivity.class);
@@ -377,6 +442,69 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
                 return false;
         }
 
+    }
+
+    private final String SENDER_ID = "xxxxxxxxxx";
+    private Random random = new Random();
+
+    private void notificarUsuarios(Publicacao publicacao){
+
+        String[] bodyNotification = new String[]{ publicacao.getAdmin().getNome()};
+        new NotificationAsync().execute(
+                publicacao,
+                "Publicou"
+        );
+    }
+
+
+    private class NotificationAsync extends AsyncTask<Object, Void, Void>{
+
+        @Override
+        protected Void doInBackground(Object... voids) {
+
+            try {
+
+                Publicacao p = (Publicacao) voids[0];
+
+                URL obj = new URL("https://fcm.googleapis.com/fcm/send");
+                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+                con.setRequestMethod("POST");
+                con.setRequestProperty("Authorization", "key=AIzaSyCIBkcjl_XsELe_CeVI-vbWO20ogOp25OY");
+                con.setRequestProperty("Content-Type", "application/json");
+
+
+                JSONObject notificacao = new JSONObject();
+                notificacao.put("title", "Nova publicação disponível" );
+                notificacao.put("body", p.getTextoPublicacao());
+                notificacao.put("sound", "default");
+
+                JSONObject data = new JSONObject();
+                data.put("imagem", "testando");
+                data.put("foto", p.getAdmin().getUrlFoto());
+
+                JSONObject object = new JSONObject();
+                object.put("to", "/topics/Iury");
+                object.put("collapse_key", "type_a");
+                object.put("notification", notificacao);
+                object.put("data", data);
+
+                con.setDoOutput(true);
+
+                OutputStreamWriter os = new OutputStreamWriter(con.getOutputStream());
+                os.write(object.toString());
+                os.flush();
+                os.close();
+                int responseCode = con.getResponseCode();
+
+            }catch (Exception e){
+
+                e.printStackTrace();
+                //Toast.makeText(CadastrarPublicacaoActivity.this, "Falha" + e.getMessage() + e.getClass(), Toast.LENGTH_SHORT).show();
+            }
+
+            return null;
+        }
     }
 
 }

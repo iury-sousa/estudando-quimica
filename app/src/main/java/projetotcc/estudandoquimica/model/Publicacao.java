@@ -62,6 +62,7 @@ public class Publicacao implements Parcelable{
         numComentarios = in.readInt();
         curtiu = in.readByte() != 0;
         publicacaoList = in.createTypedArrayList(Publicacao.CREATOR);
+
     }
 
     public static final Creator<Publicacao> CREATOR = new Creator<Publicacao>() {

@@ -1,8 +1,13 @@
 package projetotcc.estudandoquimica;
 
+import android.app.DownloadManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.arch.lifecycle.LiveData;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.ColorRes;
@@ -29,12 +34,16 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.Response;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -42,7 +51,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,6 +99,7 @@ public class MainActivity extends AppCompatActivity
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
         auth = FirebaseAuth.getInstance();
+
 
 //        UsuarioRepositorio usuarioRepositorio = new UsuarioRepositorio(getApplication());
 //        LiveData<List<UsuarioEntity>> usuarios = usuarioRepositorio.getAll();
@@ -143,8 +159,8 @@ public class MainActivity extends AppCompatActivity
         fotoPerfil.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent it = new Intent(getApplicationContext(), ProfessorAlunoActivity.class);
-//                startActivity(it);
+                Intent it = new Intent(getApplicationContext(), HomeActivity.class);
+                startActivity(it);
             }
         });
 
@@ -205,8 +221,52 @@ public class MainActivity extends AppCompatActivity
 //        });
 
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Create channel to show notifications.
+            String channelId  = getString(R.string.default_notification_channel_id);
+            String channelName = "Iury";
+            NotificationManager notificationManager =
+                    getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(new NotificationChannel(channelId,
+                    channelName, NotificationManager.IMPORTANCE_LOW));
+        }
 
+//        if (getIntent().getExtras() != null) {
+//            for (String key : getIntent().getExtras().keySet()) {
+//                Object value = getIntent().getExtras().get(key);
+//                Log.i("TAG", "Key: " + key + " Value: " + value);
+//            }
+//        }
 
+        if (getIntent().getExtras() != null) {
+
+            for (String key : getIntent().getExtras().keySet()) {
+                String value = getIntent().getExtras().getString(key);
+
+                if (key.equals("AnotherActivity") && value.equals("True")) {
+                    Intent intent = new Intent(this, CadastrarPublicacaoActivity.class);
+                    intent.putExtra("value", value);
+                    startActivity(intent);
+                    finish();
+                }
+
+            }
+        }
+
+        //FirebaseMessaging.getInstance().subscribeToTopic("Iury");
+        //MessagesClientFCMServer m = new MessagesClientFCMServer();
+//        FirebaseMessaging.getInstance().subscribeToTopic("novo")
+//                .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<Void> task) {
+//                        String msg = "Ola Iury";
+//                        if (!task.isSuccessful()) {
+//                            msg = "Falha";
+//                        }
+//                        Log.d("TAG", msg);
+//                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+//                    }
+//                });
 
     }
 
@@ -353,5 +413,6 @@ public class MainActivity extends AppCompatActivity
 
 
     }
+
 
 }

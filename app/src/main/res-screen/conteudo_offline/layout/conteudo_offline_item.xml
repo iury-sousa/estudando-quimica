@@ -6,23 +6,25 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
+    app:cardCornerRadius="6dp"
     app:cardUseCompatPadding="true">
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-
-        <LinearLayout
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_tubo2"
+        >
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="vertical"
+            android:background="@drawable/bgrect"
             android:padding="20dp">
             <TextView
                 android:id="@+id/id_card"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
                 android:visibility="gone"/>
 
             <TextView
@@ -30,29 +32,46 @@
                 style="@style/TextAppearance.AppCompat.Title"
                 android:maxLength="25"
                 android:gravity="center"
-                android:text="Titulo"
+                android:layout_centerHorizontal="true"
+                android:text="@string/title_1"
+                android:layout_below="@+id/id_card"
+                android:shadowColor="#000"
+                android:shadowDy="5"
+                android:shadowDx="2"
+                android:shadowRadius="10"
                 android:textAlignment="center"
+                android:textColor="#FFF"
                 android:layout_width="wrap_content"
-                android:layout_height="50dp"/>
+                android:layout_height="wrap_content"/>
 
             <TextView
                 android:id="@+id/contentTextView"
-                android:text="Descrição do Titulo"
+                android:text="@string/text_1"
+                android:gravity="center"
                 style="@style/TextAppearance.AppCompat.Body1"
+                android:layout_below="@+id/titleTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
+                android:textColor="#FFF"
+                android:shadowColor="#000"
+                android:shadowDy="2"
+                android:shadowDx="2"
+                android:shadowRadius="2"
+                android:layout_centerHorizontal="true"
                 android:maxLines="7"
                 android:maxHeight="117dp"/>
 
             <Button
                 style="@style/ButtonCard"
+                android:layout_alignParentBottom="true"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="36dp"
                 android:layout_marginTop="10dp"
+                android:background="#a236ff"
                 android:text="Estudar"
                 android:id="@+id/botaoConteudo"/>
-        </LinearLayout>
+        </RelativeLayout>
 
         <ImageView
             android:layout_width="wrap_content"

@@ -60,6 +60,7 @@ import net.danlew.android.joda.JodaTimeAndroid;
 import java.util.ArrayList;
 import java.util.List;
 
+import projetotcc.estudandoquimica.HomeActivity;
 import projetotcc.estudandoquimica.MainActivity;
 import projetotcc.estudandoquimica.R;
 import projetotcc.estudandoquimica.VerificarConexaoInternet;
@@ -499,7 +500,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     private void callMainActivity(){
-        Intent intent = new Intent( this, MainActivity.class );
+        Intent intent = new Intent( this, HomeActivity.class );
         startActivity(intent);
         finish();
     }

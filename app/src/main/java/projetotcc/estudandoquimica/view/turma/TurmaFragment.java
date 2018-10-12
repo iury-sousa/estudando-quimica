@@ -141,9 +141,9 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
         auth = FirebaseAuth.getInstance();
 
 
-        MainActivity activity = (MainActivity) getActivity();
-
-        activity.getSupportActionBar().setTitle("Turmas");
+//        MainActivity activity = (MainActivity) getActivity();
+//
+//        activity.getSupportActionBar().setTitle("Turmas");
 
         fab = binding.fab;
         fab.setOnClickListener(new View.OnClickListener() {
@@ -397,7 +397,6 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
             }
         });
     }
-
 
     public void DialogCadastrarTurma(Turma turma) {
 

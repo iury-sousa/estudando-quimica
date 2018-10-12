@@ -28,6 +28,7 @@ import projetotcc.estudandoquimica.MainActivity;
 import projetotcc.estudandoquimica.R;
 import projetotcc.estudandoquimica.view.compartilhado.CadastrarPublicacaoActivity;
 import projetotcc.estudandoquimica.view.offline.ConteudoOfflineFragment;
+import projetotcc.estudandoquimica.view.turma.TurmaFragment;
 
 public class HomeFragment extends Fragment{
 
@@ -61,13 +62,17 @@ public class HomeFragment extends Fragment{
         params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP);
         tabLayout.setLayoutParams(params);
         ViewPager viewPager = view.findViewById(R.id.pagina);
-        viewPager.setOffscreenPageLimit(3);
+        viewPager.setOffscreenPageLimit(4);
 
         tabLayout.setupWithViewPager(viewPager);
+
         viewPager.setAdapter(tabsAdapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
-
+        tabLayout.getTabAt(0).setIcon(R.drawable.ic_home);
+        tabLayout.getTabAt(1).setIcon(R.drawable.ic_school);
+        tabLayout.getTabAt(2).setIcon(R.drawable.ic_book);
+        tabLayout.getTabAt(3).setIcon(R.drawable.ic_book);
 
         MainActivity activity = (MainActivity) getActivity();
         activity.getSupportActionBar().setTitle(getString(R.string.app_name));
@@ -82,6 +87,10 @@ public class HomeFragment extends Fragment{
                     activity.getSupportActionBar().show();
 
                 }else if(tab.getPosition() == 1){
+                    activity.getSupportActionBar().setTitle("Turmas");
+                    activity.getSupportActionBar().show();
+
+                }else if(tab.getPosition() == 2){
                     activity.getSupportActionBar().setTitle("Conteúdo offline");
                     activity.getSupportActionBar().show();
 
@@ -113,15 +122,12 @@ public class HomeFragment extends Fragment{
         appBar.removeView(tabLayout);
     }
 
-    private void setIconsTabLayout(){
-        Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.ic_book);
-    }
 
 }
 
  class TabsAdapter extends FragmentStatePagerAdapter {
 
-    private String[] titles = new String[]{"Conteúdos", "Estudos", "Quiz"};
+    private String[] titles = new String[]{"Conteúdos", "Estudos", "Quiz", "Turmas"};
     private int tabCount = 3;
 
     public TabsAdapter(FragmentManager fm) {
@@ -131,7 +137,7 @@ public class HomeFragment extends Fragment{
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return titles[position];
+        return null; //titles[position];
     }
 
     @Override
@@ -143,9 +149,13 @@ public class HomeFragment extends Fragment{
                 return new ConteudoCompartilhadoFragment();
 
             case 1:
-                return new ConteudoOfflineFragment();
+                return new TurmaFragment();
+
 
             case 2:
+                return new ConteudoOfflineFragment();
+
+            case 3:
                 return new QuizFragment();
 
             default:
@@ -156,6 +166,6 @@ public class HomeFragment extends Fragment{
 
     @Override
     public int getCount() {
-        return 3;
+        return 4;
     }
 }

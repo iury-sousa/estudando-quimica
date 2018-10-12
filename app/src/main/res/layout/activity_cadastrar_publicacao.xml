@@ -57,7 +57,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:maxHeight="300dp"
-                        android:textSize="18sp"
+                        android:textSize="16sp"
                         android:paddingEnd="16dp"
                         android:paddingStart="16dp"
                         android:paddingTop="10dp"
@@ -93,7 +93,9 @@
                             android:layout_marginTop="1dp"
                             android:adjustViewBounds="true"
                             android:maxHeight="400dp"
-                            android:visibility="visible" />
+                            android:visibility="visible"
+                            app:image="@{pub.imagemUrl}"
+                            />
                             <!--android:src="@drawable/imagem_teste"-->
                             <!--app:image="@{pub.imagemUrl}"-->
 
@@ -111,9 +113,9 @@
             android:orientation="vertical">
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="4dp"
                 android:layout_gravity="top"
-                android:background="#afafaf" />
+                android:background="@drawable/sombra" />
             <LinearLayout
                 android:id="@+id/btn_imagem"
                 android:layout_width="match_parent"

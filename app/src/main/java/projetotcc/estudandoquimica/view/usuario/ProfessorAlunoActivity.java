@@ -68,7 +68,6 @@ public class ProfessorAlunoActivity extends AppCompatActivity implements View.On
 
         textView.setOnClickListener(this);
 
-
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -146,6 +145,8 @@ public class ProfessorAlunoActivity extends AppCompatActivity implements View.On
                 DatabaseReference ref2 = FirebaseDatabase
                         .getInstance().getReference("usuarios/" + auth.getCurrentUser().getUid());
 
+
+
                 ref2.child("professor").setValue(ativo);
 
                 Intent it = new Intent(this, MainActivity.class);
@@ -158,7 +159,8 @@ public class ProfessorAlunoActivity extends AppCompatActivity implements View.On
 
     }
 
-//    @SuppressLint("ClickableViewAccessibility")
+
+    //    @SuppressLint("ClickableViewAccessibility")
 //    @Override
 //    public boolean onTouch(View v, MotionEvent event)
 //    {

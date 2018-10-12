@@ -75,6 +75,7 @@ public class ConteudoCompartilhadoFragment extends Fragment
     private PopupMenu popup;
     private Publicacao publicacao;
     private int posicaoPublicacao;
+    Usuario usuario;
 
     public ConteudoCompartilhadoFragment() {
     }
@@ -163,6 +164,23 @@ public class ConteudoCompartilhadoFragment extends Fragment
             public void onRefresh() {
                 carregarPublicacoes(viewModel);
                 binding.swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
+        DatabaseReference ref = FirebaseDatabase.getInstance()
+                .getReference("usuarios/" + auth.getCurrentUser().getUid());
+
+        usuario = new Usuario();
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                usuario.setProfessor(dataSnapshot.child("professor").getValue(Boolean.class));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
 
@@ -364,6 +382,107 @@ public class ConteudoCompartilhadoFragment extends Fragment
         return lista;
     }
 
+    public List<Publicacao> carregarTodos(DataSnapshot dataSnapshot, List<Publicacao> lista, int[] c){
+
+        DatabaseReference reference = FirebaseDatabase.getInstance()
+                .getReference("estudante_turmas/" + auth.getCurrentUser().getUid());
+
+        reference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+
+                DatabaseReference ref = FirebaseDatabase.getInstance()
+                        .getReference("turmas/" + dataSnapshot.getKey() + "/listaPublicacoes");
+
+                ref.limitToFirst(5).addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot1, @Nullable String s) {
+                        String id = dataSnapshot1.getKey();
+
+
+                        dataSnapshot.getRef()
+                                .orderByKey()
+                                .equalTo(id).addChildEventListener(new ChildEventListener() {
+                            @Override
+                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                        dataSnapshot.getRef().equalTo(
+//                                String.valueOf(dataSnapshot.child("timestamp").getValue(Long.class))
+//                                        + "_" + id).limitToFirst(10);
+
+                                lista.add(getPublicacao(dataSnapshot, c));
+                            }
+
+                            @Override
+                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            }
+
+                            @Override
+                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                            }
+
+                            @Override
+                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+        return lista;
+    }
+
     public void carregarPublicacoes(PublicacaoViewModel viewModel) {
 
         if (!VerificarConexaoInternet.verificaConexao(getContext())) {
@@ -524,6 +643,12 @@ public class ConteudoCompartilhadoFragment extends Fragment
 
             case R.id.action_edit:
 
+                Intent it = new Intent(getActivity(), CadastrarPublicacaoActivity.class);
+
+                it.putExtra("pub", publicacao);
+                it.putExtra("administrador", publicacao.getAdmin());
+                startActivity(it);
+
                 return true;
 
             case R.id.action_delete:
@@ -535,9 +660,6 @@ public class ConteudoCompartilhadoFragment extends Fragment
 
                     reference = FirebaseDatabase.getInstance()
                             .getReference("publicacoes/" + publicacao.getId());
-
-
-
 
                     reference.removeValue(new DatabaseReference.CompletionListener() {
                         @Override
@@ -558,8 +680,7 @@ public class ConteudoCompartilhadoFragment extends Fragment
                                 @Override
                                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                                    dataSnapshot.child("listaPublicacoes").child(
-                                            publicacao.getId()).getRef().removeValue();
+                                    dataSnapshot.child("listaPublicacoes/" + publicacao.getId()).getRef().removeValue();
 
                                 }
 

@@ -25,6 +25,12 @@ public class CardPagerAdapter extends PagerAdapter implements CardAdapter, Butto
     private List<CardItem> cardItems;
     private float mBaseElevation;
     private ListaAssuntoActivity listaAssuntoActivity;
+    private ClickListener clickListener;
+
+    public void setClickListener(ClickListener clickListener){
+
+        this.clickListener = clickListener;
+    }
 
     public CardPagerAdapter(ListaAssuntoActivity listaAssuntoActivity) {
         this.listaAssuntoActivity = listaAssuntoActivity;
@@ -41,11 +47,10 @@ public class CardPagerAdapter extends PagerAdapter implements CardAdapter, Butto
 
         TextView tituloTextView = (TextView) view.findViewById(R.id.titleTextView);
         TextView contentTextView = (TextView) view.findViewById(R.id.contentTextView);
-        TextView textView1 = view.findViewById(R.id.id_card);
 
         tituloTextView.setText(item.getTitle());
         contentTextView.setText(item.getText());
-        textView1.setText(item.getId());
+
     }
 
     @NonNull
@@ -63,8 +68,16 @@ public class CardPagerAdapter extends PagerAdapter implements CardAdapter, Butto
 
         cardView.setMaxCardElevation(mBaseElevation * MAX_ELEVATION_FACTOR);
         cardViews.set(position, cardView);
+
         Button botaoCardView = view.findViewById(R.id.botaoConteudo);
-        botaoCardView.setOnClickListener(this);
+
+
+        botaoCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickListener.onEstudarClick(cardItems.get(position));
+            }
+        });
 
         return view;
 
@@ -103,22 +116,27 @@ public class CardPagerAdapter extends PagerAdapter implements CardAdapter, Butto
 
         CardView cardView = getCardViewAt(listaAssuntoActivity.getViewPager().getCurrentItem());
 
-        ConteudoOffline conteudoOffline = new ConteudoOffline();
-
-
-
-        TextView titulo = cardView.findViewById(R.id.titleTextView);
-        TextView assunto = cardView.findViewById(R.id.contentTextView);
-        TextView id = cardView.findViewById(R.id.id_card);
-
-        conteudoOffline.setAssunto(assunto.getText().toString());
-        conteudoOffline.setTitulo(titulo.getText().toString());
-        conteudoOffline.setId(Integer.parseInt(id.getText().toString()));
+//        ConteudoOffline conteudoOffline = new ConteudoOffline();
+//
+//
+//
+//        TextView titulo = cardView.findViewById(R.id.titleTextView);
+//        TextView assunto = cardView.findViewById(R.id.contentTextView);
+//        TextView id = cardView.findViewById(R.id.id_card);
+//
+//        conteudoOffline.setAssunto(assunto.getText().toString());
+//        conteudoOffline.setTitulo(titulo.getText().toString());
+//        conteudoOffline.setId(Integer.parseInt(id.getText().toString()));
 
 
         Intent it = new Intent(listaAssuntoActivity.getApplicationContext(), ExibirConteudoActivity.class);
-        it.putExtra("conteudo", conteudoOffline);
+//        it.putExtra("conteudo", conteudoOffline);
         listaAssuntoActivity.startActivity(it);
+    }
+
+    public interface ClickListener{
+
+        void onEstudarClick(CardItem item);
     }
 
 }

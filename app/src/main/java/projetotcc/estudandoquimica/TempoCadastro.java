@@ -61,7 +61,7 @@ public class TempoCadastro {
 
         }else if(minutos >= 0 && minutos <= 59){
 
-            tempo = minutos + "min";
+            tempo = minutos + " min";
 
         }else if(horas >= 1 && horas < 24){
 
@@ -73,7 +73,7 @@ public class TempoCadastro {
 
         }else if(semanas >= 1 && semanas < 5){
 
-            tempo = semanas + "sem";
+            tempo = semanas + " sem";
 
         }else if(meses >= 1 && meses <= 12){
 

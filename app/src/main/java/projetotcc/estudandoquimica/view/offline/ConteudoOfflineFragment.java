@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import projetotcc.estudandoquimica.componentesPersonalizados.CircleProgressBar;
 import projetotcc.estudandoquimica.R;
 import projetotcc.estudandoquimica.view.offline.ViewPagerCard.CardItem;
+import projetotcc.estudandoquimica.view.offline.ViewPagerCard.CardPagerAdapter;
 
 
 /**
@@ -46,6 +48,23 @@ public class ConteudoOfflineFragment extends Fragment {
 
                 Intent it = new Intent(getContext(), ListaAssuntoActivity.class);
                 it.putParcelableArrayListExtra("cardItems", cardItems);
+                it.putExtra("titulo", "Básico");
+                startActivity(it);
+            }
+        });
+
+        LinearLayout quiOrganica = view.findViewById(R.id.quimica_organica);
+        quiOrganica.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                ArrayList<CardItem> cardItems = new ArrayList<>();
+                cardItems.add(new CardItem(1,"Química Orgânica", "A química orgânica é uma subdivisão da química que estuda os compostos carbônicos e compostos orgânicos."));
+                cardItems.add(new CardItem(2, "Funções e nomenclatura", "As funções orgânicas são caracterizadas por um grupo funcional, que confere características e nomenclaturas especificas."));
+
+                Intent it = new Intent(getContext(), ListaAssuntoActivity.class);
+                it.putParcelableArrayListExtra("cardItems", cardItems);
+                it.putExtra("titulo", "Química Orgânica");
                 startActivity(it);
             }
         });
@@ -54,13 +73,11 @@ public class ConteudoOfflineFragment extends Fragment {
         final CircleProgressBar progressBar2 = view.findViewById(R.id.processo_titulo2);
         final CircleProgressBar progressBar3 = view.findViewById(R.id.processo_titulo3);
 
-        progressBar.setProgress(95);
-        progressBar2.setProgress(45);
-        progressBar3.setProgress(75);
+        progressBar.setProgress(100);
+        progressBar2.setProgress(100);
+        progressBar3.setProgress(100);
         setHasOptionsMenu(false);
        return view;
     }
-
-
 
 }

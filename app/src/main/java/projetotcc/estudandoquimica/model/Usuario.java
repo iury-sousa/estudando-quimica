@@ -1,6 +1,8 @@
 package projetotcc.estudandoquimica.model;
 
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.TextUtils;
 
 import com.google.firebase.database.DatabaseReference;
@@ -11,7 +13,7 @@ import java.util.Date;
 
 import projetotcc.estudandoquimica.view.usuario.LibraryClass;
 
-public class Usuario {
+public class Usuario implements Parcelable{
 
     public static String PROVIDER = "projetotcc.estudandoquimica.model.Usuario.PROVIDER";
 
@@ -64,6 +66,29 @@ public class Usuario {
         this.sexo = sexo;
         this.urlFoto = urlFoto;
     }
+
+    protected Usuario(Parcel in) {
+        id = in.readString();
+        nome = in.readString();
+        email = in.readString();
+        senha = in.readString();
+        professor = in.readByte() != 0;
+        celular = in.readString();
+        sexo = in.readByte() != 0;
+        urlFoto = in.readString();
+    }
+
+    public static final Creator<Usuario> CREATOR = new Creator<Usuario>() {
+        @Override
+        public Usuario createFromParcel(Parcel in) {
+            return new Usuario(in);
+        }
+
+        @Override
+        public Usuario[] newArray(int size) {
+            return new Usuario[size];
+        }
+    };
 
     @Exclude
     public String getId() {
@@ -179,4 +204,20 @@ public class Usuario {
     }
 
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(nome);
+        dest.writeString(email);
+        dest.writeString(senha);
+        dest.writeByte((byte) (professor ? 1 : 0));
+        dest.writeString(celular);
+        dest.writeByte((byte) (sexo ? 1 : 0));
+        dest.writeString(urlFoto);
+    }
 }

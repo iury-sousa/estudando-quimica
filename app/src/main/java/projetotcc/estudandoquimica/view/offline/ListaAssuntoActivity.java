@@ -1,5 +1,6 @@
 package projetotcc.estudandoquimica.view.offline;
 
+import android.content.Intent;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,13 +15,13 @@ import projetotcc.estudandoquimica.view.offline.ViewPagerCard.CardPagerAdapter;
 import projetotcc.estudandoquimica.view.offline.ViewPagerCard.ShandowTransformer;
 
 
-public class ListaAssuntoActivity extends AppCompatActivity{
+public class ListaAssuntoActivity extends AppCompatActivity implements CardPagerAdapter.ClickListener{
 
     private ViewPager viewPager;
 
     private CardPagerAdapter cardPagerAdapter;
     private ShandowTransformer cardShandowTransformer;
-
+    private int idAssunto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,23 +33,32 @@ public class ListaAssuntoActivity extends AppCompatActivity{
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        toolbar.setTitle("Ligações químicas");
+
+
+        Bundle b = getIntent().getExtras();
+
+        if(b != null ){
+            idAssunto = getIntent().getExtras().getInt("idAssunto");
+            toolbar.setTitle(getIntent().getExtras().getString("titulo"));
+        }
 
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         cardPagerAdapter = new CardPagerAdapter(this);
         ArrayList<CardItem> cardItems = getIntent().getParcelableArrayListExtra("cardItems");
 
         for(int i = 0; i < cardItems.size(); i++){
+
             cardPagerAdapter.addCardItem(cardItems.get(i));
         }
 
         cardShandowTransformer = new ShandowTransformer(viewPager, cardPagerAdapter);
+        cardShandowTransformer.enableScaling(true);
 
         viewPager.setAdapter(cardPagerAdapter);
         viewPager.setPageTransformer(false, cardShandowTransformer);
         viewPager.setOffscreenPageLimit(3);
-        cardShandowTransformer.enableScaling(true);
 
+        cardPagerAdapter.setClickListener(this);
 
     }
 
@@ -65,5 +75,13 @@ public class ListaAssuntoActivity extends AppCompatActivity{
 
     public ViewPager getViewPager() {
         return viewPager;
+    }
+
+    @Override
+    public void onEstudarClick(CardItem item) {
+        Intent it = new Intent(this, ExibirConteudoActivity.class);
+        it.putExtra("idConteudo", item.getId());
+        it.putExtra("titulo", item.getTitle());
+        startActivity(it);
     }
 }

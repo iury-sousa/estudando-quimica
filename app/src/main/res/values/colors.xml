@@ -20,4 +20,5 @@
     <color name="colorItemAtivado">#91b7ec</color>
     <color name="colorItemDesativado">#f7f4ff</color>
     <color name="colorBtnAtualizar">#509d30fb</color>
+    <color name="colorNotification">#8c28ff</color>
 </resources>

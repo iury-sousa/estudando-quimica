@@ -15,11 +15,13 @@ public class ConteudoOffline implements Parcelable {
 
     }
 
-    public ConteudoOffline(String titulo, String assunto, String texto, int[] imagensArray) {
-        this.titulo = titulo;
-        this.assunto = assunto;
+    public ConteudoOffline(String texto) {
         this.texto = texto;
-        this.imagensArray = imagensArray;
+    }
+
+    public ConteudoOffline( int id, String texto) {
+        this.texto = texto;
+        this.id = id;
     }
 
     protected ConteudoOffline(Parcel in) {
