@@ -43,12 +43,15 @@
                 android:textColor="#000"
                 android:text="@{turma.nomeProfessor}"
                 android:textSize="16sp"/>
-            <!--<TextView-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:textColor="#867bb3"-->
-                <!--android:text="@{turma.codeTurma}"-->
-                <!--android:textSize="16sp"/>-->
+            <TextView
+                android:id="@+id/code_turma"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#867bb3"
+                android:text="@{turma.codeTurma}"
+                android:textSize="14sp"
+                android:layout_marginTop="10dp"
+                android:visibility="@{turma.visualizarCodeTurma}"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

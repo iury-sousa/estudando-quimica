@@ -18,6 +18,7 @@ import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -63,6 +64,7 @@ public class ComentariosActivity extends AppCompatActivity implements View.OnCli
         binding = DataBindingUtil.setContentView(this, R.layout.activity_comentarios);
         usuario = FirebaseAuth.getInstance().getCurrentUser();
         user = FirebaseAuth.getInstance().getCurrentUser();
+        TextView tv = findViewById(R.id.sem_registro);
         Bundle b = getIntent().getExtras();
 
         if (b != null) {
@@ -86,6 +88,7 @@ public class ComentariosActivity extends AppCompatActivity implements View.OnCli
         c.setUsuario(new Usuario(usuario.getDisplayName(), usuario.getPhotoUrl().toString()));
 
         List<Comentario> lista = new ArrayList<>();
+        final int[] cont = {0};
         adapter.setComentarios(lista);
 //        adapter.addComentario(c);
 //        adapter.addComentario(c);
@@ -120,6 +123,7 @@ public class ComentariosActivity extends AppCompatActivity implements View.OnCli
                         comentario.setUsuario(usuario);
 
                         adapter.addComentario(comentario);
+
                     }
 
                     @Override
@@ -127,6 +131,7 @@ public class ComentariosActivity extends AppCompatActivity implements View.OnCli
 
                     }
                 });
+
             }
 
             @Override
@@ -149,6 +154,7 @@ public class ComentariosActivity extends AppCompatActivity implements View.OnCli
 
             }
         });
+
 
 
         recyclerView.setAdapter(adapter);

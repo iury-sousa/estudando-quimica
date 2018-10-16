@@ -66,9 +66,9 @@
                         android:id="@+id/conf"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_more_vert"
+                        android:src="@drawable/ic_more"
                         android:visibility="@{publicacao.visibilidadeMenuAcoes}"
-                       android:layout_alignParentEnd="true"/>
+                        android:layout_alignParentEnd="true"/>
                     <TextView
                         android:id="@+id/titulo"
                         android:layout_width="match_parent"
@@ -133,18 +133,22 @@
                     android:id="@+id/qtd_curtidas"
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
+                    android:maxLength="15"
+                    android:gravity="start|center_vertical"
                     android:layout_marginStart="10dp"
                     android:text="@{publicacao.numCurtidas}"
                     android:visibility="@{publicacao.visibilidadeNumCurtidas}"
                     android:textColor="#000"
+                    android:layout_alignParentStart="true"
                     android:textSize="14sp"
                     />
 
                 <TextView
                     android:id="@+id/qtd_comentarios"
-                    android:layout_width="50dp"
+                    android:layout_width="wrap_content"
+                    android:maxLength="15"
                     android:layout_height="wrap_content"
-                    android:gravity="end"
+                    android:gravity="end|center_vertical"
                     android:layout_alignParentEnd="true"
                     android:layout_toEndOf="@+id/qtd_curtidas"
                     android:textColor="#000"

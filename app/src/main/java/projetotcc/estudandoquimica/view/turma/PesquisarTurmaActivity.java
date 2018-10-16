@@ -391,6 +391,11 @@ TurmaClickListener, RecyclerView.OnItemTouchListener, View.OnClickListener{
 
     }
 
+    @Override
+    public void onCompartilheCodigo(Turma turma) {
+
+    }
+
     private class RecyclerViewDemoOnGestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {

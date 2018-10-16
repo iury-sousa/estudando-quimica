@@ -1,5 +1,8 @@
 package projetotcc.estudandoquimica.view.usuario;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.app.SearchManager;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
@@ -7,6 +10,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -52,8 +57,9 @@ public class ListUsuariosFragment extends Fragment implements SearchView.OnQuery
     private String idTurma = "";
     List<Usuario> list;
     private ListaEstudanteViewModel viewModel;
-
+    private static boolean isProfessor = false;
     private String text;
+    FragmentListUsuariosBinding binding;
 
     public void pesquisar(String text){
         adapter.getFilter().filter(text.trim());
@@ -64,6 +70,26 @@ public class ListUsuariosFragment extends Fragment implements SearchView.OnQuery
     }
 
 
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//
+//        showProgress(true);
+//        VerificarUsuario.verificarTipoUsuario(retorno -> {
+//            if(retorno){
+//
+//                binding.fab.setVisibility(View.VISIBLE);
+//                showProgress(false);
+//                isProfessor = true;
+//            }else{
+//
+//                showProgress(false);
+//                binding.fab.setVisibility(View.GONE);
+//            }
+//
+//        });
+//    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -73,23 +99,42 @@ public class ListUsuariosFragment extends Fragment implements SearchView.OnQuery
 //            String query = intent.getStringExtra(SearchManager.QUERY);
 //            //doMySearch(query);
 //        }
+        binding =
+                DataBindingUtil.inflate(inflater,R.layout.fragment_list_usuarios, container,false);
+
         setHasOptionsMenu(true);
         Intent it = getActivity().getIntent();
         Bundle b = it.getExtras();
 
         if(b != null){
             idTurma = getActivity().getIntent().getExtras().getString("idTurma");
+            String adminTurma = getActivity().getIntent().getExtras().getString("adminTurma");
+
+            if(adminTurma.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+
+                binding.fab.setVisibility(View.VISIBLE);
+//                showProgress(false);
+//                isProfessor = true;
+            }else{
+
+                //showProgress(false);
+                binding.fab.setVisibility(View.GONE);
+            }
+
         }
 
-        FragmentListUsuariosBinding binding =
-                DataBindingUtil.inflate(inflater,R.layout.fragment_list_usuarios, container,false);
 
-        if(VerificarUsuario.verificarUsuario()){
+//
+//        if(VerificarUsuario.verificarUsuario()){
+//
+//
+//
+//
+//        }else{
+//
+//            binding.fab.setVisibility(View.GONE);
+//        }
 
-            binding.fab.setVisibility(View.VISIBLE);
-        }else{
-            binding.fab.setVisibility(View.GONE);
-        }
 
         recyclerView = binding.listaUsuarios;
 
@@ -158,7 +203,6 @@ public class ListUsuariosFragment extends Fragment implements SearchView.OnQuery
                 List<Usuario> list = new ArrayList<>();
                 final int[] c = {0};
                 if(dataSnapshot.exists()){
-
 
                     dataSnapshot.child(idTurma).getRef().addChildEventListener(new ChildEventListener() {
 
@@ -271,5 +315,38 @@ public class ListUsuariosFragment extends Fragment implements SearchView.OnQuery
     @Override
     public void click(Usuario usuario, int position) {
 
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+        // for very easy animations. If available, use these APIs to fade-in
+        // the progress spinner.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+            binding.container.setVisibility(show ? View.GONE : View.VISIBLE);
+            binding.container.animate().setDuration(shortAnimTime).alpha(
+                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    binding.container.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            });
+
+            binding.progress.setVisibility(show ? View.VISIBLE : View.GONE);
+            binding.progress.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    binding.progress.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        } else {
+            // The ViewPropertyAnimator APIs are not available, so simply show
+            // and hide the relevant UI components.
+            binding.progress.setVisibility(show ? View.VISIBLE : View.GONE);
+            binding.container.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
     }
 }

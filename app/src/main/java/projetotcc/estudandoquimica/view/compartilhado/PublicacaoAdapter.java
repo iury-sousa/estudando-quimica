@@ -32,6 +32,8 @@ public class PublicacaoAdapter extends StatefulRecyclerView.Adapter<PublicacaoAd
         this.context = context;
         //this.lista_publicacao = lista_publicacao;
         setHasStableIds(true);
+
+        this.lista_publicacao = lista_publicacao;
         this.botoesClickListener = botoesClickListener;
     }
 
@@ -40,13 +42,15 @@ public class PublicacaoAdapter extends StatefulRecyclerView.Adapter<PublicacaoAd
 
         if(this.lista_publicacao == null) {
             this.lista_publicacao = lista_publicacao;
-            notifyDataSetChanged();
+            //notifyDataSetChanged();
         }
     }
 
     public void addPublicacao(Publicacao publicacao, int posicao){
 
         lista_publicacao.add(publicacao);
+
+
         notifyItemInserted(getItemCount());
         notifyItemRangeChanged(0, lista_publicacao.size());
     }

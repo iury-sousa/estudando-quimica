@@ -1,34 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
-        <data/>
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/sem_publicacao"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="50dp"
+            android:gravity="center"
+            android:text="Sem publicações no momento! Recarregue a página"
+            android:textSize="16sp"
+            android:visibility="gone" />
+
+        <RelativeLayout
             android:id="@+id/principal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:context=".view.home.ConteudoCompartilhadoFragment">
 
-                <TextView
-                    android:id="@+id/sem_publicacao"
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/swipeRefreshLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <projetotcc.estudandoquimica.componentesPersonalizados.StatefulRecyclerView
+                    android:id="@+id/conteudoCompartilhado"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="Sem publicações no momento"
-                    android:gravity="center"
-                    android:textSize="16sp"
-                    android:layout_marginBottom="50dp"
-                    android:visibility="gone"/>
-
-                <android.support.v4.widget.SwipeRefreshLayout
-                    android:id="@+id/swipeRefreshLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-                        <projetotcc.estudandoquimica.componentesPersonalizados.StatefulRecyclerView
-                            android:id="@+id/conteudoCompartilhado"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:clipToPadding="false"
-                            android:paddingBottom="20dp"
-                            android:background="#efefef"/>
-                </android.support.v4.widget.SwipeRefreshLayout>
+                    android:background="#efefef"
+                    android:clipToPadding="false"
+                    android:paddingBottom="20dp" />
+            </android.support.v4.widget.SwipeRefreshLayout>
         </RelativeLayout>
+    </RelativeLayout>
 </layout>

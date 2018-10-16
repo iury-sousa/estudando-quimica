@@ -16,6 +16,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -68,14 +69,26 @@ public class ConteudoCompartilhadoFragment extends Fragment
     private PublicacaoViewModel viewModel;
     private FirebaseAuth auth;
     private String idTurma = "";
-    private boolean isProfessor = false;
+    private boolean isProfessor;
     private List<Publicacao> list;
     private WrapContentLinearLayoutManager wcl;
     private Parcelable listState;
     private PopupMenu popup;
     private Publicacao publicacao;
     private int posicaoPublicacao;
-    Usuario usuario;
+    private Usuario usuario;
+    private DatabaseReference reference;
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        VerificarUsuario.verificarTipoUsuario(retorno -> {
+
+            isProfessor = retorno;
+
+        });
+    }
 
     public ConteudoCompartilhadoFragment() {
     }
@@ -163,6 +176,7 @@ public class ConteudoCompartilhadoFragment extends Fragment
             @Override
             public void onRefresh() {
                 carregarPublicacoes(viewModel);
+                //testeCarregamento();
                 binding.swipeRefreshLayout.setRefreshing(false);
             }
         });
@@ -184,7 +198,9 @@ public class ConteudoCompartilhadoFragment extends Fragment
             }
         });
 
+        //testeCarregamento();
         carregarPublicacoes(viewModel);
+        setHasOptionsMenu(true);
 
         return binding.getRoot();
     }
@@ -382,7 +398,7 @@ public class ConteudoCompartilhadoFragment extends Fragment
         return lista;
     }
 
-    public List<Publicacao> carregarTodos(DataSnapshot dataSnapshot, List<Publicacao> lista, int[] c){
+    public List<Publicacao> carregarTodos(DataSnapshot data, List<Publicacao> lista, int[] c) {
 
         DatabaseReference reference = FirebaseDatabase.getInstance()
                 .getReference("estudante_turmas/" + auth.getCurrentUser().getUid());
@@ -400,8 +416,7 @@ public class ConteudoCompartilhadoFragment extends Fragment
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot1, @Nullable String s) {
                         String id = dataSnapshot1.getKey();
 
-
-                        dataSnapshot.getRef()
+                        data.getRef()
                                 .orderByKey()
                                 .equalTo(id).addChildEventListener(new ChildEventListener() {
                             @Override
@@ -492,6 +507,7 @@ public class ConteudoCompartilhadoFragment extends Fragment
         }
 
         viewModel.getDataSnapshotLiveData().observe(this, new Observer<DataSnapshot>() {
+
             @Override
             public void onChanged(@Nullable DataSnapshot dataSnapshot) {
 
@@ -501,18 +517,25 @@ public class ConteudoCompartilhadoFragment extends Fragment
                 if (dataSnapshot.exists()) {
 
 
-                    if (!idTurma.isEmpty()) {
+                    try {
 
-                        lista = carregarPorTurmas(dataSnapshot, lista, c);
+                        if (!idTurma.isEmpty()) {
 
-                    } else {
+                            lista = carregarPorTurmas(dataSnapshot, lista, c);
 
-                        lista = carregarPorAdmin(dataSnapshot, lista, c);
+                        } else {
+
+                            if (isProfessor) {
+                                lista = carregarPorAdmin(dataSnapshot, lista, c);
+                            } else {
+                                lista = carregarTodos(dataSnapshot, lista, c);
+                            }
+                        }
+                    } catch (Exception e) {
 
                     }
-
-
                 }
+
                 if (adapter.getItemCount() == 0) {
 
                     adapter.updatePublicacao(lista);
@@ -546,35 +569,145 @@ public class ConteudoCompartilhadoFragment extends Fragment
 
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
+    public void testeCarregamento() {
 
-        if (menu.findItem(R.id.action_publicacao) != null) {
-            menu.removeItem(R.id.action_publicacao);
-        }
+        viewModel.getLiveData().observe(this, new Observer<DataSnapshot>() {
+            @Override
+            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
 
-        if (VerificarUsuario.verificarUsuario()) {
+                List<Publicacao> publicacaos = new ArrayList<>();
+                final int[] c = {0};
 
-            inflater.inflate(R.menu.menu_conteudo, menu);
-        }
-    }
+                dataSnapshot.getRef()
+                        //.orderByKey()
+                        .orderByChild("administrador").equalTo(auth.getCurrentUser().getUid())
+                        .limitToLast(100)
+                        .addChildEventListener(new ChildEventListener() {
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+                            @Override
+                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-        switch (item.getItemId()) {
+                                Publicacao p = new Publicacao();
+                                p.setId(dataSnapshot.getKey());
+                                p.setTextoPublicacao(dataSnapshot.child("textoPublicacao").getValue(String.class));
+                                p.setTitulo(dataSnapshot.child("titulo").getValue(String.class));
+                                p.setDataPublicacao(String.valueOf(dataSnapshot.child("timestamp").getValue(Long.class)));
+                                p.setAdmin(new Usuario(dataSnapshot.child("administrador").getValue(String.class), "", "", ""));
 
-            case R.id.action_publicacao:
+                                p.setImagemUrl(dataSnapshot.child("imagens/url").getValue(String.class));
 
-                Intent it = new Intent(getActivity(), CadastrarPublicacaoActivity.class);
-                startActivity(it);
-                getActivity().overridePendingTransition(R.anim.enter_top, R.anim.zoom_out);
-                return true;
+                                DatabaseReference reference = FirebaseDatabase.getInstance()
+                                        .getReference("publicacoes_curtida/" + p.getId());
 
-            default:
-                return false;
-        }
+                                reference.child("listaCurtidas")
+                                        .addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                                Boolean curtiuUser = dataSnapshot.child(auth.getCurrentUser().getUid()).getValue(Boolean.class);
+
+                                                p.setNumCurtidas((int) dataSnapshot.getChildrenCount());
+
+                                                if (curtiuUser != null) {
+
+                                                    p.setCurtiu(true);
+
+
+                                                } else {
+
+                                                    p.setCurtiu(false);
+
+                                                }
+
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
+
+                                dataSnapshot.child("comentarios").getRef().addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                        Log.i("TAG", String.valueOf(dataSnapshot.getChildrenCount()));
+                                        p.setNumComentarios((int) dataSnapshot.getChildrenCount());
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
+                                final DatabaseReference ref = FirebaseDatabase.getInstance().
+                                        getReference("usuarios/" + dataSnapshot.child("administrador").getValue(String.class));
+
+                                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        p.setAdmin(new Usuario(dataSnapshot.getKey(),
+                                                dataSnapshot.child("nome").getValue(String.class), null,
+                                                dataSnapshot.child("urlFoto").getValue(String.class)));
+                                        //adapter.addPublicacao(p, adapter.getItemCount());
+                                        adapter.notifyItemChanged(c[0]);
+                                        c[0]++;
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
+                                publicacaos.add(p);
+
+                            }
+
+                            @Override
+                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            }
+
+                            @Override
+                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                            }
+
+                            @Override
+                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                if (adapter.getItemCount() == 0) {
+
+                    adapter.updatePublicacao(publicacaos);
+
+                }
+
+                if (adapter.getItemCount() == 0) {
+
+                    binding.semPublicacao.setVisibility(View.VISIBLE);
+                    binding.conteudoCompartilhado.setVisibility(View.GONE);
+                } else {
+
+                    binding.semPublicacao.setVisibility(View.GONE);
+                    binding.conteudoCompartilhado.setVisibility(View.VISIBLE);
+
+                }
+
+                binding.executePendingBindings();
+            }
+
+
+        });
     }
 
     @Override
@@ -636,10 +769,9 @@ public class ConteudoCompartilhadoFragment extends Fragment
         popup.show();
     }
 
-    private DatabaseReference reference;
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
 
             case R.id.action_edit:
 
@@ -653,10 +785,10 @@ public class ConteudoCompartilhadoFragment extends Fragment
 
             case R.id.action_delete:
 
-                if(!VerificarConexaoInternet.verificaConexao(getActivity())){
+                if (!VerificarConexaoInternet.verificaConexao(getActivity())) {
 
                     VerificarConexaoInternet.getMensagem(binding.getRoot());
-                }else{
+                } else {
 
                     reference = FirebaseDatabase.getInstance()
                             .getReference("publicacoes/" + publicacao.getId());
@@ -677,33 +809,33 @@ public class ConteudoCompartilhadoFragment extends Fragment
                                     .equalTo(auth.getCurrentUser().getUid())
                                     .addChildEventListener(new ChildEventListener() {
 
-                                @Override
-                                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                        @Override
+                                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                                    dataSnapshot.child("listaPublicacoes/" + publicacao.getId()).getRef().removeValue();
+                                            dataSnapshot.child("listaPublicacoes/" + publicacao.getId()).getRef().removeValue();
 
-                                }
+                                        }
 
-                                @Override
-                                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                        @Override
+                                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                                }
+                                        }
 
-                                @Override
-                                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                                        @Override
+                                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
 
-                                }
+                                        }
 
-                                @Override
-                                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                        @Override
+                                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                                }
+                                        }
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                }
-                            });
+                                        }
+                                    });
 
                             adapter.remover(posicaoPublicacao);
                         }
@@ -714,6 +846,41 @@ public class ConteudoCompartilhadoFragment extends Fragment
 
             case R.id.action_cancel:
                 popup.dismiss();
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+        if (idTurma != null) {
+
+            if (menu.findItem(R.id.action_publicacao) != null) {
+                menu.removeItem(R.id.action_publicacao);
+            }
+
+            if (isProfessor) {
+                inflater.inflate(R.menu.menu_conteudo, menu);
+                menu.removeItem(R.id.action_config);
+            }
+        }
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.action_publicacao:
+
+                Intent it = new Intent(getActivity(), CadastrarPublicacaoActivity.class);
+                startActivity(it);
+                getActivity().overridePendingTransition(R.anim.enter_top, R.anim.zoom_out);
                 return true;
 
             default:

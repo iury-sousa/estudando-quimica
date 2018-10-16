@@ -1,6 +1,7 @@
 package projetotcc.estudandoquimica.viewmodel;
 
 import android.annotation.SuppressLint;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
@@ -133,6 +134,10 @@ public class PublicacaoViewModel extends ViewModel {
     @NonNull
     public MutableLiveData<DataSnapshot> getDataSnapshotLiveData() {
 
+        return liveData;
+    }
+
+    public LiveData<DataSnapshot> getLiveData(){
         return liveData;
     }
 
@@ -297,7 +302,6 @@ public class PublicacaoViewModel extends ViewModel {
         return publicacao.getNumComentarios() == 0 && publicacao.getNumCurtidas() == 0 ?
                 View.GONE : View.VISIBLE;
     }
-
 
     public int getVisibilidadeMenuAcoes(){
 

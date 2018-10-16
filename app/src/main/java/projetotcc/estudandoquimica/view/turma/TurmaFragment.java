@@ -1,12 +1,15 @@
 package projetotcc.estudandoquimica.view.turma;
 
 
-import android.arch.lifecycle.MutableLiveData;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -29,6 +32,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -41,7 +45,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import projetotcc.estudandoquimica.MainActivity;
+import projetotcc.estudandoquimica.HomeActivity;
 import projetotcc.estudandoquimica.R;
 import projetotcc.estudandoquimica.VerificarUsuario;
 import projetotcc.estudandoquimica.databinding.FragmentTurmaBinding;
@@ -69,6 +73,7 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
     private ActionMode actionMode;
     private RecyclerView recyclerView;
     private static final int DIALOG_REQUEST = 1;
+    private static boolean isProfessor;
 
     private FirebaseAuth auth;
 
@@ -93,6 +98,30 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        showProgress(true);
+        //binding.fab.setVisibility(View.GONE);
+        VerificarUsuario.verificarTipoUsuario(retorno -> {
+            if(retorno){
+
+                //binding.fab.setVisibility(View.VISIBLE);
+                isProfessor = true;
+                showProgress(false);
+                carregarPorAdmin();
+            }else{
+
+                //binding.fab.setVisibility(View.GONE);
+                isProfessor = false;
+                carregarPorAluno();
+                showProgress(false);
+            }
+
+        });
+    }
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -107,12 +136,14 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
 
         recyclerView = binding.listaTurma;
 
-        if (VerificarUsuario.verificarUsuario()) {
 
-            binding.fab.setVisibility(View.VISIBLE);
-        } else {
-            binding.fab.setVisibility(View.GONE);
-        }
+
+//        if (VerificarUsuario.verificarUsuario()) {
+//
+//            binding.fab.setVisibility(View.VISIBLE);
+//        } else {
+//            binding.fab.setVisibility(View.GONE);
+//        }
 
         recyclerView.setLayoutManager(new WrapContentLinearLayoutManager(inflater.getContext(),
                 LinearLayoutManager.VERTICAL, false));
@@ -149,7 +180,7 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogCadastrarTurma(null);
+                DialogTurma(null);
                 getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
             }
@@ -159,7 +190,7 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
             @Override
             public void onRefresh() {
 
-                if(atualizarTurmas()){
+                if(isProfessor){
                     carregarPorAdmin();
                 }else{
                     carregarPorAluno();
@@ -169,11 +200,11 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
             }
         });
 
-        if(atualizarTurmas()){
-
-        }else{
-
-        }
+//        if(atualizarTurmas()){
+//
+//        }else{
+//
+//        }
         // setHasOptionsMenu(true);
         return binding.getRoot();
     }
@@ -322,7 +353,7 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
                                                 turma.setId(t.getKey());
                                                 turma.setData_criacao(t.child("data_criacao").getValue(String.class));
                                                 turma.setAdministradorTurma(t.child("administradorTurma").getValue(String.class));
-                                                turma.setCodeTurma(t.child("codeTurma").getValue(String.class));
+//                                                turma.setCodeTurma(t.child("codeTurma").getValue(String.class));
                                                 turma.setProfessor(new Turma.Professor(turma.getAdministradorTurma(), null));
 
 
@@ -398,12 +429,20 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
         });
     }
 
-    public void DialogCadastrarTurma(Turma turma) {
+    public void DialogTurma(Turma turma) {
 
-        Intent it = new Intent(getContext(), DialogTurmaActivity.class);
+        Intent it = null;
+        if(isProfessor) {
 
-        if (turma != null) {
-            it.putExtra("nome", turma.getNome());
+            it = new Intent(getContext(), DialogTurmaActivity.class);
+
+
+            if (turma != null) {
+                it.putExtra("nome", turma.getNome());
+            }
+        }else{
+
+            it = new Intent(getContext(), EntrarTurmaActivity.class);
         }
 
         startActivityForResult(it, DIALOG_REQUEST);
@@ -419,15 +458,30 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
 
         if (requestCode == DIALOG_REQUEST) {
             if (resultCode == RESULT_OK) {
-                String resultado = data.getStringExtra("resultado");
-                int opcao = data.getIntExtra("opcao", 0);
 
-                if (opcao == 1) {
-                    viewModel.inserir(resultado);
-                } else if (opcao == 2) {
+                if(isProfessor) {
+                    String resultado = data.getStringExtra("resultado");
+                    int opcao = data.getIntExtra("opcao", 0);
 
-                    turma.setNome(resultado);
-                    viewModel.atualizar(turma);
+                    if (opcao == 1) {
+                        viewModel.inserir(resultado);
+                    } else if (opcao == 2) {
+
+                        turma.setNome(resultado);
+                        viewModel.atualizar(turma);
+                    }
+                }else{
+
+                    String resultado = data.getStringExtra("resultado");
+
+                    DatabaseReference ref = FirebaseDatabase.getInstance()
+                            .getReference("estudante_turmas");
+
+                    ref.child(auth.getUid()).child(resultado).setValue(true);
+
+                    ref = FirebaseDatabase.getInstance().getReference("estudantes");
+                    ref.child(resultado).child(auth.getUid()).setValue(true);
+
                 }
 
             }
@@ -494,13 +548,18 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 
             MenuInflater inflater = mode.getMenuInflater();
-            if (VerificarUsuario.verificarUsuario()) {
+//            VerificarUsuario.verificarTipoUsuario(new VerificarUsuario.CallbackVerificarUsuario() {
+//                @Override
+//                public void callback(Boolean retorno) {
+                    if(isProfessor){
 
-                inflater.inflate(R.menu.menu_turma, menu);
-            } else {
+                        inflater.inflate(R.menu.menu_turma, menu);
+                    }else{
+                        inflater.inflate(R.menu.menu_sair, menu);
+                    }
 
-                inflater.inflate(R.menu.menu_sair, menu);
-            }
+//                }
+//            });
 
             return true;
         }
@@ -524,7 +583,7 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
                     for (int i = selectedItemPositions.size() - 1; i >= 0; i--) {
                         currPos = selectedItemPositions.get(i);
                         Turma t = adapter.getTurma(currPos);
-                        t.setNome("Teste Tudo");
+                        //t.setNome("Teste Tudo");
                         viewModel.deletar(t);
                         adapter.removerTurma(currPos);
 
@@ -547,7 +606,22 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
 
                     if (adapter.getSelectedItems().size() == 1) {
                         turma = adapter.getTurma(adapter.getSelectedItems().get(0));
-                        DialogCadastrarTurma(turma);
+                        DialogTurma(turma);
+                    }
+                    actionMode.finish();
+                    return true;
+
+                case R.id.action_exit_turma:
+                    List<Integer> selectedItem = adapter.getSelectedItems();
+                    int cont;
+
+                    for (int i = selectedItem.size() - 1; i >= 0; i--) {
+                        cont = selectedItem.get(i);
+                        Turma t = adapter.getTurma(cont);
+                        //t.setNome("Teste Tudo");
+                        viewModel.sairTurma(t.getId(), auth.getUid());
+                        adapter.removerTurma(cont);
+
                     }
                     actionMode.finish();
                     return true;
@@ -576,8 +650,67 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
             Intent it = new Intent(getContext(), TurmaActivity.class);
             it.putExtra("idTurma", turma.getId());
             it.putExtra("nome", turma.getNome());
+            it.putExtra("adminTurma", turma.getAdministradorTurma());
             getActivity().startActivity(it);
             getActivity().overridePendingTransition(R.anim.enter, R.anim.exit);
+        }
+    }
+
+    @Override
+    public void onCompartilheCodigo(Turma turma) {
+        Intent compartilha = new Intent(Intent.ACTION_SEND);
+        compartilha.setType("text/plain");
+        compartilha.putExtra(Intent.EXTRA_SUBJECT, "Compartilhar código da turma");
+        compartilha.putExtra(Intent.EXTRA_TEXT,
+                "Oiii!, você foi escolhido para fazer parte do nosso grupo de estudo com conteúdos voltados para a química. Baixe nosso" +
+                        " aplicativo no link abaixo e após se cadastrar insira o código da turma.\n\n " +
+                        "Link para baixar o app: https://1drv.ms/f/s!AqnODiiU_rJ4iNB6PorhJwcOONxxzA\n\n" +
+                        "Código da turma: " + turma.getCodeTurma().replace("@", "") + "\n\n");
+
+        startActivity(Intent.createChooser(compartilha, "Compartilhar link!"));
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+        // for very easy animations. If available, use these APIs to fade-in
+        // the progress spinner.
+        if(getActivity() != null) {
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+                    int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+                    binding.container.setVisibility(show ? View.GONE : View.VISIBLE);
+                    binding.container.animate().setDuration(shortAnimTime).alpha(
+                            show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            binding.container.setVisibility(show ? View.GONE : View.VISIBLE);
+                        }
+                    });
+
+                    binding.progress.setVisibility(show ? View.VISIBLE : View.GONE);
+                    binding.progress.animate().setDuration(shortAnimTime).alpha(
+                            show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            binding.progress.setVisibility(show ? View.VISIBLE : View.GONE);
+                        }
+                    });
+                } else {
+                    // The ViewPropertyAnimator APIs are not available, so simply show
+                    // and hide the relevant UI components.
+                    binding.progress.setVisibility(show ? View.VISIBLE : View.GONE);
+                    binding.container.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            }catch (Exception e){
+
+            }
         }
     }
 
@@ -600,7 +733,7 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
                 return;
             }
 
-            actionMode = ((MainActivity) TurmaFragment.this.getActivity()).startSupportActionMode(startActionMode);
+            actionMode = ((HomeActivity) TurmaFragment.this.getActivity()).startSupportActionMode(startActionMode);
 
             int idx = recyclerView.getChildAdapterPosition(view);
             myToggleSelection(idx);

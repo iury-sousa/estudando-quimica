@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ViewSwitcher;
 
 import java.util.ArrayList;
 
@@ -21,7 +22,7 @@ import projetotcc.estudandoquimica.view.offline.ViewPagerCard.CardPagerAdapter;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ConteudoOfflineFragment extends Fragment {
+public class ConteudoOfflineFragment extends Fragment implements View.OnClickListener{
 
 
     public ConteudoOfflineFragment() {
@@ -35,40 +36,6 @@ public class ConteudoOfflineFragment extends Fragment {
         // Inflate the layout for this fragment
        View view = inflater.inflate(R.layout.fragment_conteudo_offline, container, false);
 
-        RelativeLayout imageButton = view.findViewById(R.id.titulo1);
-        imageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                ArrayList<CardItem> cardItems = new ArrayList<>();
-                cardItems.add(new CardItem(1,"Ligações químicas", "Os átomos ligam entre si para formar moléculas, para que isso ocorra existem três tipos de ligação: a ligação iônica, a ligação covalente e a ligação metálica."));
-//                cardItems.add(new CardItem(R.string.title_2, R.string.text_1));
-//                cardItems.add(new CardItem(R.string.title_3, R.string.text_1));
-//                cardItems.add(new CardItem(R.string.title_4, R.string.text_1));
-
-                Intent it = new Intent(getContext(), ListaAssuntoActivity.class);
-                it.putParcelableArrayListExtra("cardItems", cardItems);
-                it.putExtra("titulo", "Básico");
-                startActivity(it);
-            }
-        });
-
-        LinearLayout quiOrganica = view.findViewById(R.id.quimica_organica);
-        quiOrganica.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                ArrayList<CardItem> cardItems = new ArrayList<>();
-                cardItems.add(new CardItem(1,"Química Orgânica", "A química orgânica é uma subdivisão da química que estuda os compostos carbônicos e compostos orgânicos."));
-                cardItems.add(new CardItem(2, "Funções e nomenclatura", "As funções orgânicas são caracterizadas por um grupo funcional, que confere características e nomenclaturas especificas."));
-
-                Intent it = new Intent(getContext(), ListaAssuntoActivity.class);
-                it.putParcelableArrayListExtra("cardItems", cardItems);
-                it.putExtra("titulo", "Química Orgânica");
-                startActivity(it);
-            }
-        });
-
         final CircleProgressBar progressBar = view.findViewById(R.id.processo_titulo1);
         final CircleProgressBar progressBar2 = view.findViewById(R.id.processo_titulo2);
         final CircleProgressBar progressBar3 = view.findViewById(R.id.processo_titulo3);
@@ -77,7 +44,48 @@ public class ConteudoOfflineFragment extends Fragment {
         progressBar2.setProgress(100);
         progressBar3.setProgress(100);
         setHasOptionsMenu(false);
+
+        ViewSwitcher vsBasico = view.findViewById(R.id.vsBasico);
+        ViewSwitcher vsLig = view.findViewById(R.id.vsLig);
+        ViewSwitcher vsOrg = view.findViewById(R.id.vsOrg);
+
+        vsLig.setOnClickListener(this);
+        vsBasico.setOnClickListener(this);
+        vsOrg.setOnClickListener(this);
+
        return view;
     }
 
+
+    public void onClickItem(View view) {
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        if(v instanceof ViewSwitcher){
+
+            ViewSwitcher viewSwitcher = (ViewSwitcher) v;
+            viewSwitcher.showNext();
+            int id = 0;
+
+            if(v.getId() == R.id.vsBasico){
+
+                id = 1;
+            }else if(v.getId() == R.id.vsLig){
+
+                id = 2;
+
+            }else if(v.getId() == R.id.vsOrg){
+
+                id = 3;
+            }
+
+            Intent it = new Intent(getContext(), ListaAssuntoActivity.class);
+            it.putExtra("id", id);
+            startActivity(it);
+
+        }
+
+    }
 }

@@ -142,5 +142,8 @@
     <string name="default_notification_channel_id">iury_id</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="tab_text_3">Tab 3</string>
+    <string name="sobre">Estudando química é um aplicativo destinado a alunos, professores e pessoas com interesse em aprender um pouco sobre a química,
+        podendo também utilizar esse aplicativo para compartilhar conteúdos voltados para está finalidade.
+    </string>
 
 </resources>

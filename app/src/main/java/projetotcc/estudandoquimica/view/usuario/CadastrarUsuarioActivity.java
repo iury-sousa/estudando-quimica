@@ -185,7 +185,7 @@ DatabaseReference.CompletionListener{
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
 
         }else{
-            //ao executar novamente ele irá verificar que já foi dado a permissão e irá executar a funcionalidade normalmente
+            //ao executar novamente ele irá verificarTipoUsuario que já foi dado a permissão e irá executar a funcionalidade normalmente
             registerForContextMenu(v);
             openContextMenu(v);
         }
@@ -199,7 +199,6 @@ DatabaseReference.CompletionListener{
         menu.setHeaderTitle("Selecione uma foto");
         menu.setHeaderIcon(R.drawable.ic_photo);
 
-        menu.add(Menu.NONE, 1, Menu.NONE, "Camera");
         MenuItem carregarImagem = menu.add(Menu.NONE,2,Menu.NONE,"Galeria");
         carregarImagem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
@@ -247,7 +246,9 @@ DatabaseReference.CompletionListener{
             Bitmap bitmapReduzido = Bitmap.createScaledBitmap(bitmap, 1080, 1000, true);
 
             showImage(bitmap);*/
-            carregarImagemGaleria(data);
+            if(data != null) {
+                carregarImagemGaleria(data);
+            }
 
             //Toast.makeText(getApplicationContext(), selectedImage.toString(), Toast.LENGTH_SHORT).show();
 
@@ -356,6 +357,7 @@ DatabaseReference.CompletionListener{
                    }else {
                        showProgress(false);
                        Intent it = new Intent(CadastrarUsuarioActivity.this, ProfessorAlunoActivity.class);
+                       it.putExtra("usuario", user);
                        startActivity(it);
                        overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
                        finish();
@@ -436,6 +438,13 @@ DatabaseReference.CompletionListener{
         if (!valid) {
 
             focusView.requestFocus();
+        }
+
+        if(uri == null){
+
+            valid = false;
+            Toast.makeText(this, "Insira uma foto!", Toast.LENGTH_LONG).show();
+
         }
 
         return valid;
@@ -611,12 +620,20 @@ DatabaseReference.CompletionListener{
                     }).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            DatabaseReference ref = FirebaseDatabase.getInstance().
-                                    getReference("usuarios/" +  auth.getCurrentUser().getUid());
-
-                            ref.child("urlFoto").setValue(pathImagem.toString());
+//                            DatabaseReference ref = FirebaseDatabase.getInstance().
+//                                    getReference("usuarios/" +  auth.getCurrentUser().getUid());
+//
+//                            ref.child("urlFoto").setValue(pathImagem.toString());
                             showProgress(false);
                             Intent it = new Intent(CadastrarUsuarioActivity.this, ProfessorAlunoActivity.class);
+
+                            Usuario usuario = new Usuario();
+                            usuario.setNome(user.getDisplayName());
+                            usuario.setId(user.getUid());
+                            usuario.setEmail(user.getEmail());
+                            usuario.setUrlFoto(pathImagem.toString());
+
+                            it.putExtra("usuario", usuario);
                             startActivity(it);
                             finish();
                             overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);

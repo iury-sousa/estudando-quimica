@@ -15,7 +15,7 @@
       },
       "oauth_client": [
         {
-          "client_id": "898422124337-v70ebd4qv0olb4f7ss9ln36og33mk0om.apps.googleusercontent.com",
+          "client_id": "898422124337-1k5986hbck5381v0etgujsc4c8ap1sf3.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "projetotcc.estudandoquimica",
@@ -23,13 +23,27 @@
           }
         },
         {
-          "client_id": "898422124337-4qfelnb9dvupmt4k6hq0js8d16eendrs.apps.googleusercontent.com",
+          "client_id": "898422124337-31keoqkuii9mb80valhu3hurisiv88o0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "projetotcc.estudandoquimica",
+            "certificate_hash": "082bd814c439edf3fe94e908ca22e4c3678ad6b4"
+          }
+        },
+        {
+          "client_id": "898422124337-c122nhu3toc6uvncqu9o3bpr8iakcjld.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
           "current_key": "AIzaSyDG6Jfz743QFggE3m1-9ZnCzTSi8U3yqBE"
+        },
+        {
+          "current_key": "AIzaSyAv6m1yvv53EMLTzVBoyj872YpJQahDbcQ"
+        },
+        {
+          "current_key": "AIzaSyCvg9X3vDJQa0WL3nmc4JFmdEFyanu62Ic"
         }
       ],
       "services": {
@@ -40,7 +54,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "898422124337-4qfelnb9dvupmt4k6hq0js8d16eendrs.apps.googleusercontent.com",
+              "client_id": "898422124337-c122nhu3toc6uvncqu9o3bpr8iakcjld.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

@@ -451,6 +451,21 @@ public class TurmaFragment extends Fragment implements RecyclerView.OnItemTouchL
         getActivity().startActivity(it);
     }
 
+    @Override
+    public void onCompartilheCodigo(Turma turma) {
+        Intent compartilha = new Intent(Intent.ACTION_SEND);
+        compartilha.setType("text/plain");
+        compartilha.putExtra(Intent.EXTRA_SUBJECT, "Compartilhar código da turma");
+
+        compartilha.putExtra(Intent.EXTRA_TEXT,
+                "Oiii!, você foi escolhido para fazer parte do nosso grupo de estudo com conteúdos voltados para a química. Baixe nosso" +
+                        " aplicativo no link abaixo e insira o código da turma.\n\n " +
+                        "Link para baixar o app: \n\n" +
+                        "Código turma:" + turma.getCodeTurma());
+
+        startActivity(Intent.createChooser(compartilha, "Compartilhar link!"));
+    }
+
     private class RecyclerViewDemoOnGestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {

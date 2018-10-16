@@ -8,6 +8,7 @@ import android.content.Context;
 import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -53,6 +54,11 @@ public class TurmaViewModel extends ViewModel{
         if(turma.getProfessor().getNome() != null) {
 
             nomeProfessor.set("Prof.: " + turma.getProfessor().getNome());
+        }
+
+        if(turma.getCodeTurma() != null) {
+
+            nomeProfessor.set("Código: " + turma.getCodeTurma());
         }
         data.set("Criado em: " + turma.getData_criacao());
         codeTurma.set(turma.getCodeTurma());
@@ -223,6 +229,23 @@ public class TurmaViewModel extends ViewModel{
         turmas.updateChildren(childUpdates);
 
         return null;
+    }
+
+    public void sairTurma(String idTurma, String idUsuario){
+
+
+        DatabaseReference ref = FirebaseDatabase.getInstance()
+                .getReference("estudante_turmas/" + idUsuario);
+
+        ref.child(idTurma).removeValue();
+
+        ref = FirebaseDatabase.getInstance().getReference("estudantes");
+        ref.child(idTurma).child(idUsuario).removeValue();
+    }
+
+    public int getVisualizarCodeTurma(){
+
+        return !codeTurma.get().isEmpty() ? View.VISIBLE : View.GONE;
     }
     
 }

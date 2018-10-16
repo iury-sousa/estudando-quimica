@@ -2,40 +2,27 @@ package projetotcc.estudandoquimica.view.usuario;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Matrix;
-import android.graphics.PointF;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.FloatMath;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
-import android.view.animation.ScaleAnimation;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ViewSwitcher;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
+import projetotcc.estudandoquimica.HomeActivity;
 import projetotcc.estudandoquimica.MainActivity;
 import projetotcc.estudandoquimica.R;
-
-import static java.lang.Math.sqrt;
+import projetotcc.estudandoquimica.model.Usuario;
 
 public class ProfessorAlunoActivity extends AppCompatActivity implements View.OnClickListener{
 
-    private boolean ativo = false;
+    private boolean isProfessor = false;
+    private Usuario usuario;
 //    private static final String TAG = "Touch";
 //
 //    Matrix matrix = new Matrix();
@@ -62,6 +49,13 @@ public class ProfessorAlunoActivity extends AppCompatActivity implements View.On
         LinearLayout linearLayout = findViewById(R.id.select_aluno);
         LinearLayout linearLayout1 = findViewById(R.id.select_prof);
         TextView textView = findViewById(R.id.btn_prosseguir);
+
+        Bundle b = getIntent().getExtras();
+
+        if(b != null){
+
+          usuario = getIntent().getExtras().getParcelable("usuario");
+        }
 
         linearLayout.setOnClickListener(this);
         linearLayout1.setOnClickListener(this);
@@ -115,7 +109,7 @@ public class ProfessorAlunoActivity extends AppCompatActivity implements View.On
 //// Launching animation set
 //                    imageProf.startAnimation(animSet);
 
-                    ativo = true;
+                    isProfessor = true;
                 }
 
                // imageProf.setBackground(getDrawable(R.drawable.seletor_professor_aluno));
@@ -129,7 +123,7 @@ public class ProfessorAlunoActivity extends AppCompatActivity implements View.On
                 }else{
 
                     imageAluno.setActivated(true);
-                    ativo = false;
+                    isProfessor = false;
                 }
                 break;
             case R.id.btn_prosseguir:
@@ -146,12 +140,14 @@ public class ProfessorAlunoActivity extends AppCompatActivity implements View.On
                         .getInstance().getReference("usuarios/" + auth.getCurrentUser().getUid());
 
 
+                usuario.setProfessor(isProfessor);
+                ref2.setValue(usuario.toMap());
 
-                ref2.child("professor").setValue(ativo);
-
-                Intent it = new Intent(this, MainActivity.class);
+                Intent it = new Intent(this, HomeActivity.class);
+                it.putExtra("isProfessor", isProfessor);
                 startActivity(it);
                 overridePendingTransition(R.anim.enter_top, R.anim.zoom_out);
+                finish();
 
                 break;
 

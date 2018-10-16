@@ -21,6 +21,7 @@
             app:popupTheme="@style/AppTheme.PopupOverlay"
             app:title="@string/app_name"
             app:layout_scrollFlags="scroll|enterAlways"/>
+
         <android.support.design.widget.TabLayout
             android:id="@+id/tabs"
             android:layout_width="match_parent"
@@ -29,6 +30,7 @@
             app:tabSelectedTextColor="#410C5A"
             app:tabTextColor="#FF5D5D5D"
             app:tabMode="fixed"
+            android:animateLayoutChanges="true"
             android:background="#FFF"
             app:tabIndicatorColor="#410C5A"
             app:tabIndicatorHeight="3dp"
@@ -40,8 +42,7 @@
                 android:id="@+id/tabItem"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:icon="@drawable/ic_home"
-                />
+                android:icon="@drawable/ic_home"/>
 
             <android.support.design.widget.TabItem
                 android:id="@+id/tabItem2"

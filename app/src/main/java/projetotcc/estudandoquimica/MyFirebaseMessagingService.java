@@ -16,6 +16,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Base64;
 import android.util.Log;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -85,9 +86,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private void sendRegistrationToServer(String token) {
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("tokens");
-
-        reference.setValue(token);
+//        DatabaseReference reference = FirebaseDatabase.getInstance()
+//                .getReference("tokens");
+//
+//        reference.setValue(token);
     }
 
     @Override

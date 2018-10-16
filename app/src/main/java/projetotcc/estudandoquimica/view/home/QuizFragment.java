@@ -9,6 +9,7 @@ import android.support.v7.widget.AppCompatTextView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import projetotcc.estudandoquimica.MainActivity;
 import projetotcc.estudandoquimica.R;
@@ -31,15 +32,15 @@ public class QuizFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_quiz, container, false);
-        MainActivity mainActivity = (MainActivity) getActivity();
 
-        AppCompatTextView imageView = view.findViewById(R.id.btnIni);
+        Button imageView = view.findViewById(R.id.btnIni);
 
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), QuestaoActivity.class);
                 startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.enter_top, R.anim.zoom_out);
             }
         });
 

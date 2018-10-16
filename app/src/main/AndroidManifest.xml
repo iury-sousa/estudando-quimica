@@ -76,7 +76,7 @@
         <activity
             android:name=".view.offline.ExibirConteudoActivity"
             android:label="@string/title_activity_conteudo"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar2" />
         <activity
             android:name=".view.compartilhado.CadastrarPublicacaoActivity"
             android:parentActivityName=".MainActivity"
@@ -135,8 +135,17 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".HomeActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".HomeActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".view.offline.VisualizarImagemActivity" />
+        <activity
+            android:name=".view.turma.EntrarTurmaActivity"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.UserDialog"
+            android:windowSoftInputMode="stateAlwaysVisible" />
+        <activity android:name=".SobreActivity"></activity>
     </application>
 
 </manifest>

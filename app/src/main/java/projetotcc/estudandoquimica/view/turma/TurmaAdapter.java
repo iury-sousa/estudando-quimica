@@ -20,7 +20,8 @@ import projetotcc.estudandoquimica.databinding.TurmaItemBinding;
 import projetotcc.estudandoquimica.model.Turma;
 import projetotcc.estudandoquimica.viewmodel.TurmaViewModel;
 
-public class TurmaAdapter extends RecyclerView.Adapter<TurmaAdapter.BindingHolder> {
+public class
+TurmaAdapter extends RecyclerView.Adapter<TurmaAdapter.BindingHolder> {
 
 
     private TurmaClickListener turmaClickListener;
@@ -243,6 +244,16 @@ public class TurmaAdapter extends RecyclerView.Adapter<TurmaAdapter.BindingHolde
                     turmaClickListener.onClick(turmas.get(getAdapterPosition()));
                 }
             });
+
+            binding.codeTurma.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    turmaClickListener.onCompartilheCodigo(turmas.get(getAdapterPosition()));
+                }
+            });
+
+
         }
 
     }

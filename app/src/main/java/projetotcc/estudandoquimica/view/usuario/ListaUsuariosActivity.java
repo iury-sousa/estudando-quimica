@@ -27,6 +27,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -46,7 +47,7 @@ import projetotcc.estudandoquimica.viewmodel.ListaEstudanteViewModel;
 import projetotcc.estudandoquimica.viewmodel.ListaUsuarioViewModel;
 
 public class ListaUsuariosActivity extends AppCompatActivity implements SearchView.OnQueryTextListener,
-        ListaUsuariosAdapter.ClickAddListener{
+        ListaUsuariosAdapter.ClickAddListener {
 
     private RecyclerView recyclerView;
     private SearchView searchView;
@@ -71,10 +72,10 @@ public class ListaUsuariosActivity extends AppCompatActivity implements SearchVi
 
         if (b != null) {
 
-            if(getIntent().getExtras().getInt("opcao") == 1){
+            if (getIntent().getExtras().getInt("opcao") == 1) {
 
                 idPublicacao = getIntent().getExtras().getString("idPublicacao");
-            }else {
+            } else {
                 idTurma = getIntent().getExtras().getString("idTurma");
             }
 
@@ -116,10 +117,10 @@ public class ListaUsuariosActivity extends AppCompatActivity implements SearchVi
             @Override
             public void onRefresh() {
 
-                if(idPublicacao.equals("")){
+                if (idPublicacao.equals("")) {
 
                     updateUsuarios();
-                }else{
+                } else {
 
                     updateUsuariosCurtidas();
                 }
@@ -129,52 +130,55 @@ public class ListaUsuariosActivity extends AppCompatActivity implements SearchVi
         });
         binding.executePendingBindings();
 
-        if(idPublicacao.equals("")){
+        if (idPublicacao.equals("")) {
 
             updateUsuarios();
-        }else{
+        } else {
 
             updateUsuariosCurtidas();
         }
 
     }
 
-    private void updateUsuarios(){
-            adapter.setExibirBotaoAdd(true);
-            viewModel.getDataSnapshotLiveDataEstudantes().observe(this, new Observer<DataSnapshot>() {
-                @Override
-                public void onChanged(@Nullable DataSnapshot dataSnapshot) {
-                    List<Usuario> list = new ArrayList<>();
-                    List<String> ids = new ArrayList<>();
-                    if(dataSnapshot.exists()){
+    private void updateUsuarios() {
+        adapter.setExibirBotaoAdd(true);
+        viewModel.getDataSnapshotLiveDataEstudantes().observe(this, new Observer<DataSnapshot>() {
+            @Override
+            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
+                List<Usuario> list = new ArrayList<>();
+                List<String> ids = new ArrayList<>();
+                if (dataSnapshot.exists()) {
 
-                        dataSnapshot.getRef().orderByChild("nome").addChildEventListener(new ChildEventListener() {
-                            @Override
-                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    dataSnapshot.getRef().orderByChild("nome").addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                                final int[] c = {0};
+                            final int[] c = {0};
 
-                                DatabaseReference reference = FirebaseDatabase.getInstance().getReference("estudantes/" + idTurma);
-                                String id = dataSnapshot.getKey();
-                                Usuario usuario = new Usuario(dataSnapshot.getKey(), null, null, null);
+                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("estudantes/" + idTurma);
+                            String id = dataSnapshot.getKey();
+                            Usuario usuario = new Usuario(dataSnapshot.getKey(), null, null, null);
 
-                                ids.add("");
+                            ids.add("");
 
-                                reference.addChildEventListener(new ChildEventListener() {
-                                    @Override
-                                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                            reference.addChildEventListener(new ChildEventListener() {
+                                @Override
+                                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                                        if(dataSnapshot.exists()){
+                                    if (dataSnapshot.exists()) {
 
-                                            Log.i("TAG", id + "_" + dataSnapshot.getKey() + " " + String.valueOf(id.equals(dataSnapshot.getKey())));
-                                            // Log.i("TAG", "Not Existe " + id + "_" + dataSnapshot.getKey());
+                                        Log.i("TAG", id + "_" + dataSnapshot.getKey() + " " + String.valueOf(id.equals(dataSnapshot.getKey())));
+                                        // Log.i("TAG", "Not Existe " + id + "_" + dataSnapshot.getKey());
 
-                                            if(!id.equals(dataSnapshot.getKey())) {
-                                                DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference("usuarios/" + id);
+                                        if (!id.equals(dataSnapshot.getKey())) {
+                                            DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference("usuarios/" + id);
 
-                                                reference1.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                    @Override
-                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            reference1.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                                    if (!dataSnapshot.getKey().equals(
+                                                            FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                                                         usuario.setId(dataSnapshot.getKey());
                                                         usuario.setEmail(dataSnapshot.child("email").getValue(String.class));
                                                         usuario.setUrlFoto(dataSnapshot.child("urlFoto").getValue(String.class));
@@ -189,51 +193,53 @@ public class ListaUsuariosActivity extends AppCompatActivity implements SearchVi
 
                                                         ids.add(usuario.getId());
                                                     }
+                                                }
 
-                                                    @Override
-                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                                    }
-                                                });
-
-
-                                            }
-                                            else{
-                                                ids.add(id);
-                                            }
+                                                }
+                                            });
 
 
+                                        } else {
+                                            ids.add(id);
                                         }
 
+
                                     }
 
+                                }
+
+                                @Override
+                                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                }
+
+                                @Override
+                                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                                }
+
+                                @Override
+                                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
+                            if (list.isEmpty()) {
+                                DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference("usuarios/" + id);
+
+                                reference1.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
-                                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                                    }
-
-                                    @Override
-                                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                                    }
-
-                                    @Override
-                                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                    }
-                                });
-
-                                if(list.isEmpty()){
-                                    DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference("usuarios/" + id);
-
-                                    reference1.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        if (!dataSnapshot.getKey().equals(
+                                                FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                                             usuario.setId(dataSnapshot.getKey());
                                             usuario.setEmail(dataSnapshot.child("email").getValue(String.class));
                                             usuario.setUrlFoto(dataSnapshot.child("urlFoto").getValue(String.class));
@@ -248,47 +254,46 @@ public class ListaUsuariosActivity extends AppCompatActivity implements SearchVi
 
                                             ids.add(usuario.getId());
                                         }
+                                    }
 
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                        }
-                                    });
-                                }
-
-                                if(adapter.getItemCount() == 0){
-                                    adapter.setUsuarios(list);
-                                }
-
+                                    }
+                                });
                             }
 
-                            @Override
-                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+                            if (adapter.getItemCount() == 0) {
+                                adapter.setUsuarios(list);
                             }
 
-                            @Override
-                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                        }
 
-                            }
+                        @Override
+                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                            @Override
-                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        }
 
-                            }
+                        @Override
+                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                        }
 
-                            }
-                        });
-                    }
+                        @Override
+                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
+                        }
 
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-
+                        }
+                    });
                 }
-            });
+
+
+            }
+        });
 
 
 //        ref.orderByChild("nome").addChildEventListener(new ChildEventListener() {
@@ -395,17 +400,16 @@ public class ListaUsuariosActivity extends AppCompatActivity implements SearchVi
 //        });
 
 
-
     }
 
-    private void updateUsuariosCurtidas(){
+    private void updateUsuariosCurtidas() {
         adapter.setExibirBotaoAdd(false);
         viewModel.getDataSnapshotLiveDataEstudantes().observe(this, new Observer<DataSnapshot>() {
             @Override
             public void onChanged(@Nullable DataSnapshot dataSnapshot) {
                 List<Usuario> list = new ArrayList<>();
 //                List<String> ids = new ArrayList<>();
-                if(dataSnapshot.exists()){
+                if (dataSnapshot.exists()) {
 
                     dataSnapshot.getRef().orderByChild("nome").addChildEventListener(new ChildEventListener() {
                         @Override
@@ -423,12 +427,12 @@ public class ListaUsuariosActivity extends AppCompatActivity implements SearchVi
                                 @Override
                                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                                    if(dataSnapshot.exists()){
+                                    if (dataSnapshot.exists()) {
 
                                         Log.i("TAG", id + "_" + dataSnapshot.getKey() + " " + String.valueOf(id.equals(dataSnapshot.getKey())));
                                         // Log.i("TAG", "Not Existe " + id + "_" + dataSnapshot.getKey());
 
-                                        if(id.equals(dataSnapshot.getKey())) {
+                                        if (id.equals(dataSnapshot.getKey())) {
                                             DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference("usuarios/" + id);
 
                                             reference1.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -444,7 +448,7 @@ public class ListaUsuariosActivity extends AppCompatActivity implements SearchVi
                                                     c[0]++;
 
 //                                                    if (!ids.contains(usuario.getId()))
-                                                        list.add(usuario);
+                                                    list.add(usuario);
 
 //                                                    ids.add(usuario.getId());
                                                 }
@@ -456,8 +460,7 @@ public class ListaUsuariosActivity extends AppCompatActivity implements SearchVi
                                             });
 
 
-                                        }
-                                        else{
+                                        } else {
 //                                            ids.add(id);
                                         }
 
@@ -487,11 +490,11 @@ public class ListaUsuariosActivity extends AppCompatActivity implements SearchVi
                                 }
                             });
 
-                            if(list.isEmpty()){
+                            if (list.isEmpty()) {
 
                             }
 
-                            if(adapter.getItemCount() == 0){
+                            if (adapter.getItemCount() == 0) {
 
                                 adapter.setUsuarios(list);
                             }
@@ -519,8 +522,6 @@ public class ListaUsuariosActivity extends AppCompatActivity implements SearchVi
                         }
                     });
                 }
-
-
 
 
             }
@@ -629,7 +630,6 @@ public class ListaUsuariosActivity extends AppCompatActivity implements SearchVi
 //
 //            }
 //        });
-
 
 
     }
@@ -665,7 +665,7 @@ public class ListaUsuariosActivity extends AppCompatActivity implements SearchVi
             return true;
         }
 
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 return true;
@@ -709,7 +709,7 @@ public class ListaUsuariosActivity extends AppCompatActivity implements SearchVi
     @Override
     public void click(Usuario usuario, int position) {
 
-        if(usuario != null){
+        if (usuario != null) {
 
             DatabaseReference ref = FirebaseDatabase.getInstance()
                     .getReference("estudantes/" + idTurma);

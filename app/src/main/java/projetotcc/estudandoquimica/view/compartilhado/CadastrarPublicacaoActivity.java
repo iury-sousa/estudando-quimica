@@ -210,7 +210,7 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
 
             inputStream = stream;
             final ImageView imageView = binding.imagemConteudo;
-           // viewModel.imagemUrl.set();
+            viewModel.imagemUrl.set(data.getData().toString());
             imageView.setVisibility(View.VISIBLE);
             imageView.setImageBitmap(bitmap);
 //            UploadFiles f = new UploadFiles(CadastrarPublicacaoActivity.this);
@@ -395,6 +395,8 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
 
         getMenuInflater().inflate(R.menu.menu_conteudo, menu);
+        menu.removeItem(R.id.action_config);
+
         return true;
     }
 
@@ -449,11 +451,11 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
 
     private void notificarUsuarios(Publicacao publicacao){
 
-        String[] bodyNotification = new String[]{ publicacao.getAdmin().getNome()};
-        new NotificationAsync().execute(
-                publicacao,
-                "Publicou"
-        );
+//        String[] bodyNotification = new String[]{ publicacao.getAdmin().getNome()};
+//        new NotificationAsync().execute(
+//                publicacao,
+//                "Publicou"
+//        );
     }
 
 
@@ -480,7 +482,7 @@ public class CadastrarPublicacaoActivity extends AppCompatActivity {
                 notificacao.put("sound", "default");
 
                 JSONObject data = new JSONObject();
-                data.put("imagem", "testando");
+                data.put("imagem", p.getImagemUrl());
                 data.put("foto", p.getAdmin().getUrlFoto());
 
                 JSONObject object = new JSONObject();

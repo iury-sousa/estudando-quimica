@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SobreActivity">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/img"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:src="@drawable/logo2"/>
+
+        <TextView
+            android:id="@+id/titulo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/img"
+            android:text="Estudando Química"
+            android:gravity="center_horizontal"
+            android:textStyle="bold"
+            android:textSize="24sp"
+            android:fontFamily="casual"
+            android:layout_marginTop="10dp"
+            android:textColor="#000"
+            android:shadowDx="2"
+            android:shadowDy="3"
+            android:shadowRadius="7"
+            android:shadowColor="#000"/>
+
+        <TextView
+            android:id="@+id/versao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/titulo"
+            android:textSize="14sp"
+            android:textColor="#464646"
+            android:text="Versão 1.0"
+            android:gravity="center_horizontal"
+            />
+
+        <TextView
+            android:id="@+id/apresentacao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/versao"
+            android:textSize="15sp"
+            android:padding="20dp"
+            android:textColor="#464646"
+            android:typeface="serif"
+            android:lineSpacingExtra="1dp"
+            android:text="Estudando química é um aplicativo destinado a alunos, professores e pessoas com interesse em aprender um pouco sobre a química. Podendo também utilizar esse aplicativo para compartilhar conteúdos voltados para está finalidade. "
+            android:gravity="center_horizontal"
+            />
+
+        <TextView
+            android:id="@+id/desenvolvedores"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/apresentacao"
+            android:textSize="15sp"
+            android:lineSpacingExtra="3dp"
+            android:typeface="serif"
+            android:textColor="#464646"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:text="Desenvolvido por: \nIury Wemerson  e  Thaís Magalhães"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/desenvolvedores"
+            android:textSize="15sp"
+            android:textColor="#464646"
+            android:textStyle="bold"
+            android:typeface="serif"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="20dp"
+            android:text="Email para contato:"
+            android:gravity="center"/>
+        <TextView
+            android:id="@+id/iury"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/email"
+            android:textSize="14sp"
+            android:typeface="serif"
+            android:textColor="#1227a9"
+            android:layout_marginStart="20dp"
+            android:text="iury_wemerson@hotmail.com"
+            android:gravity="center"/>
+        <TextView
+            android:id="@+id/thais"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/iury"
+            android:textSize="14sp"
+            android:typeface="serif"
+            android:textColor="#1227a9"
+            android:layout_marginStart="20dp"
+            android:text="taismagalhaes12@hotmail.com"
+            android:gravity="center"
+            android:layout_marginBottom="10dp"/>
+
+    </RelativeLayout>
+
+</android.support.v4.widget.NestedScrollView>

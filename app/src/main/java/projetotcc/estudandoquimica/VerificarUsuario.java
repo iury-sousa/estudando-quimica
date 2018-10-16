@@ -12,6 +12,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import projetotcc.estudandoquimica.model.Usuario;
+
 public class VerificarUsuario {
 
     private static FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -97,4 +99,54 @@ public class VerificarUsuario {
 
         return isProfessor;
     }
+
+
+    public static void verificarTipoUsuario(CallbackVerificarUsuario<Boolean> callback){
+
+        DatabaseReference reference = FirebaseDatabase.getInstance()
+                .getReference("usuarios/" + user.getUid() + "/professor");
+
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                //isProfessor = dataSnapshot.getValue(Boolean.class);
+                callback.callback(dataSnapshot.getValue(Boolean.class));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public static void verificarCadastroUsuario(CallbackVerificarUsuario<Boolean> callback, String idUsuario){
+        DatabaseReference reference = FirebaseDatabase.getInstance()
+                .getReference("usuarios/" + idUsuario);
+
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.getValue() == null) {
+
+                    callback.callback(false);
+                }else{
+                    callback.callback(true);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public interface CallbackVerificarUsuario<T> {
+
+        void callback(T retorno);
+    }
+
 }

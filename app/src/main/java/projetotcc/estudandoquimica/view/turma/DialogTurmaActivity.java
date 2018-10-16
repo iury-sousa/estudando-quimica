@@ -73,8 +73,6 @@ public class DialogTurmaActivity extends AppCompatActivity implements View.OnCli
                 finish();
             }
 
-
-
         }
     }
 }

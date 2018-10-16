@@ -8,16 +8,21 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         tools:context=".view.compartilhado.ComentariosActivity">
-
-
+        <TextView
+            android:id="@+id/sem_registro"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="50dp"
+            android:gravity="center"
+            android:text="Sem comentários no momento!"
+            android:textSize="16sp"
+            android:visibility="gone" />
 
         <!--<android.support.v4.widget.SwipeRefreshLayout-->
             <!--android:id="@+id/swipeRefreshLayout"-->
             <!--android:layout_width="match_parent"-->
             <!--android:layout_height="0dp"-->
             <!--android:layout_weight="0.9">-->
-
-
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/lista_comentarios"
@@ -27,12 +32,7 @@
                 android:background="#FFF"
                 android:layoutAnimation="@anim/layout_animation" />
 
-
         <!--</android.support.v4.widget.SwipeRefreshLayout>-->
-
-
-
-
         <View
             android:id="@+id/view"
             android:layout_width="match_parent"

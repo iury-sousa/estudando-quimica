@@ -10,6 +10,8 @@ import com.google.firebase.database.Exclude;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import projetotcc.estudandoquimica.view.usuario.LibraryClass;
 
@@ -190,11 +192,22 @@ public class Usuario implements Parcelable{
         DatabaseReference firebase = LibraryClass.getFirebase().child("usuarios").child( getId() );
 
         if( completionListener.length == 0 ){
-            firebase.setValue(this);
+            firebase.setValue(toMap());
         }
         else{
             firebase.setValue(this, completionListener[0]);
         }
+    }
+
+    public Map<String, Object> toMap() {
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("nome", nome);
+        map.put("email", email);
+        map.put("professor", professor);
+        map.put("urlFoto", urlFoto);
+
+        return map;
     }
 
     public void contextDataDB( Context context ){

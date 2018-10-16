@@ -64,6 +64,7 @@ import projetotcc.estudandoquimica.HomeActivity;
 import projetotcc.estudandoquimica.MainActivity;
 import projetotcc.estudandoquimica.R;
 import projetotcc.estudandoquimica.VerificarConexaoInternet;
+import projetotcc.estudandoquimica.VerificarUsuario;
 import projetotcc.estudandoquimica.databinding.ActivityLoginBinding;
 import projetotcc.estudandoquimica.model.Usuario;
 
@@ -72,7 +73,7 @@ import static android.Manifest.permission.READ_CONTACTS;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor>,
+public class LoginActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener{
 
     /**
@@ -101,8 +102,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private FirebaseAuth auth;
     private GoogleApiClient mGoogleApiClient;
     private FirebaseAuth.AuthStateListener mAuthListener;
-
-
 
     private static int RC_SIGN_IN = 1;
 
@@ -140,7 +139,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         //mainActivity = new MainActivity();
 
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        populateAutoComplete();
+        //populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -239,7 +238,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             return;
         }
 
-        getLoaderManager().initLoader(0, null, this);
+
     }
 
     private boolean mayRequestContacts() {
@@ -272,7 +271,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                            @NonNull int[] grantResults) {
         if (requestCode == REQUEST_READ_CONTACTS) {
             if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                populateAutoComplete();
+                //populateAutoComplete();
             }
         }
     }
@@ -379,39 +378,34 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return new CursorLoader(this,
-                // Retrieve data rows for the device user's 'profile' contact.
-                Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
-                        ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
+//    @Override
+//    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+//        return new CursorLoader(this,
+//                // Retrieve data rows for the device user's 'profile' contact.
+//                Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
+//                        ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
+//
+//                // Select only email addresses.
+//                ContactsContract.Contacts.Data.MIMETYPE +
+//                        " = ?", new String[]{ContactsContract.CommonDataKinds.Email
+//                .CONTENT_ITEM_TYPE},
+//
+//                // Show primary email addresses first. Note that there won't be
+//                // a primary email address if the user hasn't specified one.
+//                ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
+//    }
 
-                // Select only email addresses.
-                ContactsContract.Contacts.Data.MIMETYPE +
-                        " = ?", new String[]{ContactsContract.CommonDataKinds.Email
-                .CONTENT_ITEM_TYPE},
-
-                // Show primary email addresses first. Note that there won't be
-                // a primary email address if the user hasn't specified one.
-                ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        List<String> emails = new ArrayList<>();
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            emails.add(cursor.getString(ProfileQuery.ADDRESS));
-            cursor.moveToNext();
-        }
-
-        addEmailsToAutoComplete(emails);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader) {
-
-    }
+//    @Override
+//    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+//        List<String> emails = new ArrayList<>();
+//        cursor.moveToFirst();
+//        while (!cursor.isAfterLast()) {
+//            emails.add(cursor.getString(ProfileQuery.ADDRESS));
+//            cursor.moveToNext();
+//        }
+//
+//        addEmailsToAutoComplete(emails);
+//    }
 
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create conteudo_offline_item to tell the AutoCompleteTextView what to show in its dropdown list.
@@ -421,8 +415,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mEmailView.setAdapter(adapter);
     }
-
-
 
     private void LoginGoogle(){
 
@@ -479,9 +471,27 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         user.setUrlFoto(userFirebase.getPhotoUrl().toString());
                     }
 
-                    user.saveDB();
+                    VerificarUsuario.verificarCadastroUsuario(new VerificarUsuario.CallbackVerificarUsuario<Boolean>() {
+                        @Override
+                        public void callback(Boolean retorno) {
+
+                            if(retorno){
+                                callMainActivity();
+                            }else{
+                                Intent intent = new Intent( LoginActivity.this, ProfessorAlunoActivity.class );
+                                intent.putExtra("usuario", user);
+                                startActivity(intent);
+                                finish();
+                                overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
+                                showProgress(false);
+
+                            }
+                        }
+                    }, user.getId());
+
+                    //user.saveDB();
                 }
-                callMainActivity();
+
 
 //                Intent intent = new Intent( LoginActivity.this, ProfessorAlunoActivity.class );
 //                startActivity(intent);
@@ -503,6 +513,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         Intent intent = new Intent( this, HomeActivity.class );
         startActivity(intent);
         finish();
+        overridePendingTransition(R.anim.enter_top, R.anim.zoom_out);
+        showProgress(false);
     }
 
     @Override
@@ -513,12 +525,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                // Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
 
+                showProgress(true);
                 GoogleSignInResult signInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
                 GoogleSignInAccount signInAccount = signInResult.getSignInAccount();
                 //syncGoogleSignInIntent(signInAccount.getIdToken());
 
                 if(signInAccount == null){
                     //Toast.makeText(this, "Falha ao logar com a conta do Google, tente novamente!", Toast.LENGTH_SHORT).show();
+                    showProgress(false);
                     return;
                 }
                 acessarLoginData(signInAccount.getIdToken());
@@ -587,7 +601,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         GoogleSignInAccount account = completedTask.getResult(ApiException.class);
                         firebaseAuthWithGoogle(account);
 
-                        Intent it = new Intent(LoginActivity.this, MainActivity.class);
+                        Intent it = new Intent(LoginActivity.this, HomeActivity.class);
                         startActivity(it);
                         finish();
                         }catch (ApiException e){
@@ -737,7 +751,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             if (success) {
                 finish();
-                Intent it = new Intent(LoginActivity.this, MainActivity.class);
+                Intent it = new Intent(LoginActivity.this, HomeActivity.class);
                 LoginActivity.this.startActivity(it);
 
             } else {

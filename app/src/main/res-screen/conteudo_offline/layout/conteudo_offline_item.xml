@@ -20,21 +20,20 @@
             android:gravity="center"
             android:background="@drawable/bgrect"
             android:padding="20dp">
-            <TextView
-                android:id="@+id/id_card"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:visibility="gone"/>
+            <!--<TextView-->
+                <!--android:id="@+id/id_card"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_alignParentTop="true"-->
+                <!--android:visibility="gone"/>-->
 
             <TextView
                 android:id="@+id/titleTextView"
                 style="@style/TextAppearance.AppCompat.Title"
-                android:maxLength="25"
+                android:maxLength="40"
                 android:gravity="center"
                 android:layout_centerHorizontal="true"
                 android:text="@string/title_1"
-                android:layout_below="@+id/id_card"
                 android:shadowColor="#000"
                 android:shadowDy="5"
                 android:shadowDx="2"
